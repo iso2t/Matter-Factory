@@ -60,8 +60,6 @@ public class FTab {
 				output.accept(itemDef);
 			}
 		}
-
-		output.accept(Items.ITEM_FRAME);
 	}
 
 }

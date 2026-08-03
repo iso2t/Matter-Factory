@@ -23,11 +23,16 @@ public class FItems {
 
 	private static final List<ItemDefinition<?>> ITEMS = new ArrayList<>();
 
-	public static List<ItemDefinition<?>> getItems() {
+	public static final ItemDefinition<Item> PALLADIUM_INGOT  = register("Palladium Ingot", Item::new);
+	public static final ItemDefinition<Item> PALLADIUM_NUGGET = register("Palladium Nugget", Item::new);
+	public static final ItemDefinition<Item> PALLADIUM_DUST   = register("Palladium Dust", Item::new);
+	public static final ItemDefinition<Item> PALLADIUM_RAW    = register("Raw Palladium", "palladium_raw", Item::new);
+
+	public static List<ItemDefinition<?>> getItems () {
 		return Collections.unmodifiableList(ITEMS);
 	}
 
-	public static <T extends Item> ItemDefinition<T> register(String name, Function<Item.Properties, T> factory) {
+	public static <T extends Item> ItemDefinition<T> register (String name, Function<Item.Properties, T> factory) {
 		String resourceFriendly = name.toLowerCase().replace(' ', '_');
 		return register(name, Factory.get(resourceFriendly), factory, FTab.MAIN);
 	}

@@ -1,7 +1,6 @@
 package com.iso2t.matterfactory.core.datagen.models;
 
 import com.iso2t.matterfactory.common.registries.FItems;
-import com.iso2t.matterfactory.core.Factory;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.core.Holder;
@@ -10,6 +9,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.stream.Stream;
 
@@ -17,6 +17,11 @@ public final class ItemModelProvider extends ModelProviders {
 
 	public ItemModelProvider (PackOutput output) {
 		super(output);
+	}
+
+	@Override
+	public @NonNull String getName () {
+		return "Model Definitions - " + com.iso2t.matterfactory.core.Factory.MODID + " (items)";
 	}
 
 	@Override

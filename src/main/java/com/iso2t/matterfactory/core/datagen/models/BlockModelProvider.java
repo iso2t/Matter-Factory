@@ -11,6 +11,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.stream.Stream;
 
@@ -23,6 +24,11 @@ public non-sealed class BlockModelProvider extends ModelProviders {
 
 	public BlockModelProvider (PackOutput output) {
 		super(output);
+	}
+
+	@Override
+	public @NonNull String getName () {
+		return "Model Definitions - " + com.iso2t.matterfactory.core.Factory.MODID + " (blocks)";
 	}
 
 	@Override

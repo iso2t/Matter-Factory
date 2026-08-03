@@ -1,3 +1,7 @@
 {
+  "item.matterfactory.palladium_dust": "Palladium Dust",
+  "item.matterfactory.palladium_ingot": "Palladium Ingot",
+  "item.matterfactory.palladium_nugget": "Palladium Nugget",
+  "item.matterfactory.palladium_raw": "Raw Palladium",
   "itemGroup.matterfactory": "Matter Factory"
 }
