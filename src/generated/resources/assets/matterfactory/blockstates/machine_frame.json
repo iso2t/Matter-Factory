@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "matterfactory:block/machine_frame"
+    }
+  }
+}

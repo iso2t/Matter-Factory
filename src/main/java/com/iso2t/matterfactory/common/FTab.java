@@ -6,6 +6,7 @@ import com.iso2t.matterfactory.common.block.BaseBlock;
 import com.iso2t.matterfactory.common.definition.ItemDefinition;
 import com.iso2t.matterfactory.common.item.BaseBlockItem;
 import com.iso2t.matterfactory.common.item.BaseItem;
+import com.iso2t.matterfactory.common.registries.FBlocks;
 import com.iso2t.matterfactory.core.Factory;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -29,7 +30,7 @@ public class FTab {
 	public static void init (Registry<CreativeModeTab> registry) {
 		var tab = CreativeModeTab.builder()
 				.title(Component.translatable("itemGroup." + Factory.MODID))
-				.icon(() -> new ItemStack(Items.APPLE))
+				.icon(FBlocks.MACHINE_FRAME::getStack)
 				.displayItems(FTab::buildDisplayItems)
 				.build();
 		Registry.register(registry, MAIN, tab);

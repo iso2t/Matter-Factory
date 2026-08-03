@@ -2,8 +2,7 @@ package com.iso2t.matterfactory.core.datagen;
 
 import com.iso2t.matterfactory.core.Factory;
 import com.iso2t.matterfactory.core.datagen.language.EnglishLangProvider;
-import com.iso2t.matterfactory.core.datagen.models.BlockModelProvider;
-import com.iso2t.matterfactory.core.datagen.models.ItemModelProvider;
+import com.iso2t.matterfactory.core.datagen.models.FactoryModelProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -27,9 +26,9 @@ public class DataGenerators {
 		var localization = new EnglishLangProvider(generator);
 
 		// MODELS & STATES
-		pack.addProvider(BlockModelProvider::new);
-		pack.addProvider(ItemModelProvider::new);
+		pack.addProvider(FactoryModelProvider::new);
 
+		// LANGUAGES (MUST RUN LAST)
 		pack.addProvider(_ -> localization);
 	}
 
