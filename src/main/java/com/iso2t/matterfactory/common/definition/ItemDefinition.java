@@ -28,6 +28,10 @@ public record ItemDefinition<T extends Item>(String englishName, DeferredItem<T>
 		return item;
 	}
 
+	public String getEnglishName () {
+		return englishName;
+	}
+
 	@Override
 	public T get () {
 		return item.get();

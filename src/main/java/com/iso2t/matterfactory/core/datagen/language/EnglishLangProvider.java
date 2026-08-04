@@ -16,12 +16,12 @@ public class EnglishLangProvider extends LanguageProvider {
 		addManualStrings();
 		addSubtitles();
 
-		// ITEMS
+		items:
 		for (var item : FItems.getItems()) {
-			add(item.asItem(), item.englishName());
+			add(item.asItem(), item.getEnglishName());
 		}
 
-		// BLOCKS
+		blocks:
 		for (var block : FBlocks.getBlocks()) {
 			add(block.getBlock(), block.getEnglishName());
 		}
