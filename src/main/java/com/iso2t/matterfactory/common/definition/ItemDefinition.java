@@ -12,6 +12,10 @@ import java.util.function.Supplier;
 
 public record ItemDefinition<T extends Item>(String englishName, DeferredItem<T> item) implements ItemLike, Supplier<T> {
 
+	public String getRegistryFriendlyName () {
+		return englishName.toLowerCase().replace(' ', '_');
+	}
+
 	public Identifier getId () {
 		return this.item.getId();
 	}
