@@ -1,17 +1,18 @@
 license="${mod_license}"
-#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+issueTrackerURL="https://github.com/iso2t/Matter-Factory/issues"
 
 [[mods]]
+
 modId="${mod_id}"
-version="${mod_version}
+version="${mod_version}"
 displayName="${mod_name}"
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optiona
+displayURL="https://github.com/iso2t/Matter-Factory"
 #logoFile="examplemod.png" #optiona
 #credits="" #optional
-#authors=""
+authors="iso2t"
 description='''
-Example mod description.
+Matter gathering, duplication, and processing.
 '''
 
 #[[mixins]]
