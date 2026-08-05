@@ -6,15 +6,21 @@ import matterfactory.common.definition.BlockDefinition;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
-import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import net.minecraft.client.renderer.block.dispatch.multipart.Condition;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.SelectItemModel;
+import net.minecraft.client.renderer.item.properties.select.DisplayContext;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface CustomBlockModel {
 
@@ -28,12 +34,12 @@ public interface CustomBlockModel {
 		TextureMapping textures = new TextureMapping().put(CableBlock.CABLE_TEXTURE, TextureMapping.getBlockTexture(cable)).put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(cable));
 
 		Identifier centerModel = CableBlock.CENTER_MODEL.create(cable, textures, generators.modelOutput);
-
 		Identifier armModel = CableBlock.ARM_MODEL.create(cable, textures, generators.modelOutput);
+		Identifier itemModel = CableBlock.ITEM_MODEL.create(cable, textures, generators.modelOutput);
+		Identifier guiModel = CableBlock.GUI_MODEL.create(cable, textures, generators.modelOutput);
 
 		registerCableBlockState(generators, cable, centerModel, armModel);
-
-		registerCableItemModel(generators, cable, textures);
+		registerCableItemModel(generators, cable, itemModel, guiModel);
 	}
 
 	private static void registerCableBlockState (BlockModelGenerators generators, CableBlock cable, Identifier centerModel, Identifier armModel) {
@@ -46,8 +52,14 @@ public interface CustomBlockModel {
 		generators.blockStateOutput.accept(multipart);
 	}
 
-	private static void registerCableItemModel (BlockModelGenerators generators, CableBlock cable, TextureMapping textures) {
-		CableBlock.ITEM_MODEL.create(ModelLocationUtils.getModelLocation(cable), textures, generators.modelOutput);
+	private static void registerCableItemModel (BlockModelGenerators generators, CableBlock cable, Identifier itemModel, Identifier guiModel) {
+		ItemModel.Unbaked normalModel = ItemModelUtils.plainModel(itemModel);
+
+		ItemModel.Unbaked inventoryModel = ItemModelUtils.plainModel(guiModel);
+
+		SelectItemModel.UnbakedSwitch<DisplayContext, ItemDisplayContext> displayContextSwitch = new SelectItemModel.UnbakedSwitch<>(new DisplayContext(), List.of(new SelectItemModel.SwitchCase<>(List.of(ItemDisplayContext.GUI), inventoryModel)));
+
+		generators.itemModelOutput.accept(cable.asItem(), new SelectItemModel.Unbaked(Optional.empty(), displayContextSwitch, Optional.of(normalModel)));
 	}
 
 	private static Condition condition (BooleanProperty property) {

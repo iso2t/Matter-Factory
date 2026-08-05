@@ -48,12 +48,9 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 	private static final VoxelShape DOWN_SHAPE  = box(5, 0, 5, 11, 5, 11);
 	private static final VoxelShape UP_SHAPE    = box(5, 11, 5, 11, 16, 11);
 	private static final VoxelShape NORTH_SHAPE = box(5, 5, 0, 11, 11, 5);
-
 	private static final VoxelShape SOUTH_SHAPE = box(5, 5, 11, 11, 11, 16);
-
-	private static final VoxelShape WEST_SHAPE = box(0, 5, 5, 5, 11, 11);
-
-	private static final VoxelShape EAST_SHAPE = box(11, 5, 5, 16, 11, 11);
+	private static final VoxelShape WEST_SHAPE  = box(0, 5, 5, 5, 11, 11);
+	private static final VoxelShape EAST_SHAPE  = box(11, 5, 5, 16, 11, 11);
 
 	private static final VoxelShape[] SHAPES = createShapes();
 
@@ -129,30 +126,12 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 	private static int getShapeIndex (BlockState state) {
 		int index = 0;
 
-		if (state.getValue(DOWN)) {
-			index |= 1;
-		}
-
-		if (state.getValue(UP)) {
-			index |= 1 << 1;
-		}
-
-		if (state.getValue(NORTH)) {
-			index |= 1 << 2;
-		}
-
-		if (state.getValue(SOUTH)) {
-			index |= 1 << 3;
-		}
-
-		if (state.getValue(WEST)) {
-			index |= 1 << 4;
-		}
-
-		if (state.getValue(EAST)) {
-			index |= 1 << 5;
-		}
-
+		if (state.getValue(DOWN)) index |= 1;
+		if (state.getValue(UP)) index |= 1 << 1;
+		if (state.getValue(NORTH)) index |= 1 << 2;
+		if (state.getValue(SOUTH)) index |= 1 << 3;
+		if (state.getValue(WEST)) index |= 1 << 4;
+		if (state.getValue(EAST)) index |= 1 << 5;
 		return index;
 	}
 
@@ -161,31 +140,12 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 
 		for (int index = 0; index < shapes.length; index++) {
 			VoxelShape shape = CORE;
-
-			if ((index & 1) != 0) {
-				shape = Shapes.or(shape, DOWN_SHAPE);
-			}
-
-			if ((index & (1 << 1)) != 0) {
-				shape = Shapes.or(shape, UP_SHAPE);
-			}
-
-			if ((index & (1 << 2)) != 0) {
-				shape = Shapes.or(shape, NORTH_SHAPE);
-			}
-
-			if ((index & (1 << 3)) != 0) {
-				shape = Shapes.or(shape, SOUTH_SHAPE);
-			}
-
-			if ((index & (1 << 4)) != 0) {
-				shape = Shapes.or(shape, WEST_SHAPE);
-			}
-
-			if ((index & (1 << 5)) != 0) {
-				shape = Shapes.or(shape, EAST_SHAPE);
-			}
-
+			if ((index & 1) != 0) shape = Shapes.or(shape, DOWN_SHAPE);
+			if ((index & (1 << 1)) != 0) shape = Shapes.or(shape, UP_SHAPE);
+			if ((index & (1 << 2)) != 0) shape = Shapes.or(shape, NORTH_SHAPE);
+			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, SOUTH_SHAPE);
+			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, WEST_SHAPE);
+			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, EAST_SHAPE);
 			shapes[index] = shape.optimize();
 		}
 
@@ -222,5 +182,9 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 	 * y: 5 -> 11
 	 * z: 5 -> 11
 	 */
-	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(0, 5, 5).to(16, 11, 11).textureAll(CABLE_TEXTURE)).build();
+	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_item").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
+
+	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_gui").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
+			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE))
+			.element(element -> element.from(5, 0, 5).to(11, 5, 11).textureAll(CABLE_TEXTURE)).element(element -> element.from(5, 11, 5).to(11, 16, 11).textureAll(CABLE_TEXTURE)).element(element -> element.from(5, 5, 0).to(11, 11, 5).textureAll(CABLE_TEXTURE)).element(element -> element.from(5, 5, 11).to(11, 11, 16).textureAll(CABLE_TEXTURE)).element(element -> element.from(0, 5, 5).to(5, 11, 11).textureAll(CABLE_TEXTURE)).element(element -> element.from(11, 5, 5).to(16, 11, 11).textureAll(CABLE_TEXTURE)).build();
 }
