@@ -1,5 +1,6 @@
 {
   "values": [
-    "matterfactory:machine_frame"
+    "matterfactory:machine_frame",
+    "matterfactory:machine_casing"
   ]
 }

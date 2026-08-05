@@ -1,6 +1,7 @@
 {
   "values": [
     "matterfactory:machine_frame",
+    "matterfactory:machine_casing",
     "matterfactory:basic_power_cable",
     "matterfactory:advanced_power_cable",
     "matterfactory:elite_power_cable",
