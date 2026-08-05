@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,7 @@ public class FBlocks {
 
 	public static final List<BlockDefinition<?>> BLOCKS = new ArrayList<>();
 
-	public static final BlockDefinition<MachineBlock> MACHINE_FRAME = register("Machine Frame", properties -> new MachineBlock(MachineBlock.Type.MACHINE_FRAME, properties)/*, MachineBlock.Type.MACHINE_FRAME::createProperties*/);
+	public static final BlockDefinition<MachineBlock> MACHINE_FRAME = register("Machine Frame", properties -> new MachineBlock(MachineBlock.Type.MACHINE_FRAME, properties), MachineBlock.Type.MACHINE_FRAME::createProperties);
 
 	public static final BlockDefinition<PowerCable> BASIC_POWER_CABLE = register("Basic Power Cable", properties -> new PowerCable(properties, Tier.BASIC));
 	public static final BlockDefinition<PowerCable> ADVANCED_POWER_CABLE = register("Advanced Power Cable", properties -> new PowerCable(properties, Tier.ADVANCED));

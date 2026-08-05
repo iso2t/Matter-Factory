@@ -8,6 +8,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.NonNull;
 
@@ -19,7 +20,7 @@ public class PowerCable extends CableBlock {
 	private final Tier tier;
 
 	public PowerCable (Properties properties, Tier tier) {
-		super(properties);
+		super(properties.requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE));
 		this.tier = tier;
 	}
 

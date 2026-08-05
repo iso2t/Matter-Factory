@@ -3,6 +3,7 @@ package matterfactory.common.block;
 import lombok.Getter;
 import matterfactory.core.datagen.util.IPickaxe;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 
 import java.util.function.Supplier;
 
@@ -17,7 +18,7 @@ public class MachineBlock extends BaseBlock implements IPickaxe {
 	}
 
 	public enum Type {
-		MACHINE_FRAME(() -> Properties.ofFullCopy(Blocks.IRON_BLOCK)),
+		MACHINE_FRAME(() -> Properties.of().requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.IRON)),
 		MACHINE_CASING(() -> Properties.ofFullCopy(Blocks.IRON_BLOCK));
 
 		private final Supplier<Properties> properties;
