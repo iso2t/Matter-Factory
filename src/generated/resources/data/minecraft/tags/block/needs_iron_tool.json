@@ -4,6 +4,16 @@
     "matterfactory:advanced_power_cable",
     "matterfactory:elite_power_cable",
     "matterfactory:ultimate_power_cable",
-    "matterfactory:infinite_power_cable"
+    "matterfactory:infinite_power_cable",
+    "matterfactory:basic_fluid_pipe",
+    "matterfactory:advanced_fluid_pipe",
+    "matterfactory:elite_fluid_pipe",
+    "matterfactory:ultimate_fluid_pipe",
+    "matterfactory:infinite_fluid_pipe",
+    "matterfactory:basic_item_pipe",
+    "matterfactory:advanced_item_pipe",
+    "matterfactory:elite_item_pipe",
+    "matterfactory:ultimate_item_pipe",
+    "matterfactory:infinite_item_pipe"
   ]
 }

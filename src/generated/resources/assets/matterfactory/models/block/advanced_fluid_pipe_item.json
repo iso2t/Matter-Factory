@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_arm"
+        },
+        "east": {
+          "texture": "#cable_arm"
+        },
+        "north": {
+          "texture": "#cable_arm"
+        },
+        "south": {
+          "texture": "#cable_arm"
+        },
+        "up": {
+          "texture": "#cable_arm"
+        },
+        "west": {
+          "texture": "#cable_arm"
+        }
+      },
+      "from": [
+        0,
+        6,
+        6
+      ],
+      "to": [
+        16,
+        10,
+        10
+      ]
+    }
+  ],
+  "textures": {
+    "cable_arm": "matterfactory:block/cable/advanced_fluid_pipe_arm",
+    "particle": "matterfactory:block/cable/advanced_fluid_pipe_center"
+  }
+}

@@ -1,7 +1,6 @@
 package matterfactory.common.model;
 
 import com.mojang.math.Quadrant;
-import com.mojang.math.Transformation;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.definition.BlockDefinition;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -10,6 +9,7 @@ import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.renderer.block.dispatch.VariantMutator;
 import net.minecraft.client.renderer.block.dispatch.multipart.Condition;
@@ -22,8 +22,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.List;
 import java.util.Optional;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 public interface CustomBlockModel {
 
@@ -34,7 +32,11 @@ public interface CustomBlockModel {
 	}
 
 	private static void registerCableModels (BlockModelGenerators generators, CableBlock cable) {
-		TextureMapping textures = new TextureMapping().put(CableBlock.CABLE_TEXTURE, TextureMapping.getBlockTexture(cable)).put(TextureSlot.PARTICLE, TextureMapping.getBlockTexture(cable));
+		Identifier texture = TextureMapping.getBlockTexture(cable).sprite().withPath(path -> path.replace("block/", "block/cable/"));
+		TextureMapping textures = new TextureMapping()
+				.put(CableBlock.CABLE_CENTER_TEXTURE, new Material(texture.withPath(path -> path + "_center")))
+				.put(CableBlock.CABLE_ARM_TEXTURE, new Material(texture.withPath(path -> path + "_arm")))
+				.put(TextureSlot.PARTICLE, new Material(texture.withPath(path -> path + "_center")));
 
 		Identifier centerModel = CableBlock.CENTER_MODEL.create(cable, textures, generators.modelOutput);
 		Identifier armModel = CableBlock.ARM_MODEL.create(cable, textures, generators.modelOutput);

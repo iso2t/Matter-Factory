@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "matterfactory:block/basic_fluid_pipe_gui"
+        },
+        "when": "gui"
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "matterfactory:block/basic_fluid_pipe_item"
+    },
+    "property": "minecraft:display_context"
+  }
+}

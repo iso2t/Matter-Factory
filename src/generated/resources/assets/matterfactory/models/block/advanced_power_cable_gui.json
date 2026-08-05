@@ -4,22 +4,22 @@
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         }
       },
       "from": [
@@ -36,198 +36,199 @@
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         }
       },
       "from": [
-        5,
+        6,
         0,
-        5
+        6
       ],
       "to": [
-        11,
-        5,
-        11
+        10,
+        6,
+        10
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         }
       },
       "from": [
-        5,
-        11,
-        5
+        6,
+        10,
+        6
       ],
       "to": [
-        11,
+        10,
         16,
-        11
+        10
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         }
       },
       "from": [
-        5,
-        5,
+        6,
+        6,
         0
       ],
       "to": [
-        11,
-        11,
-        5
+        10,
+        10,
+        6
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         }
       },
       "from": [
-        5,
-        5,
-        11
+        6,
+        6,
+        10
       ],
       "to": [
-        11,
-        11,
+        10,
+        10,
         16
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         }
       },
       "from": [
         0,
-        5,
-        5
+        6,
+        6
       ],
       "to": [
-        5,
-        11,
-        11
+        6,
+        10,
+        10
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_arm"
         }
       },
       "from": [
-        11,
-        5,
-        5
+        10,
+        6,
+        6
       ],
       "to": [
         16,
-        11,
-        11
+        10,
+        10
       ]
     }
   ],
   "textures": {
-    "cable": "matterfactory:block/advanced_power_cable",
-    "particle": "matterfactory:block/advanced_power_cable"
+    "cable_arm": "matterfactory:block/cable/advanced_power_cable_arm",
+    "cable_center": "matterfactory:block/cable/advanced_power_cable_center",
+    "particle": "matterfactory:block/cable/advanced_power_cable_center"
   }
 }

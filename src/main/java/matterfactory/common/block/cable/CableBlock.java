@@ -34,8 +34,9 @@ import org.jspecify.annotations.Nullable;
 
 public abstract class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWaterloggedBlock, IPickaxe {
 
-	public static final TextureSlot          CABLE_TEXTURE = TextureSlot.create("cable", TextureSlot.ALL);
-	private static final Identifier          BLOCK_MODEL_PARENT = Identifier.withDefaultNamespace("block/block");
+	public static final TextureSlot CABLE_CENTER_TEXTURE = TextureSlot.create("cable_center", TextureSlot.ALL);
+	public static final TextureSlot CABLE_ARM_TEXTURE    = TextureSlot.create("cable_arm", TextureSlot.ALL);
+	private static final Identifier BLOCK_MODEL_PARENT   = Identifier.withDefaultNamespace("block/block");
 
 	public static final BooleanProperty DOWN  = BooleanProperty.create("down");
 	public static final BooleanProperty UP    = BooleanProperty.create("up");
@@ -169,19 +170,22 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		CustomBlockModel.registerCableType(generator, this);
 	}
 
-	public static final ModelTemplate CENTER_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
+	public static final ModelTemplate CENTER_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
+			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE)).build();
 
-	public static final ModelTemplate ARM_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_arm").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 0).to(11, 11, 5).textureAll(CABLE_TEXTURE)).build();
+	public static final ModelTemplate ARM_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_arm").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
+			.element(element -> element.from(6, 6, 0).to(10, 10, 5).textureAll(CABLE_ARM_TEXTURE)).build();
 
-	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
+	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
+			.element(element -> element.from(0, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE)).build();
 
-	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(5, 0, 5).to(11, 5, 11).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(5, 11, 5).to(11, 16, 11).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(5, 5, 0).to(11, 11, 5).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(5, 5, 11).to(11, 11, 16).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(0, 5, 5).to(5, 11, 11).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(11, 5, 5).to(16, 11, 11).textureAll(CABLE_TEXTURE))
+	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
+			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE))
+			.element(element -> element.from(6, 0, 6).to(10, 6, 10).textureAll(CABLE_ARM_TEXTURE))
+			.element(element -> element.from(6, 10, 6).to(10, 16, 10).textureAll(CABLE_ARM_TEXTURE))
+			.element(element -> element.from(6, 6, 0).to(10, 10, 6).textureAll(CABLE_ARM_TEXTURE))
+			.element(element -> element.from(6, 6, 10).to(10, 10, 16).textureAll(CABLE_ARM_TEXTURE))
+			.element(element -> element.from(0, 6, 6).to(6, 10, 10).textureAll(CABLE_ARM_TEXTURE))
+			.element(element -> element.from(10, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE))
 			.build();
 }

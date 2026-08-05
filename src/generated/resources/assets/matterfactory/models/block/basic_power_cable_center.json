@@ -3,22 +3,22 @@
     {
       "faces": {
         "down": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "east": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "north": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "south": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "up": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         },
         "west": {
-          "texture": "#cable"
+          "texture": "#cable_center"
         }
       },
       "from": [
@@ -34,7 +34,7 @@
     }
   ],
   "textures": {
-    "cable": "matterfactory:block/basic_power_cable",
-    "particle": "matterfactory:block/basic_power_cable"
+    "cable_center": "matterfactory:block/cable/basic_power_cable_center",
+    "particle": "matterfactory:block/cable/basic_power_cable_center"
   }
 }
