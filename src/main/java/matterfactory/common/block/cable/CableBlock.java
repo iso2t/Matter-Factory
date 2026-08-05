@@ -9,6 +9,7 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -33,6 +34,7 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 
 	public static final MapCodec<CableBlock> CODEC         = simpleCodec(CableBlock::new);
 	public static final TextureSlot          CABLE_TEXTURE = TextureSlot.create("cable", TextureSlot.ALL);
+	private static final Identifier          BLOCK_MODEL_PARENT = Identifier.withDefaultNamespace("block/block");
 
 	public static final BooleanProperty DOWN  = BooleanProperty.create("down");
 	public static final BooleanProperty UP    = BooleanProperty.create("up");
@@ -182,9 +184,15 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 	 * y: 5 -> 11
 	 * z: 5 -> 11
 	 */
-	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_item").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
+	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
 
-	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_gui").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
+	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
 			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE))
-			.element(element -> element.from(5, 0, 5).to(11, 5, 11).textureAll(CABLE_TEXTURE)).element(element -> element.from(5, 11, 5).to(11, 16, 11).textureAll(CABLE_TEXTURE)).element(element -> element.from(5, 5, 0).to(11, 11, 5).textureAll(CABLE_TEXTURE)).element(element -> element.from(5, 5, 11).to(11, 11, 16).textureAll(CABLE_TEXTURE)).element(element -> element.from(0, 5, 5).to(5, 11, 11).textureAll(CABLE_TEXTURE)).element(element -> element.from(11, 5, 5).to(16, 11, 11).textureAll(CABLE_TEXTURE)).build();
+			.element(element -> element.from(5, 0, 5).to(11, 5, 11).textureAll(CABLE_TEXTURE))
+			.element(element -> element.from(5, 11, 5).to(11, 16, 11).textureAll(CABLE_TEXTURE))
+			.element(element -> element.from(5, 5, 0).to(11, 11, 5).textureAll(CABLE_TEXTURE))
+			.element(element -> element.from(5, 5, 11).to(11, 11, 16).textureAll(CABLE_TEXTURE))
+			.element(element -> element.from(0, 5, 5).to(5, 11, 11).textureAll(CABLE_TEXTURE))
+			.element(element -> element.from(11, 5, 5).to(16, 11, 11).textureAll(CABLE_TEXTURE))
+			.build();
 }

@@ -1,6 +1,7 @@
 package matterfactory.common.model;
 
 import com.mojang.math.Quadrant;
+import com.mojang.math.Transformation;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.definition.BlockDefinition;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -21,6 +22,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.List;
 import java.util.Optional;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public interface CustomBlockModel {
 
