@@ -33,7 +33,7 @@ public class FBlocks {
 
 	public static final List<BlockDefinition<?>> BLOCKS = new ArrayList<>();
 
-	public static final BlockDefinition<MachineBlock> MACHINE_FRAME = register("Machine Frame", properties -> new MachineBlock(MachineBlock.Type.MACHINE_FRAME, properties), MachineBlock.Type.MACHINE_FRAME::createProperties);
+	public static final BlockDefinition<MachineBlock> MACHINE_FRAME = register("Machine Frame", properties -> new MachineBlock(MachineBlock.Type.MACHINE_FRAME, properties.requiresCorrectToolForDrops().strength(2.0F, 6.0F).sound(SoundType.IRON)));
 
 	public static final BlockDefinition<PowerCable> BASIC_POWER_CABLE = register("Basic Power Cable", properties -> new PowerCable(properties, Tier.BASIC));
 	public static final BlockDefinition<PowerCable> ADVANCED_POWER_CABLE = register("Advanced Power Cable", properties -> new PowerCable(properties, Tier.ADVANCED));
