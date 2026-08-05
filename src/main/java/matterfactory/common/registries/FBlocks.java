@@ -3,6 +3,7 @@ package matterfactory.common.registries;
 import matterfactory.common.FTab;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.block.MachineBlock;
+import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.definition.ItemDefinition;
 import matterfactory.common.item.BaseBlockItem;
@@ -31,6 +32,8 @@ public class FBlocks {
 	public static final List<BlockDefinition<?>> BLOCKS = new ArrayList<>();
 
 	public static final BlockDefinition<MachineBlock> MACHINE_FRAME = register("Machine Frame", properties -> new MachineBlock(MachineBlock.Type.MACHINE_FRAME, properties)/*, MachineBlock.Type.MACHINE_FRAME::createProperties*/);
+
+	public static final BlockDefinition<CableBlock> CABLE = register("Cable", CableBlock::new);
 
 	public static List<BlockDefinition<?>> getBlocks () {
 		return Collections.unmodifiableList(BLOCKS);
