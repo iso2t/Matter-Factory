@@ -159,31 +159,10 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 		CustomBlockModel.registerCableType(generator, this);
 	}
 
-	/*
-	 * Center cube:
-	 *
-	 * x: 5 -> 11
-	 * y: 5 -> 11
-	 * z: 5 -> 11
-	 */
 	public static final ModelTemplate CENTER_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
 
-	/*
-	 * Base arm points north.
-	 *
-	 * x: 5 -> 11
-	 * y: 5 -> 11
-	 * z: 0 -> 5
-	 */
 	public static final ModelTemplate ARM_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_arm").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 0).to(11, 11, 5).textureAll(CABLE_TEXTURE)).build();
 
-	/*
-	 * Full straight cable used for the inventory.
-	 *
-	 * x: 0 -> 16
-	 * y: 5 -> 11
-	 * z: 5 -> 11
-	 */
 	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_TEXTURE)).build();
 
 	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
