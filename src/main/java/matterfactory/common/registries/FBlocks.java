@@ -1,9 +1,10 @@
 package matterfactory.common.registries;
 
+import matterfactory.Tier;
 import matterfactory.common.FTab;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.block.MachineBlock;
-import matterfactory.common.block.cable.CableBlock;
+import matterfactory.common.block.cable.PowerCable;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.definition.ItemDefinition;
 import matterfactory.common.item.BaseBlockItem;
@@ -33,7 +34,11 @@ public class FBlocks {
 
 	public static final BlockDefinition<MachineBlock> MACHINE_FRAME = register("Machine Frame", properties -> new MachineBlock(MachineBlock.Type.MACHINE_FRAME, properties)/*, MachineBlock.Type.MACHINE_FRAME::createProperties*/);
 
-	public static final BlockDefinition<CableBlock> CABLE = register("Cable", CableBlock::new);
+	public static final BlockDefinition<PowerCable> BASIC_POWER_CABLE = register("Basic Power Cable", properties -> new PowerCable(properties, Tier.BASIC));
+	public static final BlockDefinition<PowerCable> ADVANCED_POWER_CABLE = register("Advanced Power Cable", properties -> new PowerCable(properties, Tier.ADVANCED));
+	public static final BlockDefinition<PowerCable> ELITE_POWER_CABLE = register("Elite Power Cable", properties -> new PowerCable(properties, Tier.ELITE));
+	public static final BlockDefinition<PowerCable> ULTIMATE_POWER_CABLE = register("Ultimate Power Cable", properties -> new PowerCable(properties, Tier.ULTIMATE));
+	public static final BlockDefinition<PowerCable> INFINITE_POWER_CABLE = register("Infinite Power Cable", properties -> new PowerCable(properties, Tier.INFINITE));
 
 	public static List<BlockDefinition<?>> getBlocks () {
 		return Collections.unmodifiableList(BLOCKS);

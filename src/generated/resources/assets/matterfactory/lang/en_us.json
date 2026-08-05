@@ -1,6 +1,10 @@
 {
-  "block.matterfactory.cable": "Cable",
+  "block.matterfactory.advanced_power_cable": "Advanced Power Cable",
+  "block.matterfactory.basic_power_cable": "Basic Power Cable",
+  "block.matterfactory.elite_power_cable": "Elite Power Cable",
+  "block.matterfactory.infinite_power_cable": "Infinite Power Cable",
   "block.matterfactory.machine_frame": "Machine Frame",
+  "block.matterfactory.ultimate_power_cable": "Ultimate Power Cable",
   "item.matterfactory.palladium_dust": "Palladium Dust",
   "item.matterfactory.palladium_ingot": "Palladium Ingot",
   "item.matterfactory.palladium_nugget": "Palladium Nugget",

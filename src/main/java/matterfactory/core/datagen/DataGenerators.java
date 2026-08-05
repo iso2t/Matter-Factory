@@ -2,7 +2,10 @@ package matterfactory.core.datagen;
 
 import matterfactory.core.Factory;
 import matterfactory.core.datagen.language.EnglishLangProvider;
+import matterfactory.core.datagen.loot.FLootTableProvider;
 import matterfactory.core.datagen.models.FactoryModelProvider;
+import matterfactory.core.datagen.tags.FBlockTagsGenerator;
+import matterfactory.core.datagen.tags.FItemTagsGenerator;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -15,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
+@SuppressWarnings ("unused")
 @EventBusSubscriber(modid = Factory.MODID)
 public class DataGenerators {
 
@@ -24,6 +28,13 @@ public class DataGenerators {
 		var registries = event.getLookupProvider();
 		var pack = generator.getVanillaPack(true);
 		var localization = new EnglishLangProvider(generator);
+
+		// LOOT TABLES
+		pack.addProvider(bindRegistries(FLootTableProvider::new, registries));
+
+		// TAGS
+		pack.addProvider(output -> new FBlockTagsGenerator(output, registries));
+		pack.addProvider(output -> new FItemTagsGenerator(output, registries));
 
 		// MODELS & STATES
 		pack.addProvider(FactoryModelProvider::new);

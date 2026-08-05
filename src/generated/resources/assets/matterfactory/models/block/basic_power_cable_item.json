@@ -1,4 +1,5 @@
 {
+  "parent": "minecraft:block/block",
   "elements": [
     {
       "faces": {
@@ -34,7 +35,7 @@
     }
   ],
   "textures": {
-    "cable": "matterfactory:block/cable",
-    "particle": "matterfactory:block/cable"
+    "cable": "matterfactory:block/basic_power_cable",
+    "particle": "matterfactory:block/basic_power_cable"
   }
 }

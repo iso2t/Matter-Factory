@@ -1,11 +1,12 @@
 package matterfactory.common.block;
 
 import lombok.Getter;
+import matterfactory.core.datagen.util.IPickaxe;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.function.Supplier;
 
-public class MachineBlock extends BaseBlock {
+public class MachineBlock extends BaseBlock implements IPickaxe {
 
 	@Getter
 	private final Type type;

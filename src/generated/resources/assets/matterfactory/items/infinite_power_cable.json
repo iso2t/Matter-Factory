@@ -5,14 +5,14 @@
       {
         "model": {
           "type": "minecraft:model",
-          "model": "matterfactory:block/cable_gui"
+          "model": "matterfactory:block/infinite_power_cable_gui"
         },
         "when": "gui"
       }
     ],
     "fallback": {
       "type": "minecraft:model",
-      "model": "matterfactory:block/cable_item"
+      "model": "matterfactory:block/infinite_power_cable_item"
     },
     "property": "minecraft:display_context"
   }

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "matterfactory:basic_power_cable",
+    "matterfactory:advanced_power_cable",
+    "matterfactory:elite_power_cable",
+    "matterfactory:ultimate_power_cable",
+    "matterfactory:infinite_power_cable"
+  ]
+}

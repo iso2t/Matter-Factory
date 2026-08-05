@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.model.CustomBlockModel;
+import matterfactory.core.datagen.util.IPickaxe;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -27,12 +28,12 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWaterloggedBlock {
+public abstract class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWaterloggedBlock, IPickaxe {
 
-	public static final MapCodec<CableBlock> CODEC         = simpleCodec(CableBlock::new);
 	public static final TextureSlot          CABLE_TEXTURE = TextureSlot.create("cable", TextureSlot.ALL);
 	private static final Identifier          BLOCK_MODEL_PARENT = Identifier.withDefaultNamespace("block/block");
 
@@ -62,9 +63,11 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 		registerDefaultState(getStateDefinition().any().setValue(DOWN, false).setValue(UP, false).setValue(NORTH, false).setValue(SOUTH, false).setValue(WEST, false).setValue(EAST, false).setValue(WATERLOGGED, false));
 	}
 
+	public abstract @NotNull MapCodec<? extends CableBlock> getCodec ();
+
 	@Override
 	protected @NonNull MapCodec<? extends Block> codec () {
-		return CODEC;
+		return getCodec();
 	}
 
 	@Override
@@ -99,9 +102,16 @@ public class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWat
 		builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST, WATERLOGGED);
 	}
 
-	private boolean canConnectTo (LevelReader level, BlockPos neighborPos, BlockState neighborState) {
-		return neighborState.getBlock() instanceof CableBlock; // TODO: May need to be more verbose as unwanted connections may be allowed with this.
-	}
+	/**
+	 * Determines whether this block can connect to a neighboring block at the specified position
+	 * with the given block state.
+	 *
+	 * @param level        the level reader providing access to the world state
+	 * @param neighborPos  the position of the neighboring block to check connectivity
+	 * @param neighborState the block state of the neighboring block to check connectivity
+	 * @return true if this block can connect to the neighboring block, false otherwise
+	 */
+	public abstract boolean canConnectTo (LevelReader level, BlockPos neighborPos, BlockState neighborState);
 
 	private BlockState getConnectionState (LevelReader level, BlockPos pos, BlockState state) {
 		for (var direction : Direction.values()) {
