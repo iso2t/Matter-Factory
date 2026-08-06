@@ -40,7 +40,7 @@ public class PowerCable extends EntityCableBlock<PowerCableBlockEntity> {
 	@Override
 	public boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
 		if (neighborState.getBlock() instanceof PowerCable) {
-			return true;
+			return !CableBlock.isManuallyDisconnected(neighborState, direction.getOpposite());
 		}
 
 		if (level instanceof Level realLevel) {

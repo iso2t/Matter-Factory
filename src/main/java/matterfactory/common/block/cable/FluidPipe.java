@@ -32,7 +32,7 @@ public class FluidPipe extends CableBlock {
 
 	@Override
 	public boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
-		return neighborState.getBlock() instanceof FluidPipe;
+		return neighborState.getBlock() instanceof FluidPipe && !CableBlock.isManuallyDisconnected(neighborState, direction.getOpposite());
 	}
 
 	@Override

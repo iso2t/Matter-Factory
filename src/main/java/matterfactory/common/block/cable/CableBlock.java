@@ -12,8 +12,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
@@ -24,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -31,6 +35,8 @@ import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemp
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import java.util.Optional;
 
 public abstract class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWaterloggedBlock, IPickaxe {
 
@@ -47,6 +53,13 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
+	public static final BooleanProperty DISCONNECTED_DOWN  = BooleanProperty.create("disconnected_down");
+	public static final BooleanProperty DISCONNECTED_UP    = BooleanProperty.create("disconnected_up");
+	public static final BooleanProperty DISCONNECTED_NORTH = BooleanProperty.create("disconnected_north");
+	public static final BooleanProperty DISCONNECTED_SOUTH = BooleanProperty.create("disconnected_south");
+	public static final BooleanProperty DISCONNECTED_WEST  = BooleanProperty.create("disconnected_west");
+	public static final BooleanProperty DISCONNECTED_EAST  = BooleanProperty.create("disconnected_east");
+
 	private static final VoxelShape CORE = box(5, 5, 5, 11, 11, 11);
 
 	private static final VoxelShape DOWN_SHAPE  = box(5, 0, 5, 11, 5, 11);
@@ -61,7 +74,20 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	public CableBlock (Properties properties) {
 		super(properties);
 
-		registerDefaultState(getStateDefinition().any().setValue(DOWN, false).setValue(UP, false).setValue(NORTH, false).setValue(SOUTH, false).setValue(WEST, false).setValue(EAST, false).setValue(WATERLOGGED, false));
+		registerDefaultState(getStateDefinition().any()
+				.setValue(DOWN, false)
+				.setValue(UP, false)
+				.setValue(NORTH, false)
+				.setValue(SOUTH, false)
+				.setValue(WEST, false)
+				.setValue(EAST, false)
+				.setValue(DISCONNECTED_DOWN, false)
+				.setValue(DISCONNECTED_UP, false)
+				.setValue(DISCONNECTED_NORTH, false)
+				.setValue(DISCONNECTED_SOUTH, false)
+				.setValue(DISCONNECTED_WEST, false)
+				.setValue(DISCONNECTED_EAST, false)
+				.setValue(WATERLOGGED, false));
 	}
 
 	public abstract @NotNull MapCodec<? extends CableBlock> getCodec ();
@@ -90,7 +116,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
 		}
 
-		return state.setValue(getConnectionProperty(direction), canConnectTo(level, pos, direction, neighborPos, neighborState));
+		return state.setValue(getConnectionProperty(direction), shouldConnectTo(state, level, pos, direction, neighborPos, neighborState));
 	}
 
 	@Override
@@ -99,8 +125,29 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	@Override
+	protected @NonNull InteractionResult useWithoutItem (@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
+		if (!player.isShiftKeyDown()) {
+			return InteractionResult.PASS;
+		}
+
+		Optional<Direction> targetedSide = getTargetedSide(state, pos, hit);
+		if (targetedSide.isEmpty()) {
+			return InteractionResult.PASS;
+		}
+
+		if (!level.isClientSide()) {
+			Direction direction = targetedSide.get();
+			BlockState updatedState = toggleConnection(level, pos, state, direction);
+			level.setBlock(pos, updatedState, Block.UPDATE_ALL);
+			level.invalidateCapabilities(pos);
+		}
+
+		return InteractionResult.SUCCESS;
+	}
+
+	@Override
 	protected void createBlockStateDefinition (StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST, WATERLOGGED);
+		builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST, DISCONNECTED_DOWN, DISCONNECTED_UP, DISCONNECTED_NORTH, DISCONNECTED_SOUTH, DISCONNECTED_WEST, DISCONNECTED_EAST, WATERLOGGED);
 	}
 
 	/**
@@ -114,15 +161,41 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	 */
 	public abstract boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState);
 
+	private boolean shouldConnectTo (BlockState state, LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
+		return !state.getValue(getDisconnectedProperty(direction)) && canConnectTo(level, pos, direction, neighborPos, neighborState);
+	}
+
 	private BlockState getConnectionState (LevelReader level, BlockPos pos, BlockState state) {
 		for (var direction : Direction.values()) {
 			var neighborPos = pos.relative(direction);
 			var neighborState = level.getBlockState(neighborPos);
 
-			state = state.setValue(getConnectionProperty(direction), canConnectTo(level, pos, direction, neighborPos, neighborState));
+			state = state.setValue(getConnectionProperty(direction), shouldConnectTo(state, level, pos, direction, neighborPos, neighborState));
 		}
 
 		return state;
+	}
+
+	private BlockState toggleConnection (Level level, BlockPos pos, BlockState state, Direction direction) {
+		var disconnectedProperty = getDisconnectedProperty(direction);
+		boolean disconnected = !state.getValue(disconnectedProperty);
+		BlockState updatedState = state.setValue(disconnectedProperty, disconnected);
+		var neighborPos = pos.relative(direction);
+		var neighborState = level.getBlockState(neighborPos);
+		return updatedState.setValue(getConnectionProperty(direction), !disconnected && shouldConnectTo(updatedState, level, pos, direction, neighborPos, neighborState));
+	}
+
+	public static Optional<Direction> getTargetedSide (BlockState state, BlockPos pos, BlockHitResult hit) {
+		var localHit = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
+
+		for (var direction : Direction.values()) {
+			if (state.getValue(getConnectionProperty(direction)) && getArmShape(direction).bounds().inflate(1.0E-5).contains(localHit)) {
+				return Optional.of(direction);
+			}
+		}
+
+		Direction face = hit.getDirection();
+		return state.getValue(getDisconnectedProperty(face)) ? Optional.of(face) : Optional.empty();
 	}
 
 	public static BooleanProperty getConnectionProperty (Direction direction) {
@@ -133,6 +206,32 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			case SOUTH -> SOUTH;
 			case WEST -> WEST;
 			case EAST -> EAST;
+		};
+	}
+
+	public static BooleanProperty getDisconnectedProperty (Direction direction) {
+		return switch (direction) {
+			case DOWN -> DISCONNECTED_DOWN;
+			case UP -> DISCONNECTED_UP;
+			case NORTH -> DISCONNECTED_NORTH;
+			case SOUTH -> DISCONNECTED_SOUTH;
+			case WEST -> DISCONNECTED_WEST;
+			case EAST -> DISCONNECTED_EAST;
+		};
+	}
+
+	public static boolean isManuallyDisconnected (BlockState state, Direction direction) {
+		return state.getBlock() instanceof CableBlock && state.getValue(getDisconnectedProperty(direction));
+	}
+
+	public static VoxelShape getArmShape (Direction direction) {
+		return switch (direction) {
+			case DOWN -> DOWN_SHAPE;
+			case UP -> UP_SHAPE;
+			case NORTH -> NORTH_SHAPE;
+			case SOUTH -> SOUTH_SHAPE;
+			case WEST -> WEST_SHAPE;
+			case EAST -> EAST_SHAPE;
 		};
 	}
 

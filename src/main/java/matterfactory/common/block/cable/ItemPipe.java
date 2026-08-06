@@ -32,7 +32,7 @@ public class ItemPipe extends CableBlock {
 
 	@Override
 	public boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
-		return neighborState.getBlock() instanceof ItemPipe;
+		return neighborState.getBlock() instanceof ItemPipe && !CableBlock.isManuallyDisconnected(neighborState, direction.getOpposite());
 	}
 
 	@Override
