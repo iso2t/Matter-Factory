@@ -38,6 +38,7 @@ public interface CustomBlockModel {
 		TextureMapping textures = new TextureMapping()
 				.put(CableBlock.CABLE_CENTER_TEXTURE, new Material(texture.withPath(path -> path + "_center")))
 				.put(CableBlock.CABLE_ARM_TEXTURE, new Material(texture.withPath(path -> path + "_arm")))
+				.put(CableBlock.CABLE_GLASS_TEXTURE, new Material(texture.withPath(path -> path + "_glass")))
 				.put(TextureSlot.PARTICLE, new Material(texture.withPath(path -> path + "_center")));
 
 		Identifier centerModel = center.create(cable, textures, generators.modelOutput);

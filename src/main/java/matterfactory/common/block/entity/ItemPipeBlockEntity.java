@@ -1,6 +1,5 @@
 package matterfactory.common.block.entity;
 
-import lombok.Getter;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.block.cable.CableConnectionMode;
 import matterfactory.common.block.cable.ItemPipe;
@@ -10,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -18,6 +18,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
@@ -32,26 +33,10 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 	public static final int VISUAL_TRANSFER_DURATION = 12;
 	public static final int VISUAL_ITEM_SPACING      = 1;
 
-	@Getter
-	private ItemStack visualItem = ItemStack.EMPTY;
-
-	@Getter
-	private Direction visualFrom = Direction.NORTH;
-
-	@Getter
-	private Direction visualTo = Direction.SOUTH;
-
-	@Getter
-	private long visualStartGameTime;
-
-	@Getter
-	private int visualDuration = VISUAL_TRANSFER_DURATION;
-
-	@Getter
-	private       int                       visualItemSpacing      = VISUAL_ITEM_SPACING;
+	private final List<VisualItemTransfer>  visualTransfers        = new ArrayList<>();
 	private final List<PendingItemDelivery> pendingDeliveries      = new ArrayList<>();
 	private final PendingDeliveryJournal    pendingDeliveryJournal = new PendingDeliveryJournal();
-	private final VisualStateJournal        visualStateJournal     = new VisualStateJournal();
+	private final VisualTransferJournal     visualTransferJournal  = new VisualTransferJournal();
 
 	public ItemPipeBlockEntity (BlockEntityType<ItemPipeBlockEntity> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
@@ -67,12 +52,14 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 			return;
 		}
 
+		blockEntity.removeExpiredVisualTransfers(level.getGameTime());
+		blockEntity.processPendingDeliveries(level);
+
 		ItemPipeNetwork network = ItemPipeNetwork.discover(level, pos);
 		if (!network.controller().equals(pos)) {
 			return;
 		}
 
-		blockEntity.processPendingDeliveries(level);
 		network.distribute();
 	}
 
@@ -84,12 +71,8 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		return getTier(getBlockState()).getItemTransferRate();
 	}
 
-	public int getVisualTotalDuration () {
-		return visualDuration + Math.max(0, visualItem.getCount() - 1) * visualItemSpacing;
-	}
-
-	public boolean canShowItemTransfer (long startGameTime, int duration) {
-		return visualItem.isEmpty() || startGameTime >= visualStartGameTime + getVisualTotalDuration();
+	public List<VisualItemTransfer> getVisualTransfers () {
+		return List.copyOf(visualTransfers);
 	}
 
 	public boolean showItemTransfer (ItemResource resource, int amount, Direction from, Direction to, long startGameTime, int duration) {
@@ -101,24 +84,29 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 			return false;
 		}
 
-		if (!canShowItemTransfer(startGameTime, duration)) {
-			return false;
-		}
-
 		if (transaction != null) {
-			visualStateJournal.updateSnapshots(transaction);
+			visualTransferJournal.updateSnapshots(transaction);
 		}
 
-		this.visualItem = resource.toStack(Math.min(amount, resource.getMaxStackSize()));
-		this.visualFrom = from;
-		this.visualTo = to;
-		this.visualStartGameTime = startGameTime;
-		this.visualDuration = duration;
-		this.visualItemSpacing = VISUAL_ITEM_SPACING;
+		int remaining = amount;
+		long itemOffset = 0;
+		int maxStackSize = Math.max(1, resource.getMaxStackSize());
+		while (remaining > 0) {
+			int visualAmount = Math.min(remaining, maxStackSize);
+			visualTransfers.add(new VisualItemTransfer(resource.toStack(visualAmount), from, to, startGameTime + itemOffset, duration, VISUAL_ITEM_SPACING));
+			remaining -= visualAmount;
+			itemOffset += (long) visualAmount * VISUAL_ITEM_SPACING;
+		}
 		if (transaction == null) {
 			markConnectionDataChanged();
 		}
 		return true;
+	}
+
+	private void removeExpiredVisualTransfers (long gameTime) {
+		if (visualTransfers.removeIf(transfer -> transfer.hasFinished(gameTime))) {
+			setChanged();
+		}
 	}
 
 	public void enqueueItemDelivery (ItemResource resource, int amount, BlockPos sinkPos, Direction sinkSide, long firstArrivalGameTime, int itemSpacing) {
@@ -140,6 +128,17 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		}
 	}
 
+	public List<ResourceStack<ItemResource>> getPendingReservations (BlockPos sinkPos, Direction sinkSide) {
+		List<ResourceStack<ItemResource>> reservations = new ArrayList<>();
+		for (PendingItemDelivery delivery : pendingDeliveries) {
+			if (delivery.sinkPos().equals(sinkPos) && delivery.sinkSide() == sinkSide) {
+				reservations.add(new ResourceStack<>(delivery.resource(), delivery.amount()));
+			}
+		}
+
+		return reservations;
+	}
+
 	private void processPendingDeliveries (Level level) {
 		long gameTime = level.getGameTime();
 		boolean changed = false;
@@ -151,8 +150,19 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 			}
 
 			int due = 1 + (int) ((gameTime - delivery.nextArrivalGameTime()) / Math.max(1, delivery.itemSpacing()));
-			int delivered = insertPendingItems(level, delivery, Math.min(delivery.amount(), due));
+			ResourceHandler<ItemResource> handler = getPendingItemHandler(level, delivery);
+			if (handler == null) {
+				ejectPendingItems(level, delivery);
+				iterator.remove();
+				changed = true;
+				continue;
+			}
+
+			int delivered = ResourceHandlerUtil.insertStacking(handler, delivery.resource(), Math.min(delivery.amount(), due), null);
 			if (delivered <= 0) {
+				delivery.retryLater(gameTime);
+				showBlockedDelivery(level, delivery);
+				changed = true;
 				continue;
 			}
 
@@ -169,7 +179,8 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		}
 	}
 
-	private static int insertPendingItems (Level level, PendingItemDelivery delivery, int amount) {
+	@Nullable
+	private static ResourceHandler<ItemResource> getPendingItemHandler (Level level, PendingItemDelivery delivery) {
 		var state = level.getBlockState(delivery.sinkPos());
 		var blockEntity = level.getBlockEntity(delivery.sinkPos());
 		var handler = level.getCapability(Capabilities.Item.BLOCK, delivery.sinkPos(), state, blockEntity, delivery.sinkSide());
@@ -177,7 +188,23 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 			handler = level.getCapability(Capabilities.Item.BLOCK, delivery.sinkPos(), state, blockEntity, null);
 		}
 
-		return ResourceHandlerUtil.insertStacking(handler, delivery.resource(), amount, null);
+		return handler;
+	}
+
+	private static void ejectPendingItems (Level level, PendingItemDelivery delivery) {
+		BlockPos pipePos = delivery.sinkPos().relative(delivery.sinkSide());
+		Direction pipeFace = delivery.sinkSide().getOpposite();
+		int remaining = delivery.amount();
+		while (remaining > 0) {
+			int stackSize = Math.min(remaining, delivery.resource().getMaxStackSize());
+			Block.popResourceFromFace(level, pipePos, pipeFace, delivery.resource().toStack(stackSize));
+			remaining -= stackSize;
+		}
+	}
+
+	private void showBlockedDelivery (Level level, PendingItemDelivery delivery) {
+		Direction blockedFace = delivery.sinkSide().getOpposite();
+		showItemTransfer(delivery.resource(), delivery.amount(), blockedFace, blockedFace, level.getGameTime(), VISUAL_TRANSFER_DURATION);
 	}
 
 	@Override
@@ -188,12 +215,33 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 	@Override
 	protected void loadAdditional (@NonNull ValueInput input) {
 		super.loadAdditional(input);
-		visualItem = input.read("visual_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
-		visualFrom = directionOr(input.getStringOr("visual_from", Direction.NORTH.getSerializedName()), Direction.NORTH);
-		visualTo = directionOr(input.getStringOr("visual_to", Direction.SOUTH.getSerializedName()), Direction.SOUTH);
-		visualStartGameTime = input.getLongOr("visual_start", 0);
-		visualDuration = input.getIntOr("visual_duration", VISUAL_TRANSFER_DURATION);
-		visualItemSpacing = input.getIntOr("visual_spacing", VISUAL_ITEM_SPACING);
+		visualTransfers.clear();
+		for (ValueInput child : input.childrenListOrEmpty("visual_transfers")) {
+			ItemStack item = child.read("item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+			if (item.isEmpty()) {
+				continue;
+			}
+
+			visualTransfers.add(new VisualItemTransfer(item,
+					directionOr(child.getStringOr("from", Direction.NORTH.getSerializedName()), Direction.NORTH),
+					directionOr(child.getStringOr("to", Direction.SOUTH.getSerializedName()), Direction.SOUTH),
+					child.getLongOr("start", 0),
+					child.getIntOr("duration", VISUAL_TRANSFER_DURATION),
+					child.getIntOr("spacing", VISUAL_ITEM_SPACING)));
+		}
+
+		// Preserve in-flight transfers when upgrading worlds saved by the single-transfer renderer.
+		if (visualTransfers.isEmpty()) {
+			ItemStack legacyItem = input.read("visual_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+			if (!legacyItem.isEmpty()) {
+				visualTransfers.add(new VisualItemTransfer(legacyItem,
+						directionOr(input.getStringOr("visual_from", Direction.NORTH.getSerializedName()), Direction.NORTH),
+						directionOr(input.getStringOr("visual_to", Direction.SOUTH.getSerializedName()), Direction.SOUTH),
+						input.getLongOr("visual_start", 0),
+						input.getIntOr("visual_duration", VISUAL_TRANSFER_DURATION),
+						input.getIntOr("visual_spacing", VISUAL_ITEM_SPACING)));
+			}
+		}
 
 		pendingDeliveries.clear();
 		for (ValueInput child : input.childrenListOrEmpty("pending_deliveries")) {
@@ -210,13 +258,17 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 	@Override
 	protected void saveAdditional (@NonNull ValueOutput output) {
 		super.saveAdditional(output);
-		if (!visualItem.isEmpty()) {
-			output.store("visual_item", ItemStack.OPTIONAL_CODEC, visualItem);
-			output.putString("visual_from", visualFrom.getSerializedName());
-			output.putString("visual_to", visualTo.getSerializedName());
-			output.putLong("visual_start", visualStartGameTime);
-			output.putInt("visual_duration", visualDuration);
-			output.putInt("visual_spacing", visualItemSpacing);
+		if (!visualTransfers.isEmpty()) {
+			var transfers = output.childrenList("visual_transfers");
+			for (VisualItemTransfer transfer : visualTransfers) {
+				var child = transfers.addChild();
+				child.store("item", ItemStack.OPTIONAL_CODEC, transfer.item());
+				child.putString("from", transfer.from().getSerializedName());
+				child.putString("to", transfer.to().getSerializedName());
+				child.putLong("start", transfer.startGameTime());
+				child.putInt("duration", transfer.duration());
+				child.putInt("spacing", transfer.itemSpacing());
+			}
 		}
 
 		if (!pendingDeliveries.isEmpty()) {
@@ -300,6 +352,31 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		return result > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
 	}
 
+	public record VisualItemTransfer(ItemStack item, Direction from, Direction to, long startGameTime, int duration, int itemSpacing) {
+
+		public VisualItemTransfer {
+			item = item.copy();
+			duration = Math.max(1, duration);
+			itemSpacing = Math.max(1, itemSpacing);
+		}
+
+		public int totalDuration () {
+			return duration + Math.max(0, item.getCount() - 1) * itemSpacing;
+		}
+
+		public boolean isActive (float gameTime) {
+			return gameTime >= startGameTime && gameTime < startGameTime + totalDuration();
+		}
+
+		public boolean hasFinished (long gameTime) {
+			return gameTime >= startGameTime + totalDuration();
+		}
+
+		public VisualItemTransfer copy () {
+			return new VisualItemTransfer(item, from, to, startGameTime, duration, itemSpacing);
+		}
+	}
+
 	private static final class PendingItemDelivery {
 		private final ItemResource resource;
 		private       int          amount;
@@ -346,6 +423,10 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 			nextArrivalGameTime += (long) delivered * Math.max(1, itemSpacing);
 		}
 
+		private void retryLater (long gameTime) {
+			nextArrivalGameTime = gameTime + Math.max(1, itemSpacing);
+		}
+
 		private PendingItemDelivery copy () {
 			return new PendingItemDelivery(resource, amount, sinkPos, sinkSide, nextArrivalGameTime, itemSpacing);
 		}
@@ -374,29 +455,27 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		}
 	}
 
-	private final class VisualStateJournal extends SnapshotJournal<VisualStateSnapshot> {
+	private final class VisualTransferJournal extends SnapshotJournal<List<VisualItemTransfer>> {
 		@Override
-		protected VisualStateSnapshot createSnapshot () {
-			return new VisualStateSnapshot(visualItem.copy(), visualFrom, visualTo, visualStartGameTime, visualDuration, visualItemSpacing);
+		protected List<VisualItemTransfer> createSnapshot () {
+			List<VisualItemTransfer> snapshot = new ArrayList<>(visualTransfers.size());
+			for (VisualItemTransfer transfer : visualTransfers) {
+				snapshot.add(transfer.copy());
+			}
+
+			return snapshot;
 		}
 
 		@Override
-		protected void revertToSnapshot (VisualStateSnapshot snapshot) {
-			visualItem = snapshot.item();
-			visualFrom = snapshot.from();
-			visualTo = snapshot.to();
-			visualStartGameTime = snapshot.startGameTime();
-			visualDuration = snapshot.duration();
-			visualItemSpacing = snapshot.itemSpacing();
+		protected void revertToSnapshot (List<VisualItemTransfer> snapshot) {
+			visualTransfers.clear();
+			visualTransfers.addAll(snapshot);
 		}
 
 		@Override
-		protected void onRootCommit (VisualStateSnapshot originalState) {
+		protected void onRootCommit (List<VisualItemTransfer> originalState) {
 			markConnectionDataChanged();
 		}
-	}
-
-	private record VisualStateSnapshot(ItemStack item, Direction from, Direction to, long startGameTime, int duration, int itemSpacing) {
 	}
 
 }

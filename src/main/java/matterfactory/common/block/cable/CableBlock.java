@@ -45,6 +45,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	public static final TextureSlot CABLE_CENTER_TEXTURE = TextureSlot.create("cable_center", TextureSlot.ALL);
 	public static final TextureSlot CABLE_ARM_TEXTURE    = TextureSlot.create("cable_arm", TextureSlot.ALL);
+	public static final TextureSlot CABLE_GLASS_TEXTURE  = TextureSlot.create("cable_glass", TextureSlot.ALL);
 	private static final Identifier BLOCK_MODEL_PARENT   = Identifier.withDefaultNamespace("block/block");
 
 	public static final BooleanProperty DOWN  = BooleanProperty.create("down");

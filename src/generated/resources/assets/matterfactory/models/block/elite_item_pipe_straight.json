@@ -1,4 +1,5 @@
 {
+  "parent": "matterfactory:block/item_pipe_translucent",
   "elements": [
     {
       "faces": {
@@ -27,14 +28,239 @@
         0
       ],
       "to": [
+        5,
+        5,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_arm"
+        },
+        "east": {
+          "texture": "#cable_arm"
+        },
+        "north": {
+          "texture": "#cable_arm"
+        },
+        "south": {
+          "texture": "#cable_arm"
+        },
+        "up": {
+          "texture": "#cable_arm"
+        },
+        "west": {
+          "texture": "#cable_arm"
+        }
+      },
+      "from": [
+        11,
+        4,
+        0
+      ],
+      "to": [
+        12,
+        5,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_arm"
+        },
+        "east": {
+          "texture": "#cable_arm"
+        },
+        "north": {
+          "texture": "#cable_arm"
+        },
+        "south": {
+          "texture": "#cable_arm"
+        },
+        "up": {
+          "texture": "#cable_arm"
+        },
+        "west": {
+          "texture": "#cable_arm"
+        }
+      },
+      "from": [
+        4,
+        11,
+        0
+      ],
+      "to": [
+        5,
+        12,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_arm"
+        },
+        "east": {
+          "texture": "#cable_arm"
+        },
+        "north": {
+          "texture": "#cable_arm"
+        },
+        "south": {
+          "texture": "#cable_arm"
+        },
+        "up": {
+          "texture": "#cable_arm"
+        },
+        "west": {
+          "texture": "#cable_arm"
+        }
+      },
+      "from": [
+        11,
+        11,
+        0
+      ],
+      "to": [
         12,
         12,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        5,
+        0
+      ],
+      "to": [
+        5.25,
+        11,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        10.75,
+        5,
+        0
+      ],
+      "to": [
+        11,
+        11,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        5,
+        0
+      ],
+      "to": [
+        11,
+        5.25,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        10.75,
+        0
+      ],
+      "to": [
+        11,
+        11,
         16
       ]
     }
   ],
   "textures": {
     "cable_arm": "matterfactory:block/cable/elite_item_pipe_arm",
+    "cable_glass": "matterfactory:block/cable/elite_item_pipe_glass",
     "particle": "matterfactory:block/cable/elite_item_pipe_center"
   }
 }

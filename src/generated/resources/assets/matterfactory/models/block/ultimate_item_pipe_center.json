@@ -1,4 +1,5 @@
 {
+  "parent": "matterfactory:block/item_pipe_translucent",
   "elements": [
     {
       "faces": {
@@ -28,13 +29,558 @@
       ],
       "to": [
         12,
+        5,
+        5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        11,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        4,
+        11
+      ],
+      "to": [
+        12,
+        5,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        11,
+        11
+      ],
+      "to": [
+        12,
         12,
         12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        5,
+        12,
+        5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        11,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        4,
+        11
+      ],
+      "to": [
+        5,
+        12,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        11,
+        4,
+        11
+      ],
+      "to": [
+        12,
+        12,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        5,
+        5,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        11,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        5,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        4,
+        11,
+        4
+      ],
+      "to": [
+        5,
+        12,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_center"
+        },
+        "east": {
+          "texture": "#cable_center"
+        },
+        "north": {
+          "texture": "#cable_center"
+        },
+        "south": {
+          "texture": "#cable_center"
+        },
+        "up": {
+          "texture": "#cable_center"
+        },
+        "west": {
+          "texture": "#cable_center"
+        }
+      },
+      "from": [
+        11,
+        11,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        5,
+        4.25
+      ],
+      "to": [
+        11,
+        11,
+        4.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        5,
+        11.5
+      ],
+      "to": [
+        11,
+        11,
+        11.75
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        4.25,
+        5,
+        5
+      ],
+      "to": [
+        4.5,
+        11,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        11.5,
+        5,
+        5
+      ],
+      "to": [
+        11.75,
+        11,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        4.25,
+        5
+      ],
+      "to": [
+        11,
+        4.5,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cable_glass"
+        },
+        "east": {
+          "texture": "#cable_glass"
+        },
+        "north": {
+          "texture": "#cable_glass"
+        },
+        "south": {
+          "texture": "#cable_glass"
+        },
+        "up": {
+          "texture": "#cable_glass"
+        },
+        "west": {
+          "texture": "#cable_glass"
+        }
+      },
+      "from": [
+        5,
+        11.5,
+        5
+      ],
+      "to": [
+        11,
+        11.75,
+        11
       ]
     }
   ],
   "textures": {
     "cable_center": "matterfactory:block/cable/ultimate_item_pipe_center",
+    "cable_glass": "matterfactory:block/cable/ultimate_item_pipe_glass",
     "particle": "matterfactory:block/cable/ultimate_item_pipe_center"
   }
 }
