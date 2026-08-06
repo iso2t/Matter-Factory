@@ -43,4 +43,9 @@ public abstract class EntityCableBlock<T extends BaseBlockEntity> extends CableB
 		return blockEntityType.create(pos, state);
 	}
 
+	@Override
+	protected boolean shouldChangedStateKeepBlockEntity (BlockState oldState) {
+		return oldState.getBlock() == this;
+	}
+
 }

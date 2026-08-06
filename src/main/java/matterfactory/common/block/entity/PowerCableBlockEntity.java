@@ -1,15 +1,19 @@
 package matterfactory.common.block.entity;
 
-import matterfactory.core.Tier;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.block.cable.CableConnectionMode;
 import matterfactory.common.block.cable.PowerCable;
 import matterfactory.common.network.CableNetwork;
+import matterfactory.core.Tier;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -24,9 +28,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 public class PowerCableBlockEntity extends BaseBlockEntity {
-
-	private static final DustParticleOptions IMPORT_PARTICLE = new DustParticleOptions(0x186EFF, 1.0F);
-	private static final DustParticleOptions EXPORT_PARTICLE = new DustParticleOptions(0xFF7418, 1.0F);
 
 	private final EnumSet<Direction> disconnectedSides = EnumSet.noneOf(Direction.class);
 	private final EnumMap<Direction, CableConnectionMode> connectionModes = new EnumMap<>(Direction.class);
@@ -43,10 +44,6 @@ public class PowerCableBlockEntity extends BaseBlockEntity {
 	public static void serverTick (Level level, BlockPos pos, BlockState state, PowerCableBlockEntity blockEntity) {
 		if (level.isClientSide()) {
 			return;
-		}
-
-		if (level instanceof ServerLevel serverLevel && level.getGameTime() % 10 == 0) {
-			blockEntity.emitModeParticles(serverLevel, pos, state);
 		}
 
 		CableNetwork network = CableNetwork.discover(level, pos);
@@ -75,7 +72,7 @@ public class PowerCableBlockEntity extends BaseBlockEntity {
 		} else {
 			disconnectedSides.remove(direction);
 		}
-		setChanged();
+		markConnectionDataChanged();
 	}
 
 	public CableConnectionMode getConnectionMode (Direction direction) {
@@ -88,25 +85,28 @@ public class PowerCableBlockEntity extends BaseBlockEntity {
 		} else {
 			connectionModes.put(direction, mode);
 		}
-		setChanged();
+		markConnectionDataChanged();
 	}
 
-	private void emitModeParticles (ServerLevel level, BlockPos pos, BlockState state) {
-		for (Direction direction : Direction.values()) {
-			CableConnectionMode mode = getConnectionMode(direction);
-			if (mode == CableConnectionMode.AUTO || !isEndpointConnection(level, pos, state, direction)) {
-				continue;
-			}
+	public boolean isEndpointConnection (Level level, BlockPos pos, BlockState state, Direction direction) {
+		return state.getValue(CableBlock.getConnectionProperty(direction)) && !(level.getBlockState(pos.relative(direction)).getBlock() instanceof PowerCable) && !isManuallyDisconnected(direction);
+	}
 
-			double x = pos.getX() + 0.5 + direction.getStepX() * 0.42;
-			double y = pos.getY() + 0.5 + direction.getStepY() * 0.42;
-			double z = pos.getZ() + 0.5 + direction.getStepZ() * 0.42;
-			level.sendParticles(mode == CableConnectionMode.IMPORT ? IMPORT_PARTICLE : EXPORT_PARTICLE, x, y, z, 1, 0.03, 0.03, 0.03, 0.0);
+	private void markConnectionDataChanged () {
+		setChanged();
+		if (level != null && !level.isClientSide()) {
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
 		}
 	}
 
-	private boolean isEndpointConnection (Level level, BlockPos pos, BlockState state, Direction direction) {
-		return state.getValue(CableBlock.getConnectionProperty(direction)) && !(level.getBlockState(pos.relative(direction)).getBlock() instanceof PowerCable) && !isManuallyDisconnected(direction);
+	@Override
+	public Packet<ClientGamePacketListener> getUpdatePacket () {
+		return ClientboundBlockEntityDataPacket.create(this);
+	}
+
+	@Override
+	public CompoundTag getUpdateTag (HolderLookup.Provider registries) {
+		return saveCustomOnly(registries);
 	}
 
 	@Override

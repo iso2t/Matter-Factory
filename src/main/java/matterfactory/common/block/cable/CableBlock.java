@@ -3,6 +3,7 @@ package matterfactory.common.block.cable;
 import com.mojang.serialization.MapCodec;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.definition.BlockDefinition;
+import matterfactory.common.item.tool.WrenchItem;
 import matterfactory.common.model.CustomBlockModel;
 import matterfactory.core.datagen.util.IPickaxe;
 import net.minecraft.client.data.models.BlockModelGenerators;
@@ -12,8 +13,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -112,7 +115,9 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	@Override
-	protected @NonNull InteractionResult useWithoutItem (@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
+	protected @NonNull InteractionResult useItemOn (ItemStack itemStack, @NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull InteractionHand hand, @NonNull BlockHitResult hit) {
+		if (!(itemStack.getItem() instanceof WrenchItem)) return InteractionResult.PASS;
+
 		Optional<Direction> targetedSide = getTargetedSide(state, pos, hit);
 		if (targetedSide.isEmpty()) {
 			return InteractionResult.PASS;
@@ -175,6 +180,8 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		setManuallyDisconnected(level, pos, state, direction, disconnected);
 		var neighborPos = pos.relative(direction);
 		var neighborState = level.getBlockState(neighborPos);
+		setNeighborManuallyDisconnected(level, neighborPos, neighborState, direction.getOpposite(), disconnected);
+		level.invalidateCapabilities(neighborPos);
 		return state.setValue(getConnectionProperty(direction), !disconnected && shouldConnectTo(state, level, pos, direction, neighborPos, neighborState));
 	}
 
@@ -204,6 +211,15 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	protected void setManuallyDisconnected (Level level, BlockPos pos, BlockState state, Direction direction, boolean disconnected) {
 	}
 
+	protected void setNeighborManuallyDisconnected (Level level, BlockPos neighborPos, BlockState neighborState, Direction neighborDirection, boolean disconnected) {
+		if (neighborState.getBlock() instanceof CableBlock cableBlock && cableBlock.supportsManualDisconnect(level, neighborPos, neighborState, neighborDirection)) {
+			cableBlock.setManuallyDisconnected(level, neighborPos, neighborState, neighborDirection, disconnected);
+			BlockPos pos = neighborPos.relative(neighborDirection);
+			BlockState state = level.getBlockState(pos);
+			level.setBlock(neighborPos, neighborState.setValue(getConnectionProperty(neighborDirection), !disconnected && cableBlock.shouldConnectTo(neighborState, level, neighborPos, neighborDirection, pos, state)), Block.UPDATE_ALL);
+		}
+	}
+
 	public static Optional<Direction> getTargetedSide (BlockState state, BlockPos pos, BlockHitResult hit) {
 		var localHit = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
 
@@ -214,7 +230,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		}
 
 		Direction face = hit.getDirection();
-		return state.getValue(getConnectionProperty(face)) ? Optional.empty() : Optional.of(face);
+		return Optional.of(face);
 	}
 
 	public static BooleanProperty getConnectionProperty (Direction direction) {

@@ -3,6 +3,7 @@ package matterfactory.common.registries;
 import com.google.common.base.Preconditions;
 import matterfactory.common.FTab;
 import matterfactory.common.definition.ItemDefinition;
+import matterfactory.common.item.tool.WrenchItem;
 import matterfactory.core.Factory;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -27,6 +28,8 @@ public class FItems {
 	public static final ItemDefinition<Item> PALLADIUM_NUGGET = register("Palladium Nugget", Item::new);
 	public static final ItemDefinition<Item> PALLADIUM_DUST   = register("Palladium Dust", Item::new);
 	public static final ItemDefinition<Item> PALLADIUM_RAW    = register("Raw Palladium", "palladium_raw", Item::new);
+
+	public static final ItemDefinition<WrenchItem> WRENCH = register("Wrench", WrenchItem::new);
 
 	public static List<ItemDefinition<?>> getItems () {
 		return Collections.unmodifiableList(ITEMS);
