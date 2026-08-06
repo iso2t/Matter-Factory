@@ -1,7 +1,8 @@
 package matterfactory.common.registries;
 
 import com.google.common.base.Preconditions;
-import matterfactory.common.block.BaseEntityBlock;
+import matterfactory.common.block.cable.EntityCableBlock;
+import matterfactory.common.block.entity.PowerCableBlockEntity;
 import matterfactory.common.block.entity.BaseBlockEntity;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.definition.BlockEntityDefinition;
@@ -25,25 +26,26 @@ public class FBlockEntities {
 
 	private static final List<BlockEntityDefinition<?>> BLOCK_ENTITIES = new ArrayList<>();
 
+	public static final BlockEntityDefinition<PowerCableBlockEntity> POWER_CABLE = create("power_cable", PowerCableBlockEntity.class, PowerCableBlockEntity::new, FBlocks.BASIC_POWER_CABLE, FBlocks.ADVANCED_POWER_CABLE, FBlocks.ELITE_POWER_CABLE, FBlocks.ULTIMATE_POWER_CABLE, FBlocks.INFINITE_POWER_CABLE);
+
 	public static List<BlockEntityDefinition<?>> getBlockEntities () {
 		return Collections.unmodifiableList(BLOCK_ENTITIES);
 	}
 
-	/*@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	private static <T extends BaseBlockEntity> BlockEntityDefinition<T> create (String id, Class<T> entityClass, BlockEntityFactory<T> factory, BlockDefinition<? extends BaseEntityBlock<?>>... blockDefinitions) {
+	private static <T extends BaseBlockEntity, B extends EntityCableBlock<T>> BlockEntityDefinition<T> create (String id, Class<T> entityClass, BlockEntityFactory<T> factory, BlockDefinition<? extends B>... blockDefinitions) {
 		Preconditions.checkArgument(blockDefinitions.length > 0);
 		var deferred = REGISTRY.register(id, () -> {
 			AtomicReference<BlockEntityType<T>> typeHolder = new AtomicReference<>();
 			BlockEntityType.BlockEntitySupplier<T> supplier = (blockPos, blockState) -> factory.create(typeHolder.get(), blockPos, blockState);
 
-			var blocks = Arrays.stream(blockDefinitions).map(BlockDefinition::getBlock).toArray(BaseEntityBlock[]::new);
-			var type = new BlockEntityType(supplier, blocks);
+			var blocks = Arrays.stream(blockDefinitions).map(BlockDefinition::getBlock).toArray(EntityCableBlock[]::new);
+			var type = new BlockEntityType<>(supplier, blocks);
 			typeHolder.setPlain(type);
 
 			for (var block : blocks) {
-				BaseEntityBlock<T> baseBlock = (BaseEntityBlock<T>) block;
-				baseBlock.setBlockEntity(entityClass, type);
+				((B) block).setBlockEntity(entityClass, type);
 			}
 
 			return type;
@@ -52,7 +54,7 @@ public class FBlockEntities {
 		var result = new BlockEntityDefinition<>(entityClass, deferred);
 		BLOCK_ENTITIES.add(result);
 		return result;
-	}*/
+	}
 
 	@FunctionalInterface
 	interface BlockEntityFactory<T extends BaseBlockEntity> {

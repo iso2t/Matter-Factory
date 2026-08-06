@@ -1,7 +1,9 @@
 package matterfactory.core;
 
 import matterfactory.common.FTab;
+import matterfactory.common.registries.FBlockEntities;
 import matterfactory.common.registries.FBlocks;
+import matterfactory.common.registries.FCapabilities;
 import matterfactory.common.registries.FItems;
 import lombok.Getter;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -47,6 +49,8 @@ public abstract class FactoryBase implements Factory {
 
 		FBlocks.REGISTRY.register(bus);
 		FItems.REGISTRY.register(bus);
+		FBlockEntities.REGISTRY.register(bus);
+		bus.addListener(FCapabilities::register);
 	}
 
 	@Override
