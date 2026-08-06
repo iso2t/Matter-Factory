@@ -1,6 +1,6 @@
 package matterfactory.common.block.entity;
 
-import matterfactory.Tier;
+import matterfactory.core.Tier;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.block.cable.PowerCable;
 import net.minecraft.core.BlockPos;

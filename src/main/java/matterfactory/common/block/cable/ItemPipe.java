@@ -2,7 +2,7 @@ package matterfactory.common.block.cable;
 
 import com.mojang.serialization.MapCodec;
 import lombok.Getter;
-import matterfactory.Tier;
+import matterfactory.core.Tier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;

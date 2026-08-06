@@ -1,6 +1,6 @@
 package matterfactory.common.registries;
 
-import matterfactory.Tier;
+import matterfactory.core.Tier;
 import matterfactory.common.FTab;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.block.MachineBlock;

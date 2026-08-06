@@ -1,4 +1,4 @@
-package matterfactory;
+package matterfactory.core;
 
 import lombok.Getter;
 import net.minecraft.world.level.block.SoundType;
