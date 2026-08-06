@@ -54,11 +54,6 @@ public class PowerCable extends EntityCableBlock<PowerCableBlockEntity> {
 	}
 
 	@Override
-	protected boolean supportsManualDisconnect (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
-		return true;
-	}
-
-	@Override
 	protected boolean supportsConnectionModes (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
 		if (!state.getValue(getConnectionProperty(direction))) {
 			return false;
@@ -73,38 +68,6 @@ public class PowerCable extends EntityCableBlock<PowerCableBlockEntity> {
 		var blockEntity = realLevel.getBlockEntity(neighborPos);
 		return realLevel.getCapability(Capabilities.Energy.BLOCK, neighborPos, neighborState, blockEntity, direction.getOpposite()) != null
 				|| realLevel.getCapability(Capabilities.Energy.BLOCK, neighborPos, neighborState, blockEntity, null) != null;
-	}
-
-	@Override
-	protected CableConnectionMode getConnectionMode (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
-		PowerCableBlockEntity blockEntity = getBlockEntity(level, pos);
-		return blockEntity == null ? CableConnectionMode.AUTO : blockEntity.getConnectionMode(direction);
-	}
-
-	@Override
-	protected void setConnectionMode (Level level, BlockPos pos, BlockState state, Direction direction, CableConnectionMode mode) {
-		PowerCableBlockEntity blockEntity = getBlockEntity(level, pos);
-		if (blockEntity != null) {
-			blockEntity.setConnectionMode(direction, mode);
-		}
-	}
-
-	@Override
-	protected boolean isManuallyDisconnected (LevelReader level, BlockPos pos, BlockState state, Direction direction) {
-		if (!(level instanceof BlockGetter blockGetter)) {
-			return false;
-		}
-
-		PowerCableBlockEntity blockEntity = getBlockEntity(blockGetter, pos);
-		return blockEntity != null && blockEntity.isManuallyDisconnected(direction);
-	}
-
-	@Override
-	protected void setManuallyDisconnected (Level level, BlockPos pos, BlockState state, Direction direction, boolean disconnected) {
-		PowerCableBlockEntity blockEntity = getBlockEntity(level, pos);
-		if (blockEntity != null) {
-			blockEntity.setManuallyDisconnected(direction, disconnected);
-		}
 	}
 
 	@Nullable

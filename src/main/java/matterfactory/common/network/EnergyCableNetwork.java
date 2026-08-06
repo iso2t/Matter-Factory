@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoint> sources, List<EnergyEndpoint> sinks, BlockPos controller, int transferLimit) {
+public record EnergyCableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoint> sources, List<EnergyEndpoint> sinks, BlockPos controller, int transferLimit) {
 
-	public static CableNetwork discover (Level level, BlockPos origin) {
+	public static EnergyCableNetwork discover (Level level, BlockPos origin) {
 		return discover(level, origin, null);
 	}
 
-	public static CableNetwork discover (Level level, BlockPos origin, @Nullable TransactionContext transaction) {
+	public static EnergyCableNetwork discover (Level level, BlockPos origin, @Nullable TransactionContext transaction) {
 		Set<BlockPos> visited = new HashSet<>();
 		ArrayDeque<BlockPos> queue = new ArrayDeque<>();
 		List<PowerCableBlockEntity> cables = new ArrayList<>();
@@ -79,7 +79,7 @@ public record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoi
 		var controller = cables.stream().map(PowerCableBlockEntity::getBlockPos).min(Comparator.comparingLong(BlockPos::asLong)).orElse(origin).immutable();
 		var transferLimit = cables.stream().mapToInt(PowerCableBlockEntity::getTransferRate).reduce(0, PowerCableBlockEntity::saturatingAdd);
 
-		return new CableNetwork(cables, sources, sinks, controller, transferLimit);
+		return new EnergyCableNetwork(cables, sources, sinks, controller, transferLimit);
 	}
 
 	private static Optional<EnergyEndpoint> getEndpoint (Level level, PowerCableBlockEntity cable, Direction cableSide, BlockPos pos, BlockState state, Direction side) {

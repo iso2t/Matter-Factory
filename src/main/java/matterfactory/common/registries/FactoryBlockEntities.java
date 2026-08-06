@@ -2,6 +2,7 @@ package matterfactory.common.registries;
 
 import com.google.common.base.Preconditions;
 import matterfactory.common.block.cable.EntityCableBlock;
+import matterfactory.common.block.entity.BaseCableBlockEntity;
 import matterfactory.common.block.entity.PowerCableBlockEntity;
 import matterfactory.common.block.entity.BaseBlockEntity;
 import matterfactory.common.definition.BlockDefinition;
@@ -33,7 +34,7 @@ public class FactoryBlockEntities {
 
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	private static <T extends BaseBlockEntity, B extends EntityCableBlock<T>> BlockEntityDefinition<T> create (String id, Class<T> entityClass, BlockEntityFactory<T> factory, BlockDefinition<? extends B>... blockDefinitions) {
+	private static <T extends BaseCableBlockEntity, B extends EntityCableBlock<T>> BlockEntityDefinition<T> create (String id, Class<T> entityClass, BlockEntityFactory<T> factory, BlockDefinition<? extends B>... blockDefinitions) {
 		Preconditions.checkArgument(blockDefinitions.length > 0);
 		var deferred = REGISTRY.register(id, () -> {
 			AtomicReference<BlockEntityType<T>> typeHolder = new AtomicReference<>();
