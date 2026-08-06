@@ -53,13 +53,6 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	public static final BooleanProperty DISCONNECTED_DOWN  = BooleanProperty.create("disconnected_down");
-	public static final BooleanProperty DISCONNECTED_UP    = BooleanProperty.create("disconnected_up");
-	public static final BooleanProperty DISCONNECTED_NORTH = BooleanProperty.create("disconnected_north");
-	public static final BooleanProperty DISCONNECTED_SOUTH = BooleanProperty.create("disconnected_south");
-	public static final BooleanProperty DISCONNECTED_WEST  = BooleanProperty.create("disconnected_west");
-	public static final BooleanProperty DISCONNECTED_EAST  = BooleanProperty.create("disconnected_east");
-
 	private static final VoxelShape CORE = box(5, 5, 5, 11, 11, 11);
 
 	private static final VoxelShape DOWN_SHAPE  = box(5, 0, 5, 11, 5, 11);
@@ -81,12 +74,6 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 				.setValue(SOUTH, false)
 				.setValue(WEST, false)
 				.setValue(EAST, false)
-				.setValue(DISCONNECTED_DOWN, false)
-				.setValue(DISCONNECTED_UP, false)
-				.setValue(DISCONNECTED_NORTH, false)
-				.setValue(DISCONNECTED_SOUTH, false)
-				.setValue(DISCONNECTED_WEST, false)
-				.setValue(DISCONNECTED_EAST, false)
 				.setValue(WATERLOGGED, false));
 	}
 
@@ -126,10 +113,6 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	@Override
 	protected @NonNull InteractionResult useWithoutItem (@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
-		if (!player.isShiftKeyDown()) {
-			return InteractionResult.PASS;
-		}
-
 		Optional<Direction> targetedSide = getTargetedSide(state, pos, hit);
 		if (targetedSide.isEmpty()) {
 			return InteractionResult.PASS;
@@ -137,8 +120,19 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 		if (!level.isClientSide()) {
 			Direction direction = targetedSide.get();
-			BlockState updatedState = toggleConnection(level, pos, state, direction);
-			level.setBlock(pos, updatedState, Block.UPDATE_ALL);
+			if (player.isShiftKeyDown()) {
+				if (!supportsManualDisconnect(level, pos, state, direction)) {
+					return InteractionResult.PASS;
+				}
+
+				BlockState updatedState = toggleConnection(level, pos, state, direction);
+				level.setBlock(pos, updatedState, Block.UPDATE_ALL);
+			} else if (supportsConnectionModes(level, pos, state, direction)) {
+				cycleConnectionMode(level, pos, state, direction);
+			} else {
+				return InteractionResult.PASS;
+			}
+
 			level.invalidateCapabilities(pos);
 		}
 
@@ -147,7 +141,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	@Override
 	protected void createBlockStateDefinition (StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST, DISCONNECTED_DOWN, DISCONNECTED_UP, DISCONNECTED_NORTH, DISCONNECTED_SOUTH, DISCONNECTED_WEST, DISCONNECTED_EAST, WATERLOGGED);
+		builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST, WATERLOGGED);
 	}
 
 	/**
@@ -162,7 +156,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	public abstract boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState);
 
 	private boolean shouldConnectTo (BlockState state, LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
-		return !state.getValue(getDisconnectedProperty(direction)) && canConnectTo(level, pos, direction, neighborPos, neighborState);
+		return !isManuallyDisconnected(level, pos, state, direction) && canConnectTo(level, pos, direction, neighborPos, neighborState);
 	}
 
 	private BlockState getConnectionState (LevelReader level, BlockPos pos, BlockState state) {
@@ -177,12 +171,37 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	private BlockState toggleConnection (Level level, BlockPos pos, BlockState state, Direction direction) {
-		var disconnectedProperty = getDisconnectedProperty(direction);
-		boolean disconnected = !state.getValue(disconnectedProperty);
-		BlockState updatedState = state.setValue(disconnectedProperty, disconnected);
+		boolean disconnected = !isManuallyDisconnected(level, pos, state, direction);
+		setManuallyDisconnected(level, pos, state, direction, disconnected);
 		var neighborPos = pos.relative(direction);
 		var neighborState = level.getBlockState(neighborPos);
-		return updatedState.setValue(getConnectionProperty(direction), !disconnected && shouldConnectTo(updatedState, level, pos, direction, neighborPos, neighborState));
+		return state.setValue(getConnectionProperty(direction), !disconnected && shouldConnectTo(state, level, pos, direction, neighborPos, neighborState));
+	}
+
+	private void cycleConnectionMode (Level level, BlockPos pos, BlockState state, Direction direction) {
+		setConnectionMode(level, pos, state, direction, getConnectionMode(level, pos, state, direction).next());
+	}
+
+	protected boolean supportsManualDisconnect (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
+		return false;
+	}
+
+	protected boolean supportsConnectionModes (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
+		return false;
+	}
+
+	protected CableConnectionMode getConnectionMode (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
+		return CableConnectionMode.AUTO;
+	}
+
+	protected void setConnectionMode (Level level, BlockPos pos, BlockState state, Direction direction, CableConnectionMode mode) {
+	}
+
+	protected boolean isManuallyDisconnected (LevelReader level, BlockPos pos, BlockState state, Direction direction) {
+		return false;
+	}
+
+	protected void setManuallyDisconnected (Level level, BlockPos pos, BlockState state, Direction direction, boolean disconnected) {
 	}
 
 	public static Optional<Direction> getTargetedSide (BlockState state, BlockPos pos, BlockHitResult hit) {
@@ -195,7 +214,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		}
 
 		Direction face = hit.getDirection();
-		return state.getValue(getDisconnectedProperty(face)) ? Optional.of(face) : Optional.empty();
+		return state.getValue(getConnectionProperty(face)) ? Optional.empty() : Optional.of(face);
 	}
 
 	public static BooleanProperty getConnectionProperty (Direction direction) {
@@ -207,21 +226,6 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			case WEST -> WEST;
 			case EAST -> EAST;
 		};
-	}
-
-	public static BooleanProperty getDisconnectedProperty (Direction direction) {
-		return switch (direction) {
-			case DOWN -> DISCONNECTED_DOWN;
-			case UP -> DISCONNECTED_UP;
-			case NORTH -> DISCONNECTED_NORTH;
-			case SOUTH -> DISCONNECTED_SOUTH;
-			case WEST -> DISCONNECTED_WEST;
-			case EAST -> DISCONNECTED_EAST;
-		};
-	}
-
-	public static boolean isManuallyDisconnected (BlockState state, Direction direction) {
-		return state.getBlock() instanceof CableBlock && state.getValue(getDisconnectedProperty(direction));
 	}
 
 	public static VoxelShape getArmShape (Direction direction) {

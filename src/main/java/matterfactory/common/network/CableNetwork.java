@@ -1,6 +1,7 @@
 package matterfactory.common.network;
 
 import matterfactory.common.block.cable.CableBlock;
+import matterfactory.common.block.cable.CableConnectionMode;
 import matterfactory.common.block.cable.PowerCable;
 import matterfactory.common.block.entity.PowerCableBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -51,7 +52,7 @@ public record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoi
 						queue.add(immutableNeighbor);
 					}
 				} else {
-					getEndpoint(level, neighborPos, neighborState, direction.getOpposite()).ifPresent(endpoints::add);
+					getEndpoint(level, cable, direction, neighborPos, neighborState, direction.getOpposite()).ifPresent(endpoints::add);
 				}
 			}
 		}
@@ -62,10 +63,16 @@ public record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoi
 			var canExtract = PowerCableBlockEntity.simulateExtract(endpoint.handler(), 1, transaction) > 0;
 			var canInsert = PowerCableBlockEntity.simulateInsert(endpoint.handler(), 1, transaction) > 0;
 
-			if (canInsert) {
-				sinks.add(endpoint);
-			} else if (canExtract) {
+			if (endpoint.mode() == CableConnectionMode.IMPORT && canExtract) {
 				sources.add(endpoint);
+			} else if (endpoint.mode() == CableConnectionMode.EXPORT && canInsert) {
+				sinks.add(endpoint);
+			} else if (endpoint.mode() == CableConnectionMode.AUTO) {
+				if (canInsert) {
+					sinks.add(endpoint);
+				} else if (canExtract) {
+					sources.add(endpoint);
+				}
 			}
 		}
 
@@ -75,9 +82,9 @@ public record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoi
 		return new CableNetwork(cables, sources, sinks, controller, transferLimit);
 	}
 
-	private static Optional<EnergyEndpoint> getEndpoint (Level level, BlockPos pos, BlockState state, Direction side) {
+	private static Optional<EnergyEndpoint> getEndpoint (Level level, PowerCableBlockEntity cable, Direction cableSide, BlockPos pos, BlockState state, Direction side) {
 		var handler = level.getCapability(Capabilities.Energy.BLOCK, pos, state, level.getBlockEntity(pos), side);
-		return handler == null ? Optional.empty() : Optional.of(new EnergyEndpoint(pos.immutable(), side, handler));
+		return handler == null ? Optional.empty() : Optional.of(new EnergyEndpoint(pos.immutable(), side, cable.getConnectionMode(cableSide), handler));
 	}
 
 	public void distribute () {
@@ -116,7 +123,7 @@ public record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoi
 		}
 
 		var sourcePos = cable.getBlockPos().relative(direction);
-		return new EnergyEndpoint(sourcePos.immutable(), direction.getOpposite(), null);
+		return new EnergyEndpoint(sourcePos.immutable(), direction.getOpposite(), CableConnectionMode.AUTO, null);
 	}
 
 	private int moveBetweenEndpoints (List<EnergyEndpoint> sources, List<EnergyEndpoint> sinks, int maxTransfer) {
