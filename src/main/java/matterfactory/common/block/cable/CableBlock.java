@@ -56,16 +56,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	private static final VoxelShape CORE = box(5, 5, 5, 11, 11, 11);
-
-	private static final VoxelShape DOWN_SHAPE  = box(5, 0, 5, 11, 5, 11);
-	private static final VoxelShape UP_SHAPE    = box(5, 11, 5, 11, 16, 11);
-	private static final VoxelShape NORTH_SHAPE = box(5, 5, 0, 11, 11, 5);
-	private static final VoxelShape SOUTH_SHAPE = box(5, 5, 11, 11, 11, 16);
-	private static final VoxelShape WEST_SHAPE  = box(0, 5, 5, 5, 11, 11);
-	private static final VoxelShape EAST_SHAPE  = box(11, 5, 5, 16, 11, 11);
-
-	private static final VoxelShape[] SHAPES = createShapes();
+	private final VoxelShape[] SHAPES = createShapes();
 
 	public CableBlock (Properties properties) {
 		super(properties);
@@ -85,6 +76,34 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	@Override
 	protected @NonNull MapCodec<? extends Block> codec () {
 		return getCodec();
+	}
+
+	public VoxelShape getCoreShape () {
+		return box(5, 5, 5, 11, 11, 11);
+	}
+
+	public VoxelShape getDownShape () {
+		return box(5, 0, 5, 11, 5, 11);
+	}
+
+	public VoxelShape getUpShape () {
+		return box(5, 11, 5, 11, 16, 11);
+	}
+
+	public VoxelShape getNorthShape () {
+		return box(5, 5, 0, 11, 11, 5);
+	}
+
+	public VoxelShape getSouthShape () {
+		return box(5, 5, 11, 11, 11, 16);
+	}
+
+	public VoxelShape getWestShape () {
+		return box(0, 5, 5, 5, 11, 11);
+	}
+
+	public VoxelShape getEastShape () {
+		return box(11, 5, 5, 16, 11, 11);
 	}
 
 	@Override
@@ -222,10 +241,11 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	public static Optional<Direction> getTargetedSide (BlockState state, BlockPos pos, BlockHitResult hit) {
+		if (!(state.getBlock() instanceof CableBlock cableBlock)) return Optional.empty();
 		var localHit = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
 
 		for (var direction : Direction.values()) {
-			if (state.getValue(getConnectionProperty(direction)) && getArmShape(direction).bounds().inflate(1.0E-5).contains(localHit)) {
+			if (state.getValue(getConnectionProperty(direction)) && getArmShape(direction, cableBlock).bounds().inflate(1.0E-5).contains(localHit)) {
 				return Optional.of(direction);
 			}
 		}
@@ -245,14 +265,14 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		};
 	}
 
-	public static VoxelShape getArmShape (Direction direction) {
+	public static VoxelShape getArmShape (Direction direction, CableBlock block) {
 		return switch (direction) {
-			case DOWN -> DOWN_SHAPE;
-			case UP -> UP_SHAPE;
-			case NORTH -> NORTH_SHAPE;
-			case SOUTH -> SOUTH_SHAPE;
-			case WEST -> WEST_SHAPE;
-			case EAST -> EAST_SHAPE;
+			case DOWN -> block.getDownShape();
+			case UP -> block.getUpShape();
+			case NORTH -> block.getNorthShape();
+			case SOUTH -> block.getSouthShape();
+			case WEST -> block.getWestShape();
+			case EAST -> block.getEastShape();
 		};
 	}
 
@@ -268,17 +288,17 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		return index;
 	}
 
-	private static VoxelShape[] createShapes () {
+	private VoxelShape[] createShapes () {
 		VoxelShape[] shapes = new VoxelShape[64];
 
 		for (int index = 0; index < shapes.length; index++) {
-			VoxelShape shape = CORE;
-			if ((index & 1) != 0) shape = Shapes.or(shape, DOWN_SHAPE);
-			if ((index & (1 << 1)) != 0) shape = Shapes.or(shape, UP_SHAPE);
-			if ((index & (1 << 2)) != 0) shape = Shapes.or(shape, NORTH_SHAPE);
-			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, SOUTH_SHAPE);
-			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, WEST_SHAPE);
-			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, EAST_SHAPE);
+			VoxelShape shape = getCoreShape();
+			if ((index & 1) != 0) shape = Shapes.or(shape, getDownShape());
+			if ((index & (1 << 1)) != 0) shape = Shapes.or(shape, getUpShape());
+			if ((index & (1 << 2)) != 0) shape = Shapes.or(shape, getNorthShape());
+			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, getSouthShape());
+			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, getWestShape());
+			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, getEastShape());
 			shapes[index] = shape.optimize();
 		}
 
@@ -291,7 +311,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	/**
-	 * The center piece of the cable.
+	 * The centerpiece of the cable.
 	 *
 	 * @return the model template representing the center model of this block
 	 */
@@ -332,14 +352,18 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		return GUI_MODEL;
 	}
 
-	public static final ModelTemplate CENTER_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE)).build();
+	public abstract @NotNull CableRenderGeometry getRenderGeometry ();
 
-	public static final ModelTemplate ARM_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_arm").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-			.element(element -> element.from(6, 6, 0).to(10, 10, 5).textureAll(CABLE_ARM_TEXTURE)).build();
+	public record CableRenderGeometry(float crossMin, float crossMax, float bandMin, float bandMax) {
 
-	public static final ModelTemplate STRAIGHT_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_straight").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-			.element(element -> element.from(6, 6, 0).to(10, 10, 16).textureAll(CABLE_ARM_TEXTURE)).build();
+		public static final CableRenderGeometry POWER_CABLE = fromPixels(5.5f, 10.5f, 1, 3.25F);
+		public static final CableRenderGeometry ITEM_PIPE   = fromPixels(3.5f, 12.5f, 1, 3.25F);
+
+		public static CableRenderGeometry fromPixels (float crossMin, float crossMax, float bandMin, float bandMax) {
+			return new CableRenderGeometry(crossMin / 16.0F, crossMax / 16.0F, bandMin / 16.0F, bandMax / 16.0F);
+		}
+
+	}
 
 	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
 			.element(element -> element.from(0, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE)).build();

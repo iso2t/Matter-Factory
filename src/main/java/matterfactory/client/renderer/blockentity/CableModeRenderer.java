@@ -2,6 +2,7 @@ package matterfactory.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.block.cable.CableConnectionMode;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -20,10 +21,6 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 
 	private static final int IMPORT_COLOR = 0xFF186EFF;
 	private static final int EXPORT_COLOR = 0xFFFF7418;
-	private static final float MIN_CROSS = 0.355F;
-	private static final float MAX_CROSS = 0.645F;
-	private static final float MIN_BAND  = 0.065F;
-	private static final float MAX_BAND  = 0.205F;
 
 	public CableModeRenderer (BlockEntityRendererProvider.Context context) {
 	}
@@ -39,6 +36,7 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 
 		Level level = blockEntity.getLevel();
 		BlockState blockState = blockEntity.getBlockState();
+		state.geometry = blockState.getBlock() instanceof CableBlock cableBlock ? cableBlock.getRenderGeometry() : CableBlock.CableRenderGeometry.POWER_CABLE;
 		for (Direction direction : Direction.values()) {
 			state.modes[direction.ordinal()] = blockEntity.getConnectionMode(direction);
 			state.endpoints[direction.ordinal()] = level != null && blockEntity.isEndpointConnection(level, blockEntity.getBlockPos(), blockState, direction);
@@ -54,42 +52,42 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 			}
 
 			int color = mode == CableConnectionMode.IMPORT ? IMPORT_COLOR : EXPORT_COLOR;
-			collector.submitCustomGeometry(poseStack, RenderTypes.debugQuads(), (pose, consumer) -> renderModeBand(pose, consumer, direction, color));
+			collector.submitCustomGeometry(poseStack, RenderTypes.debugQuads(), (pose, consumer) -> renderModeBand(pose, consumer, direction, state.geometry, color));
 		}
 	}
 
-	private static void renderModeBand (PoseStack.Pose pose, VertexConsumer consumer, Direction direction, int color) {
-		float minX = MIN_CROSS;
-		float minY = MIN_CROSS;
-		float minZ = MIN_CROSS;
-		float maxX = MAX_CROSS;
-		float maxY = MAX_CROSS;
-		float maxZ = MAX_CROSS;
+	private static void renderModeBand (PoseStack.Pose pose, VertexConsumer consumer, Direction direction, CableBlock.CableRenderGeometry geometry, int color) {
+		float minX = geometry.crossMin();
+		float minY = geometry.crossMin();
+		float minZ = geometry.crossMin();
+		float maxX = geometry.crossMax();
+		float maxY = geometry.crossMax();
+		float maxZ = geometry.crossMax();
 
 		switch (direction) {
 			case DOWN -> {
-				minY = MIN_BAND;
-				maxY = MAX_BAND;
+				minY = geometry.bandMin();
+				maxY = geometry.bandMax();
 			}
 			case UP -> {
-				minY = 1.0F - MAX_BAND;
-				maxY = 1.0F - MIN_BAND;
+				minY = 1.0F - geometry.bandMax();
+				maxY = 1.0F - geometry.bandMin();
 			}
 			case NORTH -> {
-				minZ = MIN_BAND;
-				maxZ = MAX_BAND;
+				minZ = geometry.bandMin();
+				maxZ = geometry.bandMax();
 			}
 			case SOUTH -> {
-				minZ = 1.0F - MAX_BAND;
-				maxZ = 1.0F - MIN_BAND;
+				minZ = 1.0F - geometry.bandMax();
+				maxZ = 1.0F - geometry.bandMin();
 			}
 			case WEST -> {
-				minX = MIN_BAND;
-				maxX = MAX_BAND;
+				minX = geometry.bandMin();
+				maxX = geometry.bandMax();
 			}
 			case EAST -> {
-				minX = 1.0F - MAX_BAND;
-				maxX = 1.0F - MIN_BAND;
+				minX = 1.0F - geometry.bandMax();
+				maxX = 1.0F - geometry.bandMin();
 			}
 		}
 

@@ -40,6 +40,11 @@ public class FluidPipe extends CableBlock {
 	}
 
 	@Override
+	public @NotNull CableRenderGeometry getRenderGeometry () {
+		return CableRenderGeometry.POWER_CABLE;
+	}
+
+	@Override
 	public @NotNull ModelTemplate getCenterModel () {
 		return ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
 				.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE)).build();

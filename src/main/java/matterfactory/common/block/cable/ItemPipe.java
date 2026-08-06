@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +72,46 @@ public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 		var blockEntity = realLevel.getBlockEntity(neighborPos);
 		return realLevel.getCapability(Capabilities.Item.BLOCK, neighborPos, neighborState, blockEntity, direction.getOpposite()) != null
 				|| realLevel.getCapability(Capabilities.Item.BLOCK, neighborPos, neighborState, blockEntity, null) != null;
+	}
+
+	@Override
+	public @NotNull CableRenderGeometry getRenderGeometry () {
+		return CableRenderGeometry.ITEM_PIPE;
+	}
+
+	@Override
+	public VoxelShape getCoreShape () {
+		return box(4, 4, 4, 12, 12, 12);
+	}
+
+	@Override
+	public VoxelShape getDownShape () {
+		return box(4, 0, 4, 12, 4, 12);
+	}
+
+	@Override
+	public VoxelShape getUpShape () {
+		return box(4, 12, 4, 12, 16, 12);
+	}
+
+	@Override
+	public VoxelShape getNorthShape () {
+		return box(4, 4, 0, 12, 12, 4);
+	}
+
+	@Override
+	public VoxelShape getSouthShape () {
+		return box(4, 4, 12, 12, 12, 16);
+	}
+
+	@Override
+	public VoxelShape getWestShape () {
+		return box(0, 4, 4, 4, 12, 12);
+	}
+
+	@Override
+	public VoxelShape getEastShape () {
+		return box(12, 4, 4, 16, 12, 12);
 	}
 
 	@Override
