@@ -21,5 +21,6 @@
   "item.matterfactory.palladium_nugget": "Palladium Nugget",
   "item.matterfactory.palladium_raw": "Raw Palladium",
   "item.matterfactory.wrench": "Wrench",
-  "itemGroup.matterfactory": "Matter Factory"
+  "itemGroup.matterfactory": "Matter Factory",
+  "subtitles.matterfactory.wrench_use": "Wrench Used"
 }

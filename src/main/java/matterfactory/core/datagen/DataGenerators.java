@@ -4,6 +4,7 @@ import matterfactory.core.Factory;
 import matterfactory.core.datagen.language.EnglishLangProvider;
 import matterfactory.core.datagen.loot.FLootTableProvider;
 import matterfactory.core.datagen.models.FactoryModelProvider;
+import matterfactory.core.datagen.sound.SoundProvider;
 import matterfactory.core.datagen.tags.FBlockTagsGenerator;
 import matterfactory.core.datagen.tags.FItemTagsGenerator;
 import net.minecraft.core.HolderLookup;
@@ -28,6 +29,9 @@ public class DataGenerators {
 		var registries = event.getLookupProvider();
 		var pack = generator.getVanillaPack(true);
 		var localization = new EnglishLangProvider(generator);
+
+		// SOUNDS
+		pack.addProvider(SoundProvider::new);
 
 		// LOOT TABLES
 		pack.addProvider(bindRegistries(FLootTableProvider::new, registries));

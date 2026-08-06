@@ -116,7 +116,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	@Override
 	protected @NonNull InteractionResult useItemOn (ItemStack itemStack, @NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull InteractionHand hand, @NonNull BlockHitResult hit) {
-		if (!(itemStack.getItem() instanceof WrenchItem)) return InteractionResult.PASS;
+		if (!(itemStack.getItem() instanceof WrenchItem wrenchItem)) return InteractionResult.PASS;
 
 		Optional<Direction> targetedSide = getTargetedSide(state, pos, hit);
 		if (targetedSide.isEmpty()) {
@@ -139,9 +139,10 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			}
 
 			level.invalidateCapabilities(pos);
+			return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, true);
 		}
 
-		return InteractionResult.SUCCESS;
+		return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, false);
 	}
 
 	@Override

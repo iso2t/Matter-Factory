@@ -32,7 +32,7 @@ public class EnglishLangProvider extends LanguageProvider {
 	}
 
 	protected void addSubtitles() {
-
+		add("subtitles.matterfactory.wrench_use", "Wrench Used");
 	}
 
 }

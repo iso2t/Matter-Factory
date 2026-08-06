@@ -1,0 +1,10 @@
+{
+  "wrench_use": {
+    "sounds": [
+      {
+        "name": "matterfactory:wrench_use"
+      }
+    ],
+    "subtitle": "subtitles.matterfactory.wrench_use"
+  }
+}
