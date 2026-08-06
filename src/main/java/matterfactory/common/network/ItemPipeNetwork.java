@@ -12,6 +12,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.resource.ResourceStack;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +100,9 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 		}
 
 		var excludedSource = getExcludedSource(pipe, direction);
+		Map<BlockPos, ItemPipeBlockEntity> pipeByPos = getPipeByPos();
+		Level level = pipe.getLevel();
+		long startGameTime = level == null ? 0 : level.getGameTime();
 		int moved = 0;
 		for (var sink : sinks) {
 			if (moved >= amount) {
@@ -108,7 +113,34 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 				continue;
 			}
 
-			moved += ResourceHandlerUtil.insertStacking(sink.handler(), resource, amount - moved, transaction);
+			List<BlockPos> path = findPipePath(pipe.getBlockPos(), sink.pos().relative(sink.side()), pipeByPos);
+			int routeTransferLimit = getRouteTransferLimit(path, pipeByPos, null);
+			if (routeTransferLimit <= 0) {
+				continue;
+			}
+
+			int segmentDuration = ItemPipeBlockEntity.VISUAL_TRANSFER_DURATION;
+			if (direction != null && !canShowTransfer(path, pipeByPos, startGameTime, segmentDuration)) {
+				continue;
+			}
+
+			int moveLimit = Math.min(amount - moved, routeTransferLimit);
+			int accepted = simulateInsertStacking(sink.handler(), resource, moveLimit, transaction);
+			if (accepted <= 0) {
+				continue;
+			}
+
+			ItemPipeBlockEntity controllerPipe = pipeByPos.get(controller);
+			if (controllerPipe == null) {
+				continue;
+			}
+
+			controllerPipe.enqueueItemDelivery(resource, accepted, sink.pos(), sink.side(), startGameTime + (long) path.size() * segmentDuration, ItemPipeBlockEntity.VISUAL_ITEM_SPACING, transaction);
+			if (direction != null) {
+				ItemEndpoint source = new ItemEndpoint(pipe.getBlockPos().relative(direction), direction.getOpposite(), CableConnectionMode.AUTO, null);
+				showTransfer(source, sink, path, pipeByPos, resource, accepted, startGameTime, segmentDuration, transaction);
+			}
+			moved += accepted;
 		}
 
 		return moved;
@@ -124,6 +156,8 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 	}
 
 	private int moveBetweenEndpoints (List<ItemEndpoint> sources, List<ItemEndpoint> sinks, int maxTransfer, @Nullable TransactionContext transaction) {
+		Map<BlockPos, ItemPipeBlockEntity> pipeByPos = getPipeByPos();
+		Map<BlockPos, Integer> routeBudgets = getRouteBudgets();
 		int moved = 0;
 
 		for (var source : sources) {
@@ -136,10 +170,26 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 					continue;
 				}
 
-				var movedStack = ResourceHandlerUtil.moveFirstStacking(source.handler(), sink.handler(), resource -> true, maxTransfer - moved, transaction);
+				List<BlockPos> path = findEndpointPath(source, sink, pipeByPos);
+				int routeTransferLimit = getRouteTransferLimit(path, pipeByPos, routeBudgets);
+				if (routeTransferLimit <= 0) {
+					continue;
+				}
+
+				Level level = pipes.isEmpty() ? null : pipes.get(0).getLevel();
+				long startGameTime = level == null ? 0 : level.getGameTime();
+				int segmentDuration = ItemPipeBlockEntity.VISUAL_TRANSFER_DURATION;
+				if (!canShowTransfer(path, pipeByPos, startGameTime, segmentDuration)) {
+					continue;
+				}
+
+				int moveLimit = Math.min(maxTransfer - moved, routeTransferLimit);
+				var movedStack = extractFirstForPendingDelivery(source.handler(), sink.handler(), moveLimit, transaction);
 				if (movedStack != null) {
 					moved += movedStack.amount();
-					showTransfer(source, sink, movedStack.resource(), movedStack.amount());
+					consumeRouteBudget(path, routeBudgets, movedStack.amount());
+					showTransfer(source, sink, path, pipeByPos, movedStack.resource(), movedStack.amount(), startGameTime, segmentDuration, null);
+					enqueueDelivery(sink, pipeByPos, movedStack.resource(), movedStack.amount(), startGameTime + (long) path.size() * segmentDuration);
 				}
 			}
 		}
@@ -147,22 +197,129 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 		return moved;
 	}
 
-	private void showTransfer (ItemEndpoint source, ItemEndpoint sink, ItemResource resource, int amount) {
+	@Nullable
+	private static ResourceStack<ItemResource> extractFirstForPendingDelivery (@Nullable ResourceHandler<ItemResource> source, @Nullable ResourceHandler<ItemResource> sink, int amount, @Nullable TransactionContext transaction) {
+		if (source == null || sink == null || amount <= 0) {
+			return null;
+		}
+
+		ItemResource resource = ResourceHandlerUtil.findExtractableResource(source, resourceToMove -> true, transaction);
+		if (resource == null) {
+			return null;
+		}
+
+		int extractable;
+		try (Transaction simulation = Transaction.open(transaction)) {
+			extractable = source.extract(resource, amount, simulation);
+		}
+
+		if (extractable <= 0) {
+			return null;
+		}
+
+		int insertable;
+		try (Transaction simulation = Transaction.open(transaction)) {
+			insertable = ResourceHandlerUtil.insertStacking(sink, resource, extractable, simulation);
+		}
+
+		int transferable = Math.min(extractable, insertable);
+		if (transferable <= 0) {
+			return null;
+		}
+
+		try (Transaction transfer = Transaction.open(transaction)) {
+			int extracted = source.extract(resource, transferable, transfer);
+			if (extracted > 0) {
+				transfer.commit();
+				return new ResourceStack<>(resource, extracted);
+			}
+		}
+
+		return null;
+	}
+
+	private static int simulateInsertStacking (@Nullable ResourceHandler<ItemResource> sink, ItemResource resource, int amount, @Nullable TransactionContext transaction) {
+		if (sink == null || resource.isEmpty() || amount <= 0) {
+			return 0;
+		}
+
+		try (Transaction simulation = Transaction.open(transaction)) {
+			return ResourceHandlerUtil.insertStacking(sink, resource, amount, simulation);
+		}
+	}
+
+	private void enqueueDelivery (ItemEndpoint sink, Map<BlockPos, ItemPipeBlockEntity> pipeByPos, ItemResource resource, int amount, long firstArrivalGameTime) {
+		ItemPipeBlockEntity controllerPipe = pipeByPos.get(controller);
+		if (controllerPipe != null) {
+			controllerPipe.enqueueItemDelivery(resource, amount, sink.pos(), sink.side(), firstArrivalGameTime, ItemPipeBlockEntity.VISUAL_ITEM_SPACING);
+		}
+	}
+
+	private Map<BlockPos, ItemPipeBlockEntity> getPipeByPos () {
 		Map<BlockPos, ItemPipeBlockEntity> pipeByPos = new HashMap<>();
 		for (ItemPipeBlockEntity pipe : pipes) {
 			pipeByPos.put(pipe.getBlockPos(), pipe);
 		}
 
-		BlockPos startPipe = source.pos().relative(source.side());
-		BlockPos endPipe = sink.pos().relative(sink.side());
-		List<BlockPos> path = findPipePath(startPipe, endPipe, pipeByPos);
+		return pipeByPos;
+	}
+
+	private Map<BlockPos, Integer> getRouteBudgets () {
+		Map<BlockPos, Integer> budgets = new HashMap<>();
+		for (ItemPipeBlockEntity pipe : pipes) {
+			budgets.put(pipe.getBlockPos(), pipe.getTransferRate());
+		}
+
+		return budgets;
+	}
+
+	private static List<BlockPos> findEndpointPath (ItemEndpoint source, ItemEndpoint sink, Map<BlockPos, ItemPipeBlockEntity> pipeByPos) {
+		return findPipePath(source.pos().relative(source.side()), sink.pos().relative(sink.side()), pipeByPos);
+	}
+
+	private static int getRouteTransferLimit (List<BlockPos> path, Map<BlockPos, ItemPipeBlockEntity> pipeByPos, @Nullable Map<BlockPos, Integer> routeBudgets) {
+		if (path.isEmpty()) {
+			return 0;
+		}
+
+		int routeTransferLimit = Integer.MAX_VALUE;
+		for (BlockPos pipePos : path) {
+			ItemPipeBlockEntity pipe = pipeByPos.get(pipePos);
+			if (pipe == null) {
+				return 0;
+			}
+
+			routeTransferLimit = Math.min(routeTransferLimit, pipe.getTransferRate());
+			if (routeBudgets != null) {
+				routeTransferLimit = Math.min(routeTransferLimit, routeBudgets.getOrDefault(pipePos, 0));
+			}
+		}
+
+		return routeTransferLimit;
+	}
+
+	private static boolean canShowTransfer (List<BlockPos> path, Map<BlockPos, ItemPipeBlockEntity> pipeByPos, long startGameTime, int segmentDuration) {
+		for (int index = 0; index < path.size(); index++) {
+			ItemPipeBlockEntity pipe = pipeByPos.get(path.get(index));
+			if (pipe == null || !pipe.canShowItemTransfer(startGameTime + (long) index * segmentDuration, segmentDuration)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static void consumeRouteBudget (List<BlockPos> path, Map<BlockPos, Integer> routeBudgets, int amount) {
+		for (BlockPos pipePos : path) {
+			routeBudgets.computeIfPresent(pipePos, (pos, budget) -> Math.max(0, budget - amount));
+		}
+	}
+
+	private void showTransfer (ItemEndpoint source, ItemEndpoint sink, List<BlockPos> path, Map<BlockPos, ItemPipeBlockEntity> pipeByPos, ItemResource resource, int amount, long startGameTime, int segmentDuration, @Nullable TransactionContext transaction) {
 		if (path.isEmpty()) {
 			return;
 		}
 
-		Level level = pipes.isEmpty() ? null : pipes.get(0).getLevel();
-		long startGameTime = level == null ? 0 : level.getGameTime();
-		int segmentDuration = ItemPipeBlockEntity.VISUAL_TRANSFER_DURATION;
 		int segmentDelay = segmentDuration;
 
 		for (int index = 0; index < path.size(); index++) {
@@ -177,7 +334,7 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 			Direction from = directionBetween(pipePos, previous);
 			Direction to = directionBetween(pipePos, next);
 			if (from != null && to != null) {
-				pipe.showItemTransfer(resource, amount, from, to, startGameTime + (long) index * segmentDelay, segmentDuration);
+				pipe.showItemTransfer(resource, amount, from, to, startGameTime + (long) index * segmentDelay, segmentDuration, transaction);
 			}
 		}
 	}

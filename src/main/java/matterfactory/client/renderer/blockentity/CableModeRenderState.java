@@ -12,6 +12,10 @@ public class CableModeRenderState extends BlockEntityRenderState {
 	final boolean[] endpoints = new boolean[Direction.values().length];
 	CableBlock.CableRenderGeometry geometry = CableBlock.CableRenderGeometry.POWER_CABLE;
 	final ItemStackRenderState visualItem = new ItemStackRenderState();
+	int visualItemCount;
+	float visualElapsedTicks;
+	int visualTravelDuration;
+	int visualItemSpacing;
 	Direction visualFrom = Direction.NORTH;
 	Direction visualTo = Direction.SOUTH;
 	float visualProgress = 1.0F;

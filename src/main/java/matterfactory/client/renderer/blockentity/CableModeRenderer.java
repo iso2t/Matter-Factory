@@ -75,26 +75,45 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 	private void extractVisualItem (T blockEntity, CableModeRenderState state, float partialTick, Level level) {
 		if (!(blockEntity instanceof ItemPipeBlockEntity itemPipe) || itemPipe.getVisualItem().isEmpty()) {
 			state.visualItem.clear();
+			state.visualItemCount = 0;
 			state.visualProgress = 1.0F;
 			return;
 		}
 
 		float duration = Math.max(1, itemPipe.getVisualDuration());
-		float progress = ((level == null ? 0 : level.getGameTime()) + partialTick - itemPipe.getVisualStartGameTime()) / duration;
-		if (progress < 0.0F || progress > 1.0F) {
+		float elapsedTicks = (level == null ? 0 : level.getGameTime()) + partialTick - itemPipe.getVisualStartGameTime();
+		if (elapsedTicks < 0.0F || elapsedTicks > itemPipe.getVisualTotalDuration()) {
 			state.visualItem.clear();
+			state.visualItemCount = 0;
 			state.visualProgress = 1.0F;
 			return;
 		}
 
 		state.visualFrom = itemPipe.getVisualFrom();
 		state.visualTo = itemPipe.getVisualTo();
-		state.visualProgress = Mth.clamp(progress, 0.0F, 1.0F);
+		state.visualItemCount = itemPipe.getVisualItem().getCount();
+		state.visualElapsedTicks = elapsedTicks;
+		state.visualTravelDuration = itemPipe.getVisualDuration();
+		state.visualItemSpacing = itemPipe.getVisualItemSpacing();
+		state.visualProgress = Mth.clamp(elapsedTicks / duration, 0.0F, 1.0F);
 		itemModelResolver.updateForTopItem(state.visualItem, itemPipe.getVisualItem(), ItemDisplayContext.GROUND, level, null, (int) itemPipe.getBlockPos().asLong());
 	}
 
 	private static void renderVisualItem (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState) {
-		Vec3 position = sharpPipePathPoint(state.visualFrom, state.visualTo, state.visualProgress);
+		int count = Math.max(1, state.visualItemCount);
+		for (int index = 0; index < count; index++) {
+			float itemElapsed = state.visualElapsedTicks - index * state.visualItemSpacing;
+			if (itemElapsed < 0.0F || itemElapsed > state.visualTravelDuration) {
+				continue;
+			}
+
+			float itemProgress = Mth.clamp(itemElapsed / Math.max(1, state.visualTravelDuration), 0.0F, 1.0F);
+			renderVisualItemAt(state, poseStack, collector, cameraState, itemProgress);
+		}
+	}
+
+	private static void renderVisualItemAt (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState, float progress) {
+		Vec3 position = sharpPipePathPoint(state.visualFrom, state.visualTo, progress);
 
 		poseStack.pushPose();
 		poseStack.translate(position.x, position.y, position.z);
