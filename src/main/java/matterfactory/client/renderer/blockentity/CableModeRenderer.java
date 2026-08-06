@@ -3,7 +3,7 @@ package matterfactory.client.renderer.blockentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import matterfactory.common.block.cable.CableConnectionMode;
-import matterfactory.common.block.entity.PowerCableBlockEntity;
+import matterfactory.common.block.entity.BaseCableBlockEntity;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
-public class PowerCableRenderer implements BlockEntityRenderer<PowerCableBlockEntity, PowerCableRenderState> {
+public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockEntityRenderer<T, CableModeRenderState> {
 
 	private static final int IMPORT_COLOR = 0xFF186EFF;
 	private static final int EXPORT_COLOR = 0xFFFF7418;
@@ -25,16 +25,16 @@ public class PowerCableRenderer implements BlockEntityRenderer<PowerCableBlockEn
 	private static final float MIN_BAND  = 0.065F;
 	private static final float MAX_BAND  = 0.205F;
 
-	public PowerCableRenderer (BlockEntityRendererProvider.Context context) {
+	public CableModeRenderer (BlockEntityRendererProvider.Context context) {
 	}
 
 	@Override
-	public @NonNull PowerCableRenderState createRenderState () {
-		return new PowerCableRenderState();
+	public @NonNull CableModeRenderState createRenderState () {
+		return new CableModeRenderState();
 	}
 
 	@Override
-	public void extractRenderState (@NonNull PowerCableBlockEntity blockEntity, @NonNull PowerCableRenderState state, float partialTick, @NonNull Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+	public void extractRenderState (@NonNull T blockEntity, @NonNull CableModeRenderState state, float partialTick, @NonNull Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
 		BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTick, cameraPos, crumblingOverlay);
 
 		Level level = blockEntity.getLevel();
@@ -46,7 +46,7 @@ public class PowerCableRenderer implements BlockEntityRenderer<PowerCableBlockEn
 	}
 
 	@Override
-	public void submit (@NonNull PowerCableRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
+	public void submit (@NonNull CableModeRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
 		for (Direction direction : Direction.values()) {
 			CableConnectionMode mode = state.modes[direction.ordinal()];
 			if (mode == CableConnectionMode.AUTO || !state.endpoints[direction.ordinal()]) {

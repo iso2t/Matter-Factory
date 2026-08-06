@@ -287,7 +287,49 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	@Override
 	public void registerModel (BlockModelGenerators generator, BlockDefinition<?> block) {
-		CustomBlockModel.registerCableType(generator, this);
+		CustomBlockModel.registerCableType(generator, this, getCenterModel(), getArmModel(), getStraightModel(), getItemModel(), getGuiModel());
+	}
+
+	/**
+	 * The center piece of the cable.
+	 *
+	 * @return the model template representing the center model of this block
+	 */
+	public abstract @NotNull ModelTemplate getCenterModel ();
+
+	/**
+	 * The arms of the cable.
+	 *
+	 * @return the {@code ModelTemplate} instance representing the arm model of the block.
+	 */
+	public abstract @NotNull ModelTemplate getArmModel ();
+
+	/**
+	 * Retrieves the straight model template associated with this cable block.
+	 * The straight model represents the visual layout for cable segments that
+	 * are aligned in a straight path without any bends or junctions.
+	 *
+	 * @return the {@code ModelTemplate} instance representing the straight model of the block
+	 */
+	public abstract @NotNull ModelTemplate getStraightModel ();
+
+	/**
+	 * Retrieves the model template associated with the item representation of this cable block.
+	 *
+	 * @return the {@code ModelTemplate} instance representing the item model of this block
+	 */
+	public @NotNull ModelTemplate getItemModel () {
+		return ITEM_MODEL;
+	}
+
+	/**
+	 * Retrieves the GUI model template associated with this cable block.
+	 * The GUI model represents the visual layout used for graphical user interface representation of the block.
+	 *
+	 * @return the {@code ModelTemplate} instance representing the GUI model of this block
+	 */
+	public @NotNull ModelTemplate getGuiModel () {
+		return GUI_MODEL;
 	}
 
 	public static final ModelTemplate CENTER_MODEL = ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)

@@ -1,6 +1,6 @@
 package matterfactory.client;
 
-import matterfactory.client.renderer.blockentity.PowerCableRenderer;
+import matterfactory.client.renderer.blockentity.CableModeRenderer;
 import matterfactory.common.registries.FactoryBlockEntities;
 import matterfactory.core.Factory;
 import matterfactory.core.FactoryBase;
@@ -21,7 +21,8 @@ public class FactoryClient extends FactoryBase {
 	}
 
 	private void registerRenderers (EntityRenderersEvent.RegisterRenderers event) {
-		event.registerBlockEntityRenderer(FactoryBlockEntities.POWER_CABLE.get(), PowerCableRenderer::new);
+		event.registerBlockEntityRenderer(FactoryBlockEntities.POWER_CABLE.get(), CableModeRenderer::new);
+		event.registerBlockEntityRenderer(FactoryBlockEntities.ITEM_PIPE.get(), CableModeRenderer::new);
 	}
 
 	@Override

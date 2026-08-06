@@ -7,6 +7,7 @@ import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.dispatch.Variant;
@@ -28,22 +29,22 @@ public interface CustomBlockModel {
 
 	void registerModel (BlockModelGenerators generator, BlockDefinition<?> block);
 
-	static void registerCableType (BlockModelGenerators generators, CableBlock block) {
-		registerCableModels(generators, block);
+	static void registerCableType (BlockModelGenerators generators, CableBlock block, ModelTemplate center, ModelTemplate arm, ModelTemplate straight, ModelTemplate item, ModelTemplate gui) {
+		registerCableModels(generators, block, center, arm, straight, item, gui);
 	}
 
-	private static void registerCableModels (BlockModelGenerators generators, CableBlock cable) {
+	private static void registerCableModels (BlockModelGenerators generators, CableBlock cable, ModelTemplate center, ModelTemplate arm, ModelTemplate straight, ModelTemplate item, ModelTemplate gui) {
 		Identifier texture = TextureMapping.getBlockTexture(cable).sprite().withPath(path -> path.replace("block/", "block/cable/"));
 		TextureMapping textures = new TextureMapping()
 				.put(CableBlock.CABLE_CENTER_TEXTURE, new Material(texture.withPath(path -> path + "_center")))
 				.put(CableBlock.CABLE_ARM_TEXTURE, new Material(texture.withPath(path -> path + "_arm")))
 				.put(TextureSlot.PARTICLE, new Material(texture.withPath(path -> path + "_center")));
 
-		Identifier centerModel = CableBlock.CENTER_MODEL.create(cable, textures, generators.modelOutput);
-		Identifier armModel = CableBlock.ARM_MODEL.create(cable, textures, generators.modelOutput);
-		Identifier straightModel = CableBlock.STRAIGHT_MODEL.create(cable, textures, generators.modelOutput);
-		Identifier itemModel = CableBlock.ITEM_MODEL.create(cable, textures, generators.modelOutput);
-		Identifier guiModel = CableBlock.GUI_MODEL.create(cable, textures, generators.modelOutput);
+		Identifier centerModel = center.create(cable, textures, generators.modelOutput);
+		Identifier armModel = arm.create(cable, textures, generators.modelOutput);
+		Identifier straightModel = straight.create(cable, textures, generators.modelOutput);
+		Identifier itemModel = item.create(cable, textures, generators.modelOutput);
+		Identifier guiModel = gui.create(cable, textures, generators.modelOutput);
 
 		registerCableBlockState(generators, cable, centerModel, armModel, straightModel);
 		registerCableItemModel(generators, cable, itemModel, guiModel);
