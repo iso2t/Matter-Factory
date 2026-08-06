@@ -139,11 +139,107 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 				var movedStack = ResourceHandlerUtil.moveFirstStacking(source.handler(), sink.handler(), resource -> true, maxTransfer - moved, transaction);
 				if (movedStack != null) {
 					moved += movedStack.amount();
+					showTransfer(source, sink, movedStack.resource(), movedStack.amount());
 				}
 			}
 		}
 
 		return moved;
+	}
+
+	private void showTransfer (ItemEndpoint source, ItemEndpoint sink, ItemResource resource, int amount) {
+		Map<BlockPos, ItemPipeBlockEntity> pipeByPos = new HashMap<>();
+		for (ItemPipeBlockEntity pipe : pipes) {
+			pipeByPos.put(pipe.getBlockPos(), pipe);
+		}
+
+		BlockPos startPipe = source.pos().relative(source.side());
+		BlockPos endPipe = sink.pos().relative(sink.side());
+		List<BlockPos> path = findPipePath(startPipe, endPipe, pipeByPos);
+		if (path.isEmpty()) {
+			return;
+		}
+
+		Level level = pipes.isEmpty() ? null : pipes.get(0).getLevel();
+		long startGameTime = level == null ? 0 : level.getGameTime();
+		int segmentDuration = ItemPipeBlockEntity.VISUAL_TRANSFER_DURATION;
+		int segmentDelay = segmentDuration;
+
+		for (int index = 0; index < path.size(); index++) {
+			BlockPos pipePos = path.get(index);
+			ItemPipeBlockEntity pipe = pipeByPos.get(pipePos);
+			if (pipe == null) {
+				continue;
+			}
+
+			BlockPos previous = index == 0 ? source.pos() : path.get(index - 1);
+			BlockPos next = index == path.size() - 1 ? sink.pos() : path.get(index + 1);
+			Direction from = directionBetween(pipePos, previous);
+			Direction to = directionBetween(pipePos, next);
+			if (from != null && to != null) {
+				pipe.showItemTransfer(resource, amount, from, to, startGameTime + (long) index * segmentDelay, segmentDuration);
+			}
+		}
+	}
+
+	private static List<BlockPos> findPipePath (BlockPos start, BlockPos end, Map<BlockPos, ItemPipeBlockEntity> pipeByPos) {
+		if (!pipeByPos.containsKey(start) || !pipeByPos.containsKey(end)) {
+			return List.of();
+		}
+
+		Map<BlockPos, BlockPos> previous = new HashMap<>();
+		ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+		Set<BlockPos> visited = new HashSet<>();
+
+		visited.add(start);
+		queue.add(start);
+
+		while (!queue.isEmpty()) {
+			BlockPos current = queue.removeFirst();
+			if (current.equals(end)) {
+				return buildPath(end, previous);
+			}
+
+			ItemPipeBlockEntity pipe = pipeByPos.get(current);
+			BlockState state = pipe.getBlockState();
+			for (Direction direction : Direction.values()) {
+				if (!state.getValue(CableBlock.getConnectionProperty(direction))) {
+					continue;
+				}
+
+				BlockPos neighbor = current.relative(direction);
+				ItemPipeBlockEntity neighborPipe = pipeByPos.get(neighbor);
+				if (neighborPipe == null || !neighborPipe.getBlockState().getValue(CableBlock.getConnectionProperty(direction.getOpposite()))) {
+					continue;
+				}
+
+				if (visited.add(neighbor)) {
+					previous.put(neighbor, current);
+					queue.add(neighbor);
+				}
+			}
+		}
+
+		return List.of();
+	}
+
+	private static List<BlockPos> buildPath (BlockPos end, Map<BlockPos, BlockPos> previous) {
+		LinkedList<BlockPos> path = new LinkedList<>();
+		for (BlockPos at = end; at != null; at = previous.get(at)) {
+			path.addFirst(at);
+		}
+		return path;
+	}
+
+	@Nullable
+	private static Direction directionBetween (BlockPos from, BlockPos to) {
+		for (Direction direction : Direction.values()) {
+			if (from.relative(direction).equals(to)) {
+				return direction;
+			}
+		}
+
+		return null;
 	}
 
 }

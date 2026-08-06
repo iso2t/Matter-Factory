@@ -7,9 +7,12 @@ import matterfactory.common.network.ItemPipeNetwork;
 import matterfactory.core.Tier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -17,6 +20,14 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 public class ItemPipeBlockEntity extends BaseCableBlockEntity {
+
+	public static final int VISUAL_TRANSFER_DURATION = 12;
+
+	private ItemStack visualItem = ItemStack.EMPTY;
+	private Direction visualFrom = Direction.NORTH;
+	private Direction visualTo = Direction.SOUTH;
+	private long visualStartGameTime;
+	private int visualDuration = VISUAL_TRANSFER_DURATION;
 
 	public ItemPipeBlockEntity (BlockEntityType<ItemPipeBlockEntity> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
@@ -48,9 +59,73 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		return getTier(getBlockState()).getItemTransferRate();
 	}
 
+	public ItemStack getVisualItem () {
+		return visualItem;
+	}
+
+	public Direction getVisualFrom () {
+		return visualFrom;
+	}
+
+	public Direction getVisualTo () {
+		return visualTo;
+	}
+
+	public long getVisualStartGameTime () {
+		return visualStartGameTime;
+	}
+
+	public int getVisualDuration () {
+		return visualDuration;
+	}
+
+	public void showItemTransfer (ItemResource resource, int amount, Direction from, Direction to, long startGameTime, int duration) {
+		if (resource.isEmpty() || amount <= 0) {
+			return;
+		}
+
+		if (!visualItem.isEmpty() && startGameTime < visualStartGameTime + visualDuration) {
+			return;
+		}
+
+		this.visualItem = resource.toStack(Math.min(amount, resource.getMaxStackSize()));
+		this.visualFrom = from;
+		this.visualTo = to;
+		this.visualStartGameTime = startGameTime;
+		this.visualDuration = duration;
+		markConnectionDataChanged();
+	}
+
 	@Override
 	protected boolean isNetworkCable (BlockState state) {
 		return state.getBlock() instanceof ItemPipe;
+	}
+
+	@Override
+	protected void loadAdditional (@NonNull ValueInput input) {
+		super.loadAdditional(input);
+		visualItem = input.read("visual_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
+		visualFrom = directionOr(input.getStringOr("visual_from", Direction.NORTH.getSerializedName()), Direction.NORTH);
+		visualTo = directionOr(input.getStringOr("visual_to", Direction.SOUTH.getSerializedName()), Direction.SOUTH);
+		visualStartGameTime = input.getLongOr("visual_start", 0);
+		visualDuration = input.getIntOr("visual_duration", VISUAL_TRANSFER_DURATION);
+	}
+
+	@Override
+	protected void saveAdditional (@NonNull ValueOutput output) {
+		super.saveAdditional(output);
+		if (!visualItem.isEmpty()) {
+			output.store("visual_item", ItemStack.OPTIONAL_CODEC, visualItem);
+			output.putString("visual_from", visualFrom.getSerializedName());
+			output.putString("visual_to", visualTo.getSerializedName());
+			output.putLong("visual_start", visualStartGameTime);
+			output.putInt("visual_duration", visualDuration);
+		}
+	}
+
+	private static Direction directionOr (String name, Direction fallback) {
+		Direction direction = Direction.byName(name);
+		return direction == null ? fallback : direction;
 	}
 
 	private record PipeItemHandler(ItemPipeBlockEntity pipe, @Nullable Direction direction) implements ResourceHandler<ItemResource> {

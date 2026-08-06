@@ -4,14 +4,19 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.block.cable.CableConnectionMode;
+import matterfactory.common.block.entity.ItemPipeBlockEntity;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -21,8 +26,13 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 
 	private static final int IMPORT_COLOR = 0xFF186EFF;
 	private static final int EXPORT_COLOR = 0xFFFF7418;
+	private static final float ITEM_TRAVEL_DISTANCE = 0.5F;
+	private static final float ITEM_SCALE = 0.5F;
+
+	private final ItemModelResolver itemModelResolver;
 
 	public CableModeRenderer (BlockEntityRendererProvider.Context context) {
+		this.itemModelResolver = context.itemModelResolver();
 	}
 
 	@Override
@@ -41,6 +51,8 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 			state.modes[direction.ordinal()] = blockEntity.getConnectionMode(direction);
 			state.endpoints[direction.ordinal()] = level != null && blockEntity.isEndpointConnection(level, blockEntity.getBlockPos(), blockState, direction);
 		}
+
+		extractVisualItem(blockEntity, state, partialTick, level);
 	}
 
 	@Override
@@ -54,6 +66,69 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 			int color = mode == CableConnectionMode.IMPORT ? IMPORT_COLOR : EXPORT_COLOR;
 			collector.submitCustomGeometry(poseStack, RenderTypes.debugQuads(), (pose, consumer) -> renderModeBand(pose, consumer, direction, state.geometry, color));
 		}
+
+		if (!state.visualItem.isEmpty()) {
+			renderVisualItem(state, poseStack, collector, cameraState);
+		}
+	}
+
+	private void extractVisualItem (T blockEntity, CableModeRenderState state, float partialTick, Level level) {
+		if (!(blockEntity instanceof ItemPipeBlockEntity itemPipe) || itemPipe.getVisualItem().isEmpty()) {
+			state.visualItem.clear();
+			state.visualProgress = 1.0F;
+			return;
+		}
+
+		float duration = Math.max(1, itemPipe.getVisualDuration());
+		float progress = ((level == null ? 0 : level.getGameTime()) + partialTick - itemPipe.getVisualStartGameTime()) / duration;
+		if (progress < 0.0F || progress > 1.0F) {
+			state.visualItem.clear();
+			state.visualProgress = 1.0F;
+			return;
+		}
+
+		state.visualFrom = itemPipe.getVisualFrom();
+		state.visualTo = itemPipe.getVisualTo();
+		state.visualProgress = Mth.clamp(progress, 0.0F, 1.0F);
+		itemModelResolver.updateForTopItem(state.visualItem, itemPipe.getVisualItem(), ItemDisplayContext.GROUND, level, null, (int) itemPipe.getBlockPos().asLong());
+	}
+
+	private static void renderVisualItem (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState) {
+		Vec3 position = sharpPipePathPoint(state.visualFrom, state.visualTo, state.visualProgress);
+
+		poseStack.pushPose();
+		poseStack.translate(position.x, position.y, position.z);
+		poseStack.mulPose(cameraState.orientation);
+		poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
+		state.visualItem.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+		poseStack.popPose();
+	}
+
+	private static Vec3 sharpPipePathPoint (Direction fromDirection, Direction toDirection, float progress) {
+		Vec3 from = sidePoint(fromDirection);
+		Vec3 to = sidePoint(toDirection);
+		Vec3 center = new Vec3(0.5, 0.5, 0.5);
+		float segmentProgress = progress * 2.0F;
+
+		if (segmentProgress <= 1.0F) {
+			return lerp(from, center, segmentProgress);
+		}
+
+		return lerp(center, to, segmentProgress - 1.0F);
+	}
+
+	private static Vec3 lerp (Vec3 from, Vec3 to, float progress) {
+		return new Vec3(
+				Mth.lerp(progress, from.x, to.x),
+				Mth.lerp(progress, from.y, to.y),
+				Mth.lerp(progress, from.z, to.z));
+	}
+
+	private static Vec3 sidePoint (Direction direction) {
+		return new Vec3(
+				0.5 + direction.getStepX() * ITEM_TRAVEL_DISTANCE,
+				0.5 + direction.getStepY() * ITEM_TRAVEL_DISTANCE,
+				0.5 + direction.getStepZ() * ITEM_TRAVEL_DISTANCE);
 	}
 
 	private static void renderModeBand (PoseStack.Pose pose, VertexConsumer consumer, Direction direction, CableBlock.CableRenderGeometry geometry, int color) {
