@@ -9,7 +9,6 @@ import matterfactory.common.definition.BlockEntityDefinition;
 import matterfactory.core.Factory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -20,13 +19,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FBlockEntities {
+public class FactoryBlockEntities {
 
 	public static final DeferredRegister<BlockEntityType<?>> REGISTRY = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Factory.MODID);
 
 	private static final List<BlockEntityDefinition<?>> BLOCK_ENTITIES = new ArrayList<>();
 
-	public static final BlockEntityDefinition<PowerCableBlockEntity> POWER_CABLE = create("power_cable", PowerCableBlockEntity.class, PowerCableBlockEntity::new, FBlocks.BASIC_POWER_CABLE, FBlocks.ADVANCED_POWER_CABLE, FBlocks.ELITE_POWER_CABLE, FBlocks.ULTIMATE_POWER_CABLE, FBlocks.INFINITE_POWER_CABLE);
+	public static final BlockEntityDefinition<PowerCableBlockEntity> POWER_CABLE = create("power_cable", PowerCableBlockEntity.class, PowerCableBlockEntity::new, FactoryBlocks.BASIC_POWER_CABLE, FactoryBlocks.ADVANCED_POWER_CABLE, FactoryBlocks.ELITE_POWER_CABLE, FactoryBlocks.ULTIMATE_POWER_CABLE, FactoryBlocks.INFINITE_POWER_CABLE);
 
 	public static List<BlockEntityDefinition<?>> getBlockEntities () {
 		return Collections.unmodifiableList(BLOCK_ENTITIES);

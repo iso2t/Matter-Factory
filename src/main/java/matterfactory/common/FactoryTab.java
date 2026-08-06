@@ -6,7 +6,7 @@ import matterfactory.common.block.BaseBlock;
 import matterfactory.common.definition.ItemDefinition;
 import matterfactory.common.item.BaseBlockItem;
 import matterfactory.common.item.BaseItem;
-import matterfactory.common.registries.FBlocks;
+import matterfactory.common.registries.FactoryBlocks;
 import matterfactory.core.Factory;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FTab {
+public class FactoryTab {
 
 	public static final ResourceKey<CreativeModeTab> MAIN = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Factory.get("main"));
 
@@ -28,8 +28,8 @@ public class FTab {
 	public static void init (Registry<CreativeModeTab> registry) {
 		var tab = CreativeModeTab.builder()
 				.title(Component.translatable("itemGroup." + Factory.MODID))
-				.icon(FBlocks.MACHINE_FRAME::getStack)
-				.displayItems(FTab::buildDisplayItems)
+				.icon(FactoryBlocks.MACHINE_FRAME::getStack)
+				.displayItems(FactoryTab::buildDisplayItems)
 				.build();
 		Registry.register(registry, MAIN, tab);
 	}

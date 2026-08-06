@@ -1,7 +1,7 @@
 package matterfactory.common.registries;
 
 import matterfactory.core.Tier;
-import matterfactory.common.FTab;
+import matterfactory.common.FactoryTab;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.block.MachineBlock;
 import matterfactory.common.block.cable.FluidPipe;
@@ -29,7 +29,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class FBlocks {
+public class FactoryBlocks {
 
 	public static final DeferredRegister.Blocks REGISTRY = DeferredRegister.createBlocks(Factory.MODID);
 
@@ -77,7 +77,7 @@ public class FBlocks {
 
 	public static <T extends Block> BlockDefinition<T> register (final String name, Identifier id, final Function<BlockBehaviour.Properties, T> supplier, Supplier<BlockBehaviour.Properties> properties, @Nullable BiFunction<Block, Item.Properties, BlockItem> itemFactory) {
 		var deferredBlock = REGISTRY.registerBlock(id.getPath(), supplier, properties);
-		var deferredItem = FItems.REGISTRY.register(id.getPath(), () -> {
+		var deferredItem = FactoryItems.REGISTRY.register(id.getPath(), () -> {
 			var block = deferredBlock.get();
 			var itemProperties = new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id)).useBlockDescriptionPrefix();
 			if (itemFactory != null) {
@@ -93,7 +93,7 @@ public class FBlocks {
 			}
 		});
 		var itemDef = new ItemDefinition<>(name, deferredItem);
-		FTab.add(itemDef);
+		FactoryTab.add(itemDef);
 
 		BlockDefinition<T> definition = new BlockDefinition<>(name, deferredBlock, itemDef);
 		BLOCKS.add(definition);

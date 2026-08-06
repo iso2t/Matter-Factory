@@ -7,9 +7,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class FItemTagsGenerator extends ItemTagsProvider {
+public class FactoryItemTagsGenerator extends ItemTagsProvider {
 
-	public FItemTagsGenerator (PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+	public FactoryItemTagsGenerator (PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, lookupProvider, matterfactory.core.Factory.MODID);
 	}
 

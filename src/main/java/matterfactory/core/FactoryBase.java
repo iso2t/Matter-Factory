@@ -1,6 +1,6 @@
 package matterfactory.core;
 
-import matterfactory.common.FTab;
+import matterfactory.common.FactoryTab;
 import matterfactory.common.registries.*;
 import lombok.Getter;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,9 +33,9 @@ public abstract class FactoryBase implements Factory {
 		this.eventBus = bus;
 		this.modContainer = container;
 
-		bus.addListener(FTab::initExternal);
+		bus.addListener(FactoryTab::initExternal);
 		bus.addListener((RegisterEvent event) -> {
-			if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB) FTab.init(BuiltInRegistries.CREATIVE_MODE_TAB);
+			if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB) FactoryTab.init(BuiltInRegistries.CREATIVE_MODE_TAB);
 		});
 
 		register();
@@ -44,11 +44,11 @@ public abstract class FactoryBase implements Factory {
 	private void register () {
 		var bus = getEventBus();
 
-		FBlocks.REGISTRY.register(bus);
-		FItems.REGISTRY.register(bus);
-		FBlockEntities.REGISTRY.register(bus);
-		FSounds.REGISTRY.register(bus);
-		bus.addListener(FCapabilities::register);
+		FactoryBlocks.REGISTRY.register(bus);
+		FactoryItems.REGISTRY.register(bus);
+		FactoryBlockEntities.REGISTRY.register(bus);
+		FactorySounds.REGISTRY.register(bus);
+		bus.addListener(FactoryCapabilities::register);
 	}
 
 	@Override

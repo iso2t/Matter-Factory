@@ -1,7 +1,7 @@
 package matterfactory.client;
 
 import matterfactory.client.renderer.blockentity.PowerCableRenderer;
-import matterfactory.common.registries.FBlockEntities;
+import matterfactory.common.registries.FactoryBlockEntities;
 import matterfactory.core.Factory;
 import matterfactory.core.FactoryBase;
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,7 @@ public class FactoryClient extends FactoryBase {
 	}
 
 	private void registerRenderers (EntityRenderersEvent.RegisterRenderers event) {
-		event.registerBlockEntityRenderer(FBlockEntities.POWER_CABLE.get(), PowerCableRenderer::new);
+		event.registerBlockEntityRenderer(FactoryBlockEntities.POWER_CABLE.get(), PowerCableRenderer::new);
 	}
 
 	@Override

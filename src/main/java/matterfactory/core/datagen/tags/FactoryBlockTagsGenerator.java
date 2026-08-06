@@ -1,27 +1,26 @@
 package matterfactory.core.datagen.tags;
 
-import matterfactory.common.registries.FBlocks;
+import matterfactory.common.registries.FactoryBlocks;
 import matterfactory.core.datagen.util.IAxe;
 import matterfactory.core.datagen.util.IPickaxe;
 import matterfactory.core.datagen.util.IShovel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class FBlockTagsGenerator extends BlockTagsProvider {
+public class FactoryBlockTagsGenerator extends BlockTagsProvider {
 
-	public FBlockTagsGenerator (PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+	public FactoryBlockTagsGenerator (PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, lookupProvider, matterfactory.core.Factory.MODID);
 	}
 
 	@Override
 	protected void addTags (HolderLookup.@NonNull Provider provider) {
-		for (var block : FBlocks.getBlocks()) {
+		for (var block : FactoryBlocks.getBlocks()) {
 			var key = block.block().getKey();
 			if (block.getBlock() instanceof IPickaxe pickaxe) {
 				this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(key);

@@ -1,7 +1,7 @@
 package matterfactory.common.item.tool;
 
 import matterfactory.common.item.BaseItem;
-import matterfactory.common.registries.FSounds;
+import matterfactory.common.registries.FactorySounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -26,7 +26,7 @@ public class WrenchItem extends BaseItem {
 		if (!(levelReader instanceof Level level)) return InteractionResult.SUCCESS;
 		if (!(stack.getItem() instanceof WrenchItem)) return InteractionResult.SUCCESS;
 
-		if (play) level.playSound(player, pos, FSounds.WRENCH_USE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+		if (play) level.playSound(player, pos, FactorySounds.WRENCH_USE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 
 		return InteractionResult.SUCCESS;
 	}

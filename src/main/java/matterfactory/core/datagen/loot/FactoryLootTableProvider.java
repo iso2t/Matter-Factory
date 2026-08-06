@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class FLootTableProvider extends LootTableProvider {
+public class FactoryLootTableProvider extends LootTableProvider {
 	private static final List<SubProviderEntry> SUB_PROVIDERS = List.of(new SubProviderEntry(DropProvider::new, LootContextParamSets.BLOCK));
 
-	public FLootTableProvider (PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+	public FactoryLootTableProvider (PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, Set.of(), SUB_PROVIDERS, registries);
 	}
 

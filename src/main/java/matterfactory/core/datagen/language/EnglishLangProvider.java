@@ -1,7 +1,7 @@
 package matterfactory.core.datagen.language;
 
-import matterfactory.common.registries.FBlocks;
-import matterfactory.common.registries.FItems;
+import matterfactory.common.registries.FactoryBlocks;
+import matterfactory.common.registries.FactoryItems;
 import net.minecraft.data.DataGenerator;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -17,12 +17,12 @@ public class EnglishLangProvider extends LanguageProvider {
 		addSubtitles();
 
 		items:
-		for (var item : FItems.getItems()) {
+		for (var item : FactoryItems.getItems()) {
 			add(item.asItem(), item.getEnglishName());
 		}
 
 		blocks:
-		for (var block : FBlocks.getBlocks()) {
+		for (var block : FactoryBlocks.getBlocks()) {
 			add(block.getBlock(), block.getEnglishName());
 		}
 	}
