@@ -90,7 +90,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
 		}
 
-		return state.setValue(getProperty(direction), canConnectTo(level, neighborPos, neighborState));
+		return state.setValue(getConnectionProperty(direction), canConnectTo(level, pos, direction, neighborPos, neighborState));
 	}
 
 	@Override
@@ -112,20 +112,20 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	 * @param neighborState the block state of the neighboring block to check connectivity
 	 * @return true if this block can connect to the neighboring block, false otherwise
 	 */
-	public abstract boolean canConnectTo (LevelReader level, BlockPos neighborPos, BlockState neighborState);
+	public abstract boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState);
 
 	private BlockState getConnectionState (LevelReader level, BlockPos pos, BlockState state) {
 		for (var direction : Direction.values()) {
 			var neighborPos = pos.relative(direction);
 			var neighborState = level.getBlockState(neighborPos);
 
-			state = state.setValue(getProperty(direction), canConnectTo(level, neighborPos, neighborState));
+			state = state.setValue(getConnectionProperty(direction), canConnectTo(level, pos, direction, neighborPos, neighborState));
 		}
 
 		return state;
 	}
 
-	private static BooleanProperty getProperty (Direction direction) {
+	public static BooleanProperty getConnectionProperty (Direction direction) {
 		return switch (direction) {
 			case DOWN -> DOWN;
 			case UP -> UP;

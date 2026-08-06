@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import lombok.Getter;
 import matterfactory.Tier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelReader;
@@ -30,7 +31,7 @@ public class FluidPipe extends CableBlock {
 	}
 
 	@Override
-	public boolean canConnectTo (LevelReader level, BlockPos neighborPos, BlockState neighborState) {
+	public boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
 		return neighborState.getBlock() instanceof FluidPipe;
 	}
 
