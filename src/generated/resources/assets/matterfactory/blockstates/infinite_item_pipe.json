@@ -3,6 +3,117 @@
     {
       "apply": {
         "model": "matterfactory:block/infinite_item_pipe_center"
+      },
+      "when": {
+        "AND": [
+          {
+            "OR": [
+              {
+                "north": "false"
+              },
+              {
+                "south": "false"
+              },
+              {
+                "east": "true"
+              },
+              {
+                "west": "true"
+              },
+              {
+                "up": "true"
+              },
+              {
+                "down": "true"
+              }
+            ]
+          },
+          {
+            "OR": [
+              {
+                "east": "false"
+              },
+              {
+                "west": "false"
+              },
+              {
+                "north": "true"
+              },
+              {
+                "south": "true"
+              },
+              {
+                "up": "true"
+              },
+              {
+                "down": "true"
+              }
+            ]
+          },
+          {
+            "OR": [
+              {
+                "up": "false"
+              },
+              {
+                "down": "false"
+              },
+              {
+                "north": "true"
+              },
+              {
+                "south": "true"
+              },
+              {
+                "east": "true"
+              },
+              {
+                "west": "true"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "matterfactory:block/infinite_item_pipe_straight"
+      },
+      "when": {
+        "down": "false",
+        "east": "false",
+        "north": "true",
+        "south": "true",
+        "up": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "matterfactory:block/infinite_item_pipe_straight",
+        "y": 90
+      },
+      "when": {
+        "down": "false",
+        "east": "true",
+        "north": "false",
+        "south": "false",
+        "up": "false",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "matterfactory:block/infinite_item_pipe_straight",
+        "x": 90
+      },
+      "when": {
+        "down": "true",
+        "east": "false",
+        "north": "false",
+        "south": "false",
+        "up": "true",
+        "west": "false"
       }
     },
     {
@@ -10,7 +121,81 @@
         "model": "matterfactory:block/infinite_item_pipe_arm"
       },
       "when": {
-        "north": "true"
+        "AND": [
+          {
+            "north": "true"
+          },
+          {
+            "AND": [
+              {
+                "OR": [
+                  {
+                    "north": "false"
+                  },
+                  {
+                    "south": "false"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "east": "false"
+                  },
+                  {
+                    "west": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "up": "false"
+                  },
+                  {
+                    "down": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -19,7 +204,81 @@
         "y": 90
       },
       "when": {
-        "east": "true"
+        "AND": [
+          {
+            "east": "true"
+          },
+          {
+            "AND": [
+              {
+                "OR": [
+                  {
+                    "north": "false"
+                  },
+                  {
+                    "south": "false"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "east": "false"
+                  },
+                  {
+                    "west": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "up": "false"
+                  },
+                  {
+                    "down": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -28,7 +287,81 @@
         "y": 180
       },
       "when": {
-        "south": "true"
+        "AND": [
+          {
+            "south": "true"
+          },
+          {
+            "AND": [
+              {
+                "OR": [
+                  {
+                    "north": "false"
+                  },
+                  {
+                    "south": "false"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "east": "false"
+                  },
+                  {
+                    "west": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "up": "false"
+                  },
+                  {
+                    "down": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -37,7 +370,81 @@
         "y": 270
       },
       "when": {
-        "west": "true"
+        "AND": [
+          {
+            "west": "true"
+          },
+          {
+            "AND": [
+              {
+                "OR": [
+                  {
+                    "north": "false"
+                  },
+                  {
+                    "south": "false"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "east": "false"
+                  },
+                  {
+                    "west": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "up": "false"
+                  },
+                  {
+                    "down": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -46,7 +453,81 @@
         "x": 270
       },
       "when": {
-        "up": "true"
+        "AND": [
+          {
+            "up": "true"
+          },
+          {
+            "AND": [
+              {
+                "OR": [
+                  {
+                    "north": "false"
+                  },
+                  {
+                    "south": "false"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "east": "false"
+                  },
+                  {
+                    "west": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "up": "false"
+                  },
+                  {
+                    "down": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -55,7 +536,81 @@
         "x": 90
       },
       "when": {
-        "down": "true"
+        "AND": [
+          {
+            "down": "true"
+          },
+          {
+            "AND": [
+              {
+                "OR": [
+                  {
+                    "north": "false"
+                  },
+                  {
+                    "south": "false"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "east": "false"
+                  },
+                  {
+                    "west": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "up": "true"
+                  },
+                  {
+                    "down": "true"
+                  }
+                ]
+              },
+              {
+                "OR": [
+                  {
+                    "up": "false"
+                  },
+                  {
+                    "down": "false"
+                  },
+                  {
+                    "north": "true"
+                  },
+                  {
+                    "south": "true"
+                  },
+                  {
+                    "east": "true"
+                  },
+                  {
+                    "west": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     }
   ]
