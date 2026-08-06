@@ -22,6 +22,7 @@ public class FactoryClient extends FactoryBase {
 
 	private void registerRenderers (EntityRenderersEvent.RegisterRenderers event) {
 		event.registerBlockEntityRenderer(FactoryBlockEntities.POWER_CABLE.get(), CableModeRenderer::new);
+		event.registerBlockEntityRenderer(FactoryBlockEntities.FLUID_PIPE.get(), CableModeRenderer::new);
 		event.registerBlockEntityRenderer(FactoryBlockEntities.ITEM_PIPE.get(), CableModeRenderer::new);
 	}
 

@@ -3,6 +3,7 @@ package matterfactory.common.block.cable;
 import com.mojang.serialization.MapCodec;
 import lombok.Getter;
 import matterfactory.common.block.entity.ItemPipeBlockEntity;
+import matterfactory.core.Factory;
 import matterfactory.core.Tier;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 
 	public static final MapCodec<ItemPipe> CODEC = simpleCodec(properties -> new ItemPipe(properties, Tier.BASIC));
-	private static final Identifier ITEM_PIPE_MODEL_PARENT = Identifier.fromNamespaceAndPath("matterfactory", "block/item_pipe_translucent");
+	private static final Identifier ITEM_PIPE_MODEL_PARENT = Factory.get("block/item_pipe_translucent");
 
 	@Getter
 	private final Tier tier;
