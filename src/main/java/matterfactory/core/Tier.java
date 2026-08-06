@@ -6,10 +6,10 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public enum Tier {
 
-	BASIC(8_192, 256, 1024, 1024, 1),
-	ADVANCED(65_536, 4_096, 2048, 2048, 16),
-	ELITE(524_288, 32_768, 4_096, 4_096, 64),
-	ULTIMATE(4_194_304, 262_144, 8_192, 8_192, 128),
+	BASIC(16_384, 512, 1_024, 256, 1),
+	ADVANCED(65_536, 2_048, 4_096, 1_024, 4),
+	ELITE(262_144, 8_192, 16_384, 4_096, 16),
+	ULTIMATE(1_048_576, 32_768, 65_536, 16_384, 64),
 	INFINITE(Integer.MAX_VALUE, Integer.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Integer.MAX_VALUE);
 
 	@Getter
