@@ -28,6 +28,7 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 	private static final int EXPORT_COLOR = 0xFFFF7418;
 	private static final float ITEM_TRAVEL_DISTANCE = 0.5F;
 	private static final float ITEM_SCALE = 0.5F;
+	private static final float BLOCK_SCALE = 0.75F;
 
 	private final ItemModelResolver itemModelResolver;
 
@@ -160,41 +161,40 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 	}
 
 	private static void renderModeBand (PoseStack.Pose pose, VertexConsumer consumer, Direction direction, CableBlock.CableRenderGeometry geometry, int color) {
-		float minX = geometry.crossMin();
-		float minY = geometry.crossMin();
-		float minZ = geometry.crossMin();
-		float maxX = geometry.crossMax();
-		float maxY = geometry.crossMax();
-		float maxZ = geometry.crossMax();
+		float outerMin = geometry.crossMin() - 0.25F / 16.0F;
+		float outerMax = geometry.crossMax() + 0.25F / 16.0F;
+		float innerMin = geometry.crossMin() + 1.0F / 16.0F;
+		float innerMax = geometry.crossMax() - 1.0F / 16.0F;
 
 		switch (direction) {
-			case DOWN -> {
-				minY = geometry.bandMin();
-				maxY = geometry.bandMax();
-			}
-			case UP -> {
-				minY = 1.0F - geometry.bandMax();
-				maxY = 1.0F - geometry.bandMin();
-			}
-			case NORTH -> {
-				minZ = geometry.bandMin();
-				maxZ = geometry.bandMax();
-			}
-			case SOUTH -> {
-				minZ = 1.0F - geometry.bandMax();
-				maxZ = 1.0F - geometry.bandMin();
-			}
-			case WEST -> {
-				minX = geometry.bandMin();
-				maxX = geometry.bandMax();
-			}
-			case EAST -> {
-				minX = 1.0F - geometry.bandMax();
-				maxX = 1.0F - geometry.bandMin();
-			}
+			case DOWN -> renderVerticalModeFrame(pose, consumer, geometry.bandMin(), geometry.bandMax(), outerMin, outerMax, innerMin, innerMax, color);
+			case UP -> renderVerticalModeFrame(pose, consumer, 1.0F - geometry.bandMax(), 1.0F - geometry.bandMin(), outerMin, outerMax, innerMin, innerMax, color);
+			case NORTH -> renderNorthSouthModeFrame(pose, consumer, geometry.bandMin(), geometry.bandMax(), outerMin, outerMax, innerMin, innerMax, color);
+			case SOUTH -> renderNorthSouthModeFrame(pose, consumer, 1.0F - geometry.bandMax(), 1.0F - geometry.bandMin(), outerMin, outerMax, innerMin, innerMax, color);
+			case WEST -> renderEastWestModeFrame(pose, consumer, geometry.bandMin(), geometry.bandMax(), outerMin, outerMax, innerMin, innerMax, color);
+			case EAST -> renderEastWestModeFrame(pose, consumer, 1.0F - geometry.bandMax(), 1.0F - geometry.bandMin(), outerMin, outerMax, innerMin, innerMax, color);
 		}
+	}
 
-		renderBox(pose, consumer, minX, minY, minZ, maxX, maxY, maxZ, color);
+	private static void renderVerticalModeFrame (PoseStack.Pose pose, VertexConsumer consumer, float minY, float maxY, float outerMin, float outerMax, float innerMin, float innerMax, int color) {
+		renderBox(pose, consumer, outerMin, minY, outerMin, outerMax, maxY, innerMin, color);
+		renderBox(pose, consumer, outerMin, minY, innerMax, outerMax, maxY, outerMax, color);
+		renderBox(pose, consumer, outerMin, minY, innerMin, innerMin, maxY, innerMax, color);
+		renderBox(pose, consumer, innerMax, minY, innerMin, outerMax, maxY, innerMax, color);
+	}
+
+	private static void renderNorthSouthModeFrame (PoseStack.Pose pose, VertexConsumer consumer, float minZ, float maxZ, float outerMin, float outerMax, float innerMin, float innerMax, int color) {
+		renderBox(pose, consumer, outerMin, outerMin, minZ, outerMax, innerMin, maxZ, color);
+		renderBox(pose, consumer, outerMin, innerMax, minZ, outerMax, outerMax, maxZ, color);
+		renderBox(pose, consumer, outerMin, innerMin, minZ, innerMin, innerMax, maxZ, color);
+		renderBox(pose, consumer, innerMax, innerMin, minZ, outerMax, innerMax, maxZ, color);
+	}
+
+	private static void renderEastWestModeFrame (PoseStack.Pose pose, VertexConsumer consumer, float minX, float maxX, float outerMin, float outerMax, float innerMin, float innerMax, int color) {
+		renderBox(pose, consumer, minX, outerMin, outerMin, maxX, innerMin, outerMax, color);
+		renderBox(pose, consumer, minX, innerMax, outerMin, maxX, outerMax, outerMax, color);
+		renderBox(pose, consumer, minX, innerMin, outerMin, maxX, innerMax, innerMin, color);
+		renderBox(pose, consumer, minX, innerMin, innerMax, maxX, innerMax, outerMax, color);
 	}
 
 	private static void renderBox (PoseStack.Pose pose, VertexConsumer consumer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int color) {

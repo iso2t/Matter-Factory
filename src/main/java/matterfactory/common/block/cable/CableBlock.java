@@ -159,10 +159,10 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			}
 
 			level.invalidateCapabilities(pos);
-			return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, true);
+			return InteractionResult.SUCCESS;
 		}
 
-		return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, false);
+		return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, true); // TODO: We are passing true, even if nothing happens...
 	}
 
 	@Override
