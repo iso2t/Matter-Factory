@@ -51,7 +51,7 @@ public class PowerCableBlockEntity extends BaseBlockEntity {
 	}
 
 	private int getTransferRate () {
-		return getTier(getBlockState()).getTransferRate();
+		return getTier(getBlockState()).getEnergyTransferRate();
 	}
 
 	private record CableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoint> sources, List<EnergyEndpoint> sinks, BlockPos controller, int transferLimit) {

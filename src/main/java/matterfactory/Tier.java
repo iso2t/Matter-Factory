@@ -6,29 +6,29 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public enum Tier {
 
-	BASIC(8192, 1024),
-	ADVANCED(65536, 8192),
-	ELITE(524288, 65536),
-	ULTIMATE(4194304, 524288),
+	BASIC(8_192, 256),
+	ADVANCED(65_536, 4_096),
+	ELITE(524_288, 32_768),
+	ULTIMATE(4_194_304, 262_144),
 	INFINITE(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
 	@Getter
 	final BlockBehaviour.Properties blockProperties;
 
 	@Getter
-	final int capacity;
+	final int energyCapacity;
 
 	@Getter
-	final int transferRate;
+	final int energyTransferRate;
 
-	Tier (BlockBehaviour.Properties blockProperties, int capacity, int transferRate) {
+	Tier (BlockBehaviour.Properties blockProperties, int energyCapacity, int energyTransferRate) {
 		this.blockProperties = blockProperties;
-		this.capacity = capacity;
-		this.transferRate = transferRate;
+		this.energyCapacity = energyCapacity;
+		this.energyTransferRate = energyTransferRate;
 	}
 
-	Tier (int capacity, int transferRate) {
-		this(BlockBehaviour.Properties.of().requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.IRON), capacity, transferRate);
+	Tier (int energyCapacity, int energyTransferRate) {
+		this(BlockBehaviour.Properties.of().requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.IRON), energyCapacity, energyTransferRate);
 	}
 
 }
