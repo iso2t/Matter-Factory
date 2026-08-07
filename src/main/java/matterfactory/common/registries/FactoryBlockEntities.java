@@ -46,7 +46,7 @@ public class FactoryBlockEntities {
 			typeHolder.setPlain(type);
 
 			for (var block : blocks) {
-				((B) block).setBlockEntity(entityClass, type);
+				block.setBlockEntity(entityClass, type);
 			}
 
 			return type;

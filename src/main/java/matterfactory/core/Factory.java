@@ -13,6 +13,7 @@ public interface Factory {
 
 	String MODID = "matterfactory";
 	String NAME  = "Matter Factory";
+	String POWER_ABBREVIATION = "FE";
 
 	static Factory instance () {
 		return FactoryBase.INSTANCE;
