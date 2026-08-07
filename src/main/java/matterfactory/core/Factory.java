@@ -15,7 +15,7 @@ public interface Factory {
 	String NAME  = "Matter Factory";
 	String POWER_ABBREVIATION = "FE";
 
-	static Factory instance () {
+	static Factory getInstance () {
 		return FactoryBase.INSTANCE;
 	}
 

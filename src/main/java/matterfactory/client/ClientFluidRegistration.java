@@ -3,7 +3,9 @@ package matterfactory.client;
 import matterfactory.common.definition.FluidDefinition;
 import matterfactory.common.fluid.BaseFluid;
 import matterfactory.common.registries.FactoryFluids;
+import matterfactory.core.Factory;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.fog.FogData;
@@ -19,8 +21,8 @@ import org.jspecify.annotations.Nullable;
 
 final class ClientFluidRegistration {
 
-	private static final float FOG_START = 1.0F;
-	private static final float FOG_END   = 6.0F;
+	private static final float FOG_COLOR_BRIGHTNESS_DARK = 0.2F;
+	private static final float FOG_COLOR_BRIGHTNESS_LIGHT = 0.6F;
 
 	private ClientFluidRegistration () {
 	}
@@ -40,7 +42,7 @@ final class ClientFluidRegistration {
 						new Material(fluid.getStillTexture()),
 						new Material(fluid.getFlowingTexture()),
 						fluid.isOpaque() ? null : new Material(fluid.getOverlayTexture()),
-						state -> fluid.getTintColor()
+						_ -> fluid.getTintColor()
 				);
 				event.register(model, definition.source(), definition.flowing());
 			}
@@ -48,19 +50,22 @@ final class ClientFluidRegistration {
 	}
 
 	private static IClientFluidTypeExtensions createExtension (BaseFluid fluid) {
+		var brightness = fluid.isOpaque()? FOG_COLOR_BRIGHTNESS_DARK : FOG_COLOR_BRIGHTNESS_LIGHT;
+
 		Vector3f fogColor = new Vector3f(fluid.getFogColor());
 		return new IClientFluidTypeExtensions() {
 			@Override
 			public void modifyFogColor (@NonNull Camera camera, float partialTick, @NonNull ClientLevel level, int renderDistance, float darkenWorldAmount, @NonNull Vector4f fluidFogColor) {
-				fluidFogColor.set(fogColor.x, fogColor.y, fogColor.z, fluidFogColor.w);
+				fluidFogColor.set(fogColor.x * brightness, fogColor.y * brightness, fogColor.z * brightness, fluidFogColor.w);
 			}
 
 			@Override
-			public void modifyFogRender (@NonNull Camera camera, @Nullable FogEnvironment environment, float renderDistance, float partialTick, FogData fogData) {
-				fogData.environmentalStart = FOG_START;
-				fogData.environmentalEnd = FOG_END;
-				fogData.skyEnd = FOG_END;
-				fogData.cloudEnd = FOG_END;
+			public void modifyFogRender (@NonNull Camera camera, @Nullable FogEnvironment environment, float renderDistance, float partialTick, @NonNull FogData fogData) {
+				environment.setupFog(fogData, camera, (ClientLevel) Factory.getInstance().getClientLevel(), partialTick, DeltaTracker.ZERO);
+				fogData.environmentalStart = fluid.getFogStart();
+				fogData.environmentalEnd = fluid.getFogEnd();
+				fogData.skyEnd = fluid.getFogEnd();
+				fogData.cloudEnd = fluid.getFogEnd();
 			}
 		};
 	}
