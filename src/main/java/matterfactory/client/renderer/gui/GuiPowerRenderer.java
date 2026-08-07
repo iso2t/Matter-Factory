@@ -34,7 +34,7 @@ public class GuiPowerRenderer extends AbstractBarRenderer {
 	public List<Component> getTooltips () {
 		int stored = getEnergyStored().getAsInt();
 		int cap = getEnergyCapacity().getAsInt();
-		return List.of(Component.literal(stored + " / " + cap + " %s".formatted(Factory.POWER_ABBREVIATION)));
+		return List.of(Component.literal(stored + " / " + cap + " %s".formatted(Factory.POWER_UNIT.getAbbreviation())));
 	}
 
 	@Override

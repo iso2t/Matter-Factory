@@ -1,5 +1,6 @@
 package matterfactory.core;
 
+import matterfactory.common.energy.PowerUnit;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,8 +13,8 @@ import java.util.Collection;
 public interface Factory {
 
 	String MODID = "matterfactory";
-	String NAME  = "Matter Factory";
-	String POWER_ABBREVIATION = "FE";
+	String    NAME       = "Matter Factory";
+	PowerUnit POWER_UNIT = PowerUnit.FORGE_ENERGY;
 
 	static Factory getInstance () {
 		return FactoryBase.INSTANCE;
