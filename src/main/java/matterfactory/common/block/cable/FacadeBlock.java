@@ -186,14 +186,7 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 			return Shapes.block();
 		}
 
-		BlockState coveredState = facade.getCoveredState();
-		VoxelShape shape = cable.getCableShape().core();
-		for (Direction direction : Direction.values()) {
-			if (coveredState.getValue(CableBlock.getConnectionProperty(direction))) {
-				shape = Shapes.or(shape, CableBlock.getMaintenanceArmShape(direction, cable));
-			}
-		}
-		return shape.optimize();
+		return CableBlock.getMaintenanceShape(facade.getCoveredState(), cable);
 	}
 
 	@Override

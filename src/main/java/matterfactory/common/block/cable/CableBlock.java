@@ -268,6 +268,16 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		};
 	}
 
+	public static VoxelShape getMaintenanceShape (BlockState state, CableBlock block) {
+		VoxelShape shape = block.getCableShape().core();
+		for (Direction direction : Direction.values()) {
+			if (state.getValue(getConnectionProperty(direction))) {
+				shape = Shapes.or(shape, getMaintenanceArmShape(direction, block));
+			}
+		}
+		return shape.optimize();
+	}
+
 	public static boolean isHoldingWrench (CollisionContext context) {
 		return context instanceof EntityCollisionContext entityContext
 		       && entityContext.getEntity() instanceof Player player
