@@ -1,0 +1,3 @@
+files:
+  - source: src/generated/resources/assets/matterfactory/lang
+    translation: src/java/resources/assets/matterfactory/lang/%two_letters_code%
