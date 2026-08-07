@@ -347,11 +347,6 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 		}
 	}
 
-	public static int saturatingAdd (int left, int right) {
-		long result = (long) left + right;
-		return result > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
-	}
-
 	public record VisualItemTransfer(ItemStack item, Direction from, Direction to, long startGameTime, int duration, int itemSpacing) {
 
 		public VisualItemTransfer {

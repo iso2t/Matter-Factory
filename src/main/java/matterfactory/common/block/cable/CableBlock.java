@@ -143,26 +143,27 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			return InteractionResult.PASS;
 		}
 
-		if (!level.isClientSide()) {
-			Direction direction = targetedSide.get();
-			if (player.isShiftKeyDown()) {
-				if (!supportsManualDisconnect(level, pos, state, direction)) {
-					return InteractionResult.PASS;
-				}
+		Direction direction = targetedSide.get();
+		boolean canModify = player.isShiftKeyDown()
+				? supportsManualDisconnect(level, pos, state, direction)
+				: supportsConnectionModes(level, pos, state, direction);
+		if (!canModify) {
+			return InteractionResult.PASS;
+		}
 
+		if (!level.isClientSide()) {
+			if (player.isShiftKeyDown()) {
 				BlockState updatedState = toggleConnection(level, pos, state, direction);
 				level.setBlock(pos, updatedState, Block.UPDATE_ALL);
-			} else if (supportsConnectionModes(level, pos, state, direction)) {
-				cycleConnectionMode(level, pos, state, direction);
 			} else {
-				return InteractionResult.PASS;
+				cycleConnectionMode(level, pos, state, direction);
 			}
 
 			level.invalidateCapabilities(pos);
 			return InteractionResult.SUCCESS;
 		}
 
-		return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, true); // TODO: We are passing true, even if nothing happens...
+		return wrenchItem.successfulWrenchAction(player, itemStack, level, pos, true);
 	}
 
 	@Override

@@ -12,9 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -46,35 +44,8 @@ public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 	}
 
 	@Override
-	public boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
-		if (neighborState.getBlock() instanceof ItemPipe) {
-			return !(level instanceof BlockGetter blockGetter) || !(getBlockEntity(blockGetter, neighborPos) instanceof ItemPipeBlockEntity neighborPipe) || !neighborPipe.isManuallyDisconnected(direction.getOpposite());
-		}
-
-		if (level instanceof Level realLevel) {
-			var blockEntity = realLevel.getBlockEntity(neighborPos);
-			return realLevel.getCapability(Capabilities.Item.BLOCK, neighborPos, neighborState, blockEntity, direction.getOpposite()) != null
-					|| realLevel.getCapability(Capabilities.Item.BLOCK, neighborPos, neighborState, blockEntity, null) != null;
-		}
-
-		return false;
-	}
-
-	@Override
-	protected boolean supportsConnectionModes (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
-		if (!state.getValue(getConnectionProperty(direction))) {
-			return false;
-		}
-
-		BlockPos neighborPos = pos.relative(direction);
-		BlockState neighborState = level.getBlockState(neighborPos);
-		if (neighborState.getBlock() instanceof ItemPipe || !(level instanceof Level realLevel)) {
-			return false;
-		}
-
-		var blockEntity = realLevel.getBlockEntity(neighborPos);
-		return realLevel.getCapability(Capabilities.Item.BLOCK, neighborPos, neighborState, blockEntity, direction.getOpposite()) != null
-				|| realLevel.getCapability(Capabilities.Item.BLOCK, neighborPos, neighborState, blockEntity, null) != null;
+	protected boolean hasEndpointCapability (Level level, BlockPos pos, BlockState state, @Nullable Direction side) {
+		return level.getCapability(Capabilities.Item.BLOCK, pos, state, level.getBlockEntity(pos), side) != null;
 	}
 
 	@Override

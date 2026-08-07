@@ -153,9 +153,4 @@ public class PowerCableBlockEntity extends BaseCableBlockEntity {
 		return handler.insert(amount, transaction);
 	}
 
-	public static int saturatingAdd (int left, int right) {
-		long result = (long) left + right;
-		return result > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
-	}
-
 }

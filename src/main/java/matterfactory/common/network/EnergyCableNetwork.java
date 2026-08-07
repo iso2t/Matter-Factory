@@ -13,7 +13,9 @@ import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public record EnergyCableNetwork(List<PowerCableBlockEntity> cables, List<EnergyEndpoint> sources, List<EnergyEndpoint> sinks, BlockPos controller, int transferLimit) {
 
@@ -22,36 +24,19 @@ public record EnergyCableNetwork(List<PowerCableBlockEntity> cables, List<Energy
 	}
 
 	public static EnergyCableNetwork discover (Level level, BlockPos origin, @Nullable TransactionContext transaction) {
-		Set<BlockPos> visited = new HashSet<>();
-		ArrayDeque<BlockPos> queue = new ArrayDeque<>();
-		List<PowerCableBlockEntity> cables = new ArrayList<>();
+		List<PowerCableBlockEntity> cables = CableNetwork.discover(level, origin, PowerCable.class, PowerCableBlockEntity.class);
 		List<EnergyEndpoint> endpoints = new ArrayList<>();
-
-		visited.add(origin.immutable());
-		queue.add(origin.immutable());
-
-		while (!queue.isEmpty()) {
-			var cablePos = queue.removeFirst();
-			var cableState = level.getBlockState(cablePos);
-			if (!(cableState.getBlock() instanceof PowerCable) || !(level.getBlockEntity(cablePos) instanceof PowerCableBlockEntity cable)) {
-				continue;
-			}
-
-			cables.add(cable);
-
-			for (var direction : Direction.values()) {
+		for (PowerCableBlockEntity cable : cables) {
+			BlockPos cablePos = cable.getBlockPos();
+			BlockState cableState = cable.getBlockState();
+			for (Direction direction : Direction.values()) {
 				if (!cableState.getValue(CableBlock.getConnectionProperty(direction))) {
 					continue;
 				}
 
-				var neighborPos = cablePos.relative(direction);
-				var neighborState = level.getBlockState(neighborPos);
-				if (neighborState.getBlock() instanceof PowerCable) {
-					var immutableNeighbor = neighborPos.immutable();
-					if (visited.add(immutableNeighbor)) {
-						queue.add(immutableNeighbor);
-					}
-				} else {
+				BlockPos neighborPos = cablePos.relative(direction);
+				BlockState neighborState = level.getBlockState(neighborPos);
+				if (!(neighborState.getBlock() instanceof PowerCable)) {
 					getEndpoint(level, cable, direction, neighborPos, neighborState, direction.getOpposite()).ifPresent(endpoints::add);
 				}
 			}
@@ -76,8 +61,8 @@ public record EnergyCableNetwork(List<PowerCableBlockEntity> cables, List<Energy
 			}
 		}
 
-		var controller = cables.stream().map(PowerCableBlockEntity::getBlockPos).min(Comparator.comparingLong(BlockPos::asLong)).orElse(origin).immutable();
-		var transferLimit = cables.stream().mapToInt(PowerCableBlockEntity::getTransferRate).reduce(0, PowerCableBlockEntity::saturatingAdd);
+		BlockPos controller = CableNetwork.controller(cables, origin);
+		int transferLimit = CableNetwork.totalTransferRate(cables, PowerCableBlockEntity::getTransferRate);
 
 		return new EnergyCableNetwork(cables, sources, sinks, controller, transferLimit);
 	}
