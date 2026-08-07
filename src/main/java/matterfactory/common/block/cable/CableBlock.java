@@ -32,7 +32,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
@@ -58,7 +60,10 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	private final VoxelShape[] SHAPES = createShapes();
+	private static final double MAINTENANCE_HITBOX_PADDING = 2.0 / 16.0;
+
+	private final VoxelShape[] SHAPES                    = createShapes();
+	private final VoxelShape[] MAINTENANCE_SHAPES        = createMaintenanceShapes();
 
 	public CableBlock (Properties properties) {
 		super(properties);
@@ -101,7 +106,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	@Override
 	protected @NonNull VoxelShape getShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
-		return SHAPES[getShapeIndex(state)];
+		return (isHoldingWrench(context) ? MAINTENANCE_SHAPES : SHAPES)[getShapeIndex(state)];
 	}
 
 	@Override
@@ -217,9 +222,13 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	public static Optional<Direction> getTargetedSide (BlockState state, BlockPos pos, BlockHitResult hit) {
 		if (!(state.getBlock() instanceof CableBlock cableBlock)) return Optional.empty();
 		var localHit = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
+		Direction hitFace = hit.getDirection();
+		if (state.getValue(getConnectionProperty(hitFace)) && getMaintenanceArmShape(hitFace, cableBlock).bounds().inflate(1.0E-5).contains(localHit)) {
+			return Optional.of(hitFace);
+		}
 
 		for (var direction : Direction.values()) {
-			if (state.getValue(getConnectionProperty(direction)) && getArmShape(direction, cableBlock).bounds().inflate(1.0E-5).contains(localHit)) {
+			if (state.getValue(getConnectionProperty(direction)) && getMaintenanceArmShape(direction, cableBlock).bounds().inflate(1.0E-5).contains(localHit)) {
 				return Optional.of(direction);
 			}
 		}
@@ -250,6 +259,21 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		};
 	}
 
+	public static VoxelShape getMaintenanceArmShape (Direction direction, CableBlock block) {
+		AABB bounds = getArmShape(direction, block).bounds();
+		return switch (direction) {
+			case DOWN, UP -> Shapes.create(new AABB(bounds.minX - MAINTENANCE_HITBOX_PADDING, bounds.minY, bounds.minZ - MAINTENANCE_HITBOX_PADDING, bounds.maxX + MAINTENANCE_HITBOX_PADDING, bounds.maxY, bounds.maxZ + MAINTENANCE_HITBOX_PADDING));
+			case NORTH, SOUTH -> Shapes.create(new AABB(bounds.minX - MAINTENANCE_HITBOX_PADDING, bounds.minY - MAINTENANCE_HITBOX_PADDING, bounds.minZ, bounds.maxX + MAINTENANCE_HITBOX_PADDING, bounds.maxY + MAINTENANCE_HITBOX_PADDING, bounds.maxZ));
+			case WEST, EAST -> Shapes.create(new AABB(bounds.minX, bounds.minY - MAINTENANCE_HITBOX_PADDING, bounds.minZ - MAINTENANCE_HITBOX_PADDING, bounds.maxX, bounds.maxY + MAINTENANCE_HITBOX_PADDING, bounds.maxZ + MAINTENANCE_HITBOX_PADDING));
+		};
+	}
+
+	public static boolean isHoldingWrench (CollisionContext context) {
+		return context instanceof EntityCollisionContext entityContext
+		       && entityContext.getEntity() instanceof Player player
+		       && player.getMainHandItem().getItem() instanceof WrenchItem;
+	}
+
 	private static int getShapeIndex (BlockState state) {
 		int index = 0;
 
@@ -273,6 +297,23 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, getCableShape().south());
 			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, getCableShape().west());
 			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, getCableShape().east());
+			shapes[index] = shape.optimize();
+		}
+
+		return shapes;
+	}
+
+	private VoxelShape[] createMaintenanceShapes () {
+		VoxelShape[] shapes = new VoxelShape[64];
+
+		for (int index = 0; index < shapes.length; index++) {
+			VoxelShape shape = getCableShape().core();
+			if ((index & 1) != 0) shape = Shapes.or(shape, getMaintenanceArmShape(Direction.DOWN, this));
+			if ((index & (1 << 1)) != 0) shape = Shapes.or(shape, getMaintenanceArmShape(Direction.UP, this));
+			if ((index & (1 << 2)) != 0) shape = Shapes.or(shape, getMaintenanceArmShape(Direction.NORTH, this));
+			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, getMaintenanceArmShape(Direction.SOUTH, this));
+			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, getMaintenanceArmShape(Direction.WEST, this));
+			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, getMaintenanceArmShape(Direction.EAST, this));
 			shapes[index] = shape.optimize();
 		}
 
