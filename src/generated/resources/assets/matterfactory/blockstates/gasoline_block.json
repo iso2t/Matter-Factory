@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "matterfactory:block/gasoline_block"
+    }
+  }
+}

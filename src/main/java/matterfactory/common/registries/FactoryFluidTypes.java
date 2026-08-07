@@ -19,6 +19,8 @@ public class FactoryFluidTypes {
 	public static final Identifier WATER_STILL   = Factory.getMinecraft("block/water_still");
 	public static final Identifier WATER_FLOWING = Factory.getMinecraft("block/water_flow");
 	public static final Identifier WATER_OVERLAY = Factory.getMinecraft("block/water_overlay");
+	public static final Identifier OPAQUE_STILL  = Factory.get("block/fluid/opaque_still");
+	public static final Identifier OPAQUE_FLOW   = Factory.get("block/fluid/opaque_flow");
 
 	public static final DeferredRegister<FluidType> REGISTRY = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, Factory.MODID);
 

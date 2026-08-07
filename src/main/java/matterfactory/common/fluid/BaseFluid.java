@@ -29,7 +29,10 @@ public class BaseFluid extends FluidType {
 	@Getter
 	private final String englishName;
 
-	public BaseFluid(String englishName, Properties properties, Identifier stillTexture, Identifier flowingTexture, Identifier overlayTexture, int tintColor, Vector3f fogColor) {
+	@Getter
+	private final boolean opaque;
+
+	public BaseFluid(String englishName, Properties properties, Identifier stillTexture, Identifier flowingTexture, Identifier overlayTexture, int tintColor, Vector3f fogColor, boolean opaque) {
 		super(properties);
 		this.englishName = englishName;
 		this.stillTexture = stillTexture;
@@ -37,6 +40,7 @@ public class BaseFluid extends FluidType {
 		this.overlayTexture = overlayTexture;
 		this.tintColor = tintColor;
 		this.fogColor = fogColor;
+		this.opaque = opaque;
 	}
 
 	@Override

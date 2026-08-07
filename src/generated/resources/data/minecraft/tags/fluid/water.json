@@ -19,6 +19,14 @@
     "matterfactory:source_ferric_chloride",
     "matterfactory:flowing_ferric_chloride",
     "matterfactory:source_aqua_regia",
-    "matterfactory:flowing_aqua_regia"
+    "matterfactory:flowing_aqua_regia",
+    "matterfactory:source_crude_oil",
+    "matterfactory:flowing_crude_oil",
+    "matterfactory:source_refined_oil",
+    "matterfactory:flowing_refined_oil",
+    "matterfactory:source_gasoline",
+    "matterfactory:flowing_gasoline",
+    "matterfactory:source_diesel",
+    "matterfactory:flowing_diesel"
   ]
 }

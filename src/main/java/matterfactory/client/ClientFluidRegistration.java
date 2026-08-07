@@ -39,7 +39,7 @@ final class ClientFluidRegistration {
 				FluidModel.Unbaked model = new FluidModel.Unbaked(
 						new Material(fluid.getStillTexture()),
 						new Material(fluid.getFlowingTexture()),
-						new Material(fluid.getOverlayTexture()),
+						fluid.isOpaque() ? null : new Material(fluid.getOverlayTexture()),
 						state -> fluid.getTintColor()
 				);
 				event.register(model, definition.source(), definition.flowing());

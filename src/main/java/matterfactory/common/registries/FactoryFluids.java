@@ -35,7 +35,7 @@ public class FactoryFluids {
 	public static final FluidDefinition HEAVY_WATER     = registerFluid("Heavy Water", 0xFF99B3FF, new Vector3f(0.5F, 0.6F, 1.0F), 1105, 1100);
 	public static final FluidDefinition DISTILLED_WATER = registerFluid("Distilled Water", 0xFF66B3FF, new Vector3f(0.4F, 0.6F, 1.0F), 1000, 1000);
 
-	// Foundational reagents for leaching, separation, neutralization, and refining.
+	// Refining fluids
 	public static final FluidDefinition SULFURIC_ACID          = registerFluid("Sulfuric Acid", 0xFFE0ED61, new Vector3f(0.8F, 0.9F, 0.4F), 1840, 1800);
 	public static final FluidDefinition HYDROCHLORIC_ACID      = registerFluid("Hydrochloric Acid", 0xFFB2E8A3, new Vector3f(0.6F, 0.9F, 0.6F), 1190, 1050);
 	public static final FluidDefinition NITRIC_ACID            = registerFluid("Nitric Acid", 0xFFECE88E, new Vector3f(0.9F, 0.9F, 0.5F), 1510, 1150);
@@ -45,16 +45,26 @@ public class FactoryFluids {
 	public static final FluidDefinition FERRIC_CHLORIDE        = registerFluid("Ferric Chloride", 0xFFD18B32, new Vector3f(0.8F, 0.5F, 0.2F), 1450, 1700);
 	public static final FluidDefinition AQUA_REGIA             = registerFluid("Aqua Regia", 0xFFF0B331, new Vector3f(0.9F, 0.6F, 0.2F), 1300, 1350);
 
+	// Petroleum
+	public static final FluidDefinition CRUDE_OIL               = registerFluid("Crude Oil", 0xFF201812, new Vector3f(0.1F, 0.08F, 0.05F), 920, 3500, true);
+	public static final FluidDefinition REFINED_OIL             = registerFluid("Refined Oil", 0xFF4D3420, new Vector3f(0.3F, 0.2F, 0.1F), 860, 1200);
+	public static final FluidDefinition GASOLINE                = registerFluid("Gasoline", 0xFFE9D36C, new Vector3f(0.9F, 0.8F, 0.3F), 740, 500);
+	public static final FluidDefinition DIESEL                  = registerFluid("Diesel", 0xFF907228, new Vector3f(0.5F, 0.35F, 0.1F), 830, 900);
+
 	public static List<FluidDefinition> getFluids () {
 		return Collections.unmodifiableList(FLUIDS);
 	}
 
 	public static FluidDefinition registerFluid (String englishName, int tintColor, Vector3f fogColor, int density, int viscosity) {
+		return registerFluid(englishName, tintColor, fogColor, density, viscosity, false);
+	}
+
+	public static FluidDefinition registerFluid (String englishName, int tintColor, Vector3f fogColor, int density, int viscosity, boolean opaque) {
 		String baseName = englishName.toLowerCase(Locale.ROOT).replace(' ', '_');
 
 		// FluidType
 		FluidType.Properties fluidProperties = FluidType.Properties.create().density(density).viscosity(viscosity).motionScale(0.014D).canPushEntity(true).canSwim(true).canDrown(true).fallDistanceModifier(0.0F);
-		Supplier<FluidType> type = FactoryFluidTypes.register(baseName, new BaseFluid(englishName, fluidProperties, FactoryFluidTypes.WATER_STILL, FactoryFluidTypes.WATER_FLOWING, FactoryFluidTypes.WATER_OVERLAY, tintColor, fogColor));
+		Supplier<FluidType> type = FactoryFluidTypes.register(baseName, new BaseFluid(englishName, fluidProperties, opaque ? FactoryFluidTypes.OPAQUE_STILL : FactoryFluidTypes.WATER_STILL, opaque ? FactoryFluidTypes.OPAQUE_FLOW : FactoryFluidTypes.WATER_FLOWING, FactoryFluidTypes.WATER_OVERLAY, tintColor, fogColor, opaque));
 
 		// Source/Flowing with forward references
 		final AtomicReference<Supplier<FlowingFluid>> sourceRef = new AtomicReference<>();
