@@ -11,4 +11,8 @@ public interface IPickaxe extends IMiningTier {
 		return BlockTags.NEEDS_STONE_TOOL;
 	}
 
+	@Override
+	default TagKey<Block> getRequiredTool () {
+		return BlockTags.MINEABLE_WITH_PICKAXE;
+	}
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "matterfactory:block/sulfuric_acid_block"
+  }
+}

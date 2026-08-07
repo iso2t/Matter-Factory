@@ -10,6 +10,7 @@ import matterfactory.common.block.cable.ItemPipe;
 import matterfactory.common.block.cable.PowerCable;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.definition.ItemDefinition;
+import matterfactory.common.fluid.BaseFluid;
 import matterfactory.common.item.BaseBlockItem;
 import matterfactory.common.item.FacadeBlockItem;
 import matterfactory.core.Factory;
@@ -80,6 +81,10 @@ public class FactoryBlocks {
 	}
 
 	public static <T extends Block> BlockDefinition<T> register (final String name, Identifier id, final Function<BlockBehaviour.Properties, T> supplier, Supplier<BlockBehaviour.Properties> properties, @Nullable BiFunction<Block, Item.Properties, BlockItem> itemFactory) {
+		return register(name, id, supplier, properties, itemFactory, true);
+	}
+
+	public static <T extends Block> BlockDefinition<T> register (final String name, Identifier id, final Function<BlockBehaviour.Properties, T> supplier, Supplier<BlockBehaviour.Properties> properties, @Nullable BiFunction<Block, Item.Properties, BlockItem> itemFactory, boolean addToTab) {
 		var deferredBlock = REGISTRY.registerBlock(id.getPath(), supplier, properties);
 		var deferredItem = FactoryItems.REGISTRY.register(id.getPath(), () -> {
 			var block = deferredBlock.get();
@@ -97,7 +102,7 @@ public class FactoryBlocks {
 			}
 		});
 		var itemDef = new ItemDefinition<>(name, deferredItem);
-		FactoryTab.add(itemDef);
+		if (addToTab) FactoryTab.add(itemDef);
 
 		BlockDefinition<T> definition = new BlockDefinition<>(name, deferredBlock, itemDef);
 		BLOCKS.add(definition);

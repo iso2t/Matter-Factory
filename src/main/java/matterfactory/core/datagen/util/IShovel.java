@@ -11,4 +11,9 @@ public interface IShovel extends IMiningTier {
 		return BlockTags.NEEDS_STONE_TOOL;
 	}
 
+	@Override
+	default TagKey<Block> getRequiredTool () {
+		return BlockTags.MINEABLE_WITH_SHOVEL;
+	}
+
 }

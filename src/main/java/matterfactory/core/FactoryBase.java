@@ -47,6 +47,8 @@ public abstract class FactoryBase implements Factory {
 		FactoryBlocks.REGISTRY.register(bus);
 		FactoryItems.REGISTRY.register(bus);
 		FactoryBlockEntities.REGISTRY.register(bus);
+		FactoryFluidTypes.REGISTRY.register(bus);
+		FactoryFluids.REGISTRY.register(bus);
 		FactorySounds.REGISTRY.register(bus);
 		bus.addListener(FactoryCapabilities::register);
 	}

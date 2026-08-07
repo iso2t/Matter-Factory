@@ -6,6 +6,7 @@ import matterfactory.core.datagen.loot.FactoryLootTableProvider;
 import matterfactory.core.datagen.models.FactoryModelProvider;
 import matterfactory.core.datagen.sound.FactorySoundProvider;
 import matterfactory.core.datagen.tags.FactoryBlockTagsGenerator;
+import matterfactory.core.datagen.tags.FactoryFluidTagsGenerator;
 import matterfactory.core.datagen.tags.FactoryItemTagsGenerator;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataProvider;
@@ -38,6 +39,7 @@ public class DataGenerators {
 
 		// TAGS
 		pack.addProvider(output -> new FactoryBlockTagsGenerator(output, registries));
+		pack.addProvider(output -> new FactoryFluidTagsGenerator(output, registries));
 		pack.addProvider(output -> new FactoryItemTagsGenerator(output, registries));
 
 		// MODELS & STATES

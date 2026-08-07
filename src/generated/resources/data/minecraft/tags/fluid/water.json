@@ -1,0 +1,24 @@
+{
+  "values": [
+    "matterfactory:source_heavy_water",
+    "matterfactory:flowing_heavy_water",
+    "matterfactory:source_distilled_water",
+    "matterfactory:flowing_distilled_water",
+    "matterfactory:source_sulfuric_acid",
+    "matterfactory:flowing_sulfuric_acid",
+    "matterfactory:source_hydrochloric_acid",
+    "matterfactory:flowing_hydrochloric_acid",
+    "matterfactory:source_nitric_acid",
+    "matterfactory:flowing_nitric_acid",
+    "matterfactory:source_hydrofluoric_acid",
+    "matterfactory:flowing_hydrofluoric_acid",
+    "matterfactory:source_sodium_hydroxide",
+    "matterfactory:flowing_sodium_hydroxide",
+    "matterfactory:source_ammonia_solution",
+    "matterfactory:flowing_ammonia_solution",
+    "matterfactory:source_ferric_chloride",
+    "matterfactory:flowing_ferric_chloride",
+    "matterfactory:source_aqua_regia",
+    "matterfactory:flowing_aqua_regia"
+  ]
+}

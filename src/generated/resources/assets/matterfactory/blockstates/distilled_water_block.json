@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "matterfactory:block/distilled_water_block"
+    }
+  }
+}

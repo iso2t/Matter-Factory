@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "matterfactory:block/ammonia_solution_block"
+    }
+  }
+}

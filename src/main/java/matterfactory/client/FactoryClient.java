@@ -1,5 +1,6 @@
 package matterfactory.client;
 
+import matterfactory.client.color.ClientColors;
 import matterfactory.client.renderer.blockentity.CableModeRenderer;
 import matterfactory.client.renderer.blockentity.FacadeRenderer;
 import matterfactory.common.registries.FactoryBlockEntities;
@@ -19,6 +20,10 @@ public class FactoryClient extends FactoryBase {
 	public FactoryClient (IEventBus bus, ModContainer container) {
 		super(bus, container);
 		bus.addListener(this::registerRenderers);
+		bus.addListener(ClientFluidRegistration::registerExtensions);
+		bus.addListener(ClientFluidRegistration::registerModels);
+		bus.addListener(ClientColors::registerItemColors);
+		bus.addListener(ClientColors::registerBlockColors);
 	}
 
 	private void registerRenderers (EntityRenderersEvent.RegisterRenderers event) {

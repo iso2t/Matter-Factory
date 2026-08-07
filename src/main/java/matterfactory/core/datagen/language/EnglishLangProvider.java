@@ -1,6 +1,7 @@
 package matterfactory.core.datagen.language;
 
 import matterfactory.common.registries.FactoryBlocks;
+import matterfactory.common.registries.FactoryFluids;
 import matterfactory.common.registries.FactoryItems;
 import net.minecraft.data.DataGenerator;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -24,6 +25,13 @@ public class EnglishLangProvider extends LanguageProvider {
 		blocks:
 		for (var block : FactoryBlocks.getBlocks()) {
 			add(block.getBlock(), block.getEnglishName());
+		}
+
+		fluid_types:
+		for (var fluid : FactoryFluids.getFluids()) {
+			// TODO: This is kind of cheating ngl
+			var key = "fluid_type." + matterfactory.core.Factory.MODID + "." + fluid.englishName().toLowerCase().replace(' ', '_');
+			add(key, fluid.englishName());
 		}
 	}
 

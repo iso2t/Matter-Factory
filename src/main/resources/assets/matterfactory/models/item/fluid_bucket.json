@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "matterfactory:item/bucket/bucket_background",
+    "layer1": "matterfactory:item/bucket/bucket_overlay"
+  }
+}
