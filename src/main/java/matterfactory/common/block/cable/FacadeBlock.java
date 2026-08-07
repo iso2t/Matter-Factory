@@ -22,14 +22,17 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -160,6 +163,17 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 
 	public static boolean isValidPaint (BlockState state) {
 		return state.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) && !state.hasBlockEntity();
+	}
+
+	@Override
+	public SoundType getSoundType (BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
+		if (level.getBlockEntity(pos) instanceof FacadeBlockEntity facade) {
+			BlockState paintedState = facade.getPaintedState();
+			if (!paintedState.isAir()) {
+				return paintedState.getSoundType(level, pos, entity);
+			}
+		}
+		return super.getSoundType(state, level, pos, entity);
 	}
 
 	@Override
