@@ -42,7 +42,7 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 
 				BlockPos neighborPos = pipePos.relative(direction);
 				BlockState neighborState = level.getBlockState(neighborPos);
-				if (!(neighborState.getBlock() instanceof ItemPipe)) {
+				if (!CableNetwork.isCableAt(level, neighborPos, ItemPipe.class, ItemPipeBlockEntity.class)) {
 					getEndpoint(level, pipe, direction, neighborPos, neighborState, direction.getOpposite()).ifPresent(endpoint -> {
 						if (endpoint.mode() == CableConnectionMode.IMPORT && canExtract(endpoint.handler(), transaction)) {
 							sources.add(endpoint);

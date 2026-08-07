@@ -203,6 +203,10 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		return false;
 	}
 
+	public final boolean supportsConnectionModesAt (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
+		return supportsConnectionModes(level, pos, state, direction);
+	}
+
 	protected CableConnectionMode getConnectionMode (BlockGetter level, BlockPos pos, BlockState state, Direction direction) {
 		return CableConnectionMode.AUTO;
 	}

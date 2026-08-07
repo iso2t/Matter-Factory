@@ -36,7 +36,7 @@ public record EnergyCableNetwork(List<PowerCableBlockEntity> cables, List<Energy
 
 				BlockPos neighborPos = cablePos.relative(direction);
 				BlockState neighborState = level.getBlockState(neighborPos);
-				if (!(neighborState.getBlock() instanceof PowerCable)) {
+				if (!CableNetwork.isCableAt(level, neighborPos, PowerCable.class, PowerCableBlockEntity.class)) {
 					getEndpoint(level, cable, direction, neighborPos, neighborState, direction.getOpposite()).ifPresent(endpoints::add);
 				}
 			}

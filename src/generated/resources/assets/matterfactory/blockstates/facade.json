@@ -1,0 +1,12 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "matterfactory:block/facade"
+      },
+      "when": {
+        "painted": "false"
+      }
+    }
+  ]
+}

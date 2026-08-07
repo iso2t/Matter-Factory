@@ -1,6 +1,7 @@
 package matterfactory.common.registries;
 
 import matterfactory.common.block.entity.FluidPipeBlockEntity;
+import matterfactory.common.block.entity.FacadeBlockEntity;
 import matterfactory.common.block.entity.ItemPipeBlockEntity;
 import matterfactory.common.block.entity.PowerCableBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -12,6 +13,9 @@ public class FactoryCapabilities {
 		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.POWER_CABLE.get(), PowerCableBlockEntity::getEnergyHandler);
 		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.FLUID_PIPE.get(), FluidPipeBlockEntity::getFluidHandler);
 		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.ITEM_PIPE.get(), ItemPipeBlockEntity::getItemHandler);
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, FactoryBlockEntities.FACADE.get(), FacadeBlockEntity::getEnergyHandler);
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, FactoryBlockEntities.FACADE.get(), FacadeBlockEntity::getFluidHandler);
+		event.registerBlockEntity(Capabilities.Item.BLOCK, FactoryBlockEntities.FACADE.get(), FacadeBlockEntity::getItemHandler);
 	}
 
 }

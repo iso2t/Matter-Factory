@@ -3,6 +3,7 @@ package matterfactory.core.datagen.models;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.model.CustomBlockModel;
 import matterfactory.common.registries.FactoryBlocks;
+import matterfactory.core.datagen.util.IDefinedModel;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.model.TexturedModel;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,8 @@ public final class BlockModelProvider {
 
 	static void registerModels (@NotNull BlockModelGenerators blockGenerator) {
 		for (var block : FactoryBlocks.getBlocks()) {
-			if (block.getBlock() instanceof CustomBlockModel custom) custom.registerModel(blockGenerator, block);
+			if (block.getBlock() instanceof IDefinedModel defined) defined.registerDefinedModel(blockGenerator, block);
+			else if (block.getBlock() instanceof CustomBlockModel custom) custom.registerModel(blockGenerator, block);
 			else blockWithItem(blockGenerator, block);
 		}
 	}

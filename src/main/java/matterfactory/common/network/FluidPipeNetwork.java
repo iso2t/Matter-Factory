@@ -41,7 +41,7 @@ public record FluidPipeNetwork(List<FluidPipeBlockEntity> pipes, List<FluidEndpo
 
 				BlockPos neighborPos = pipePos.relative(direction);
 				BlockState neighborState = level.getBlockState(neighborPos);
-				if (!(neighborState.getBlock() instanceof FluidPipe)) {
+				if (!CableNetwork.isCableAt(level, neighborPos, FluidPipe.class, FluidPipeBlockEntity.class)) {
 					getEndpoint(level, pipe, direction, neighborPos, neighborState, direction.getOpposite()).ifPresent(endpoint -> {
 						if (endpoint.mode() == CableConnectionMode.IMPORT && canExtract(endpoint.handler(), transaction)) {
 							sources.add(endpoint);

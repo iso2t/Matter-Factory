@@ -1,6 +1,7 @@
 package matterfactory.common.network;
 
 import matterfactory.common.block.cable.CableBlock;
+import matterfactory.common.block.entity.FacadeBlockEntity;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,26 +35,44 @@ public final class CableNetwork {
 		queue.add(immutableOrigin);
 		while (!queue.isEmpty()) {
 			BlockPos pipePos = queue.removeFirst();
-			BlockState pipeState = level.getBlockState(pipePos);
-			var blockEntity = level.getBlockEntity(pipePos);
-			if (!blockType.isInstance(pipeState.getBlock()) || !blockEntityType.isInstance(blockEntity)) {
+			T pipe = getCable(level, pipePos, blockType, blockEntityType);
+			if (pipe == null) {
 				continue;
 			}
 
-			pipes.add(blockEntityType.cast(blockEntity));
+			pipes.add(pipe);
+			BlockState pipeState = pipe.getBlockState();
 			for (Direction direction : Direction.values()) {
 				if (!pipeState.getValue(CableBlock.getConnectionProperty(direction))) {
 					continue;
 				}
 
 				BlockPos neighborPos = pipePos.relative(direction);
-				if (blockType.isInstance(level.getBlockState(neighborPos).getBlock()) && visited.add(neighborPos.immutable())) {
+				if (isCableAt(level, neighborPos, blockType, blockEntityType) && visited.add(neighborPos.immutable())) {
 					queue.add(neighborPos.immutable());
 				}
 			}
 		}
 
 		return pipes;
+	}
+
+	public static <T extends BaseCableBlockEntity> boolean isCableAt (Level level, BlockPos pos, Class<? extends CableBlock> blockType, Class<T> blockEntityType) {
+		return getCable(level, pos, blockType, blockEntityType) != null;
+	}
+
+	@Nullable
+	private static <T extends BaseCableBlockEntity> T getCable (Level level, BlockPos pos, Class<? extends CableBlock> blockType, Class<T> blockEntityType) {
+		BlockState state = level.getBlockState(pos);
+		if (blockType.isInstance(state.getBlock()) && blockEntityType.isInstance(level.getBlockEntity(pos))) {
+			return blockEntityType.cast(level.getBlockEntity(pos));
+		}
+
+		if (level.getBlockEntity(pos) instanceof FacadeBlockEntity facade && blockType.isInstance(facade.getCoveredState().getBlock())) {
+			return facade.getCoveredCable(blockEntityType);
+		}
+
+		return null;
 	}
 
 	public static <T extends BaseCableBlockEntity> Map<BlockPos, T> indexPipes (List<T> pipes) {
