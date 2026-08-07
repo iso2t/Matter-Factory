@@ -222,24 +222,14 @@ public class ItemPipeBlockEntity extends BaseCableBlockEntity {
 				continue;
 			}
 
-			visualTransfers.add(new VisualItemTransfer(item,
-					directionOr(child.getStringOr("from", Direction.NORTH.getSerializedName()), Direction.NORTH),
-					directionOr(child.getStringOr("to", Direction.SOUTH.getSerializedName()), Direction.SOUTH),
-					child.getLongOr("start", 0),
-					child.getIntOr("duration", VISUAL_TRANSFER_DURATION),
-					child.getIntOr("spacing", VISUAL_ITEM_SPACING)));
+			visualTransfers.add(new VisualItemTransfer(item, directionOr(child.getStringOr("from", Direction.NORTH.getSerializedName()), Direction.NORTH), directionOr(child.getStringOr("to", Direction.SOUTH.getSerializedName()), Direction.SOUTH), child.getLongOr("start", 0), child.getIntOr("duration", VISUAL_TRANSFER_DURATION), child.getIntOr("spacing", VISUAL_ITEM_SPACING)));
 		}
 
 		// Preserve in-flight transfers when upgrading worlds saved by the single-transfer renderer.
 		if (visualTransfers.isEmpty()) {
 			ItemStack legacyItem = input.read("visual_item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
 			if (!legacyItem.isEmpty()) {
-				visualTransfers.add(new VisualItemTransfer(legacyItem,
-						directionOr(input.getStringOr("visual_from", Direction.NORTH.getSerializedName()), Direction.NORTH),
-						directionOr(input.getStringOr("visual_to", Direction.SOUTH.getSerializedName()), Direction.SOUTH),
-						input.getLongOr("visual_start", 0),
-						input.getIntOr("visual_duration", VISUAL_TRANSFER_DURATION),
-						input.getIntOr("visual_spacing", VISUAL_ITEM_SPACING)));
+				visualTransfers.add(new VisualItemTransfer(legacyItem, directionOr(input.getStringOr("visual_from", Direction.NORTH.getSerializedName()), Direction.NORTH), directionOr(input.getStringOr("visual_to", Direction.SOUTH.getSerializedName()), Direction.SOUTH), input.getLongOr("visual_start", 0), input.getIntOr("visual_duration", VISUAL_TRANSFER_DURATION), input.getIntOr("visual_spacing", VISUAL_ITEM_SPACING)));
 			}
 		}
 

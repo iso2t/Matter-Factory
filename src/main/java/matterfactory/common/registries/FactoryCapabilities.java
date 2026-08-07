@@ -1,7 +1,7 @@
 package matterfactory.common.registries;
 
-import matterfactory.common.block.entity.FluidPipeBlockEntity;
 import matterfactory.common.block.entity.FacadeBlockEntity;
+import matterfactory.common.block.entity.FluidPipeBlockEntity;
 import matterfactory.common.block.entity.ItemPipeBlockEntity;
 import matterfactory.common.block.entity.PowerCableBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;

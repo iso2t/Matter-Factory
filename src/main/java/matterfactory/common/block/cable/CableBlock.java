@@ -44,10 +44,10 @@ import java.util.Optional;
 
 public abstract class CableBlock extends BaseBlock implements CustomBlockModel, SimpleWaterloggedBlock, IPickaxe {
 
-	public static final TextureSlot CABLE_CENTER_TEXTURE = TextureSlot.create("cable_center", TextureSlot.ALL);
-	public static final TextureSlot CABLE_ARM_TEXTURE    = TextureSlot.create("cable_arm", TextureSlot.ALL);
-	public static final TextureSlot CABLE_GLASS_TEXTURE  = TextureSlot.create("cable_glass", TextureSlot.ALL);
-	private static final Identifier BLOCK_MODEL_PARENT   = Identifier.withDefaultNamespace("block/block");
+	public static final  TextureSlot CABLE_CENTER_TEXTURE = TextureSlot.create("cable_center", TextureSlot.ALL);
+	public static final  TextureSlot CABLE_ARM_TEXTURE    = TextureSlot.create("cable_arm", TextureSlot.ALL);
+	public static final  TextureSlot CABLE_GLASS_TEXTURE  = TextureSlot.create("cable_glass", TextureSlot.ALL);
+	private static final Identifier  BLOCK_MODEL_PARENT   = Identifier.withDefaultNamespace("block/block");
 
 	public static final BooleanProperty DOWN  = BooleanProperty.create("down");
 	public static final BooleanProperty UP    = BooleanProperty.create("up");
@@ -63,14 +63,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	public CableBlock (Properties properties) {
 		super(properties);
 
-		registerDefaultState(getStateDefinition().any()
-				.setValue(DOWN, false)
-				.setValue(UP, false)
-				.setValue(NORTH, false)
-				.setValue(SOUTH, false)
-				.setValue(WEST, false)
-				.setValue(EAST, false)
-				.setValue(WATERLOGGED, false));
+		registerDefaultState(getStateDefinition().any().setValue(DOWN, false).setValue(UP, false).setValue(NORTH, false).setValue(SOUTH, false).setValue(WEST, false).setValue(EAST, false).setValue(WATERLOGGED, false));
 	}
 
 	public abstract @NotNull MapCodec<? extends CableBlock> getCodec ();
@@ -81,14 +74,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	public CableShape getCableShape () {
-		return CableShape.from(
-				box(5, 5, 5, 11, 11, 11),
-				box(5, 0, 5, 11, 5, 11),
-				box(5, 11, 5, 11, 16, 11),
-				box(5, 5, 0, 11, 11, 5),
-				box(5, 5, 11, 11, 11, 16),
-				box(0, 5, 5, 5, 11, 11),
-				box(11, 5, 5, 16, 11, 11));
+		return CableShape.from(box(5, 5, 5, 11, 11, 11), box(5, 0, 5, 11, 5, 11), box(5, 11, 5, 11, 16, 11), box(5, 5, 0, 11, 11, 5), box(5, 5, 11, 11, 11, 16), box(0, 5, 5, 5, 11, 11), box(11, 5, 5, 16, 11, 11));
 	}
 
 	@Override
@@ -128,9 +114,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		}
 
 		Direction direction = targetedSide.get();
-		boolean canModify = player.isShiftKeyDown()
-				? supportsManualDisconnect(level, pos, state, direction)
-				: supportsConnectionModes(level, pos, state, direction);
+		boolean canModify = player.isShiftKeyDown() ? supportsManualDisconnect(level, pos, state, direction) : supportsConnectionModes(level, pos, state, direction);
 		if (!canModify) {
 			return InteractionResult.PASS;
 		}
@@ -159,8 +143,8 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	 * Determines whether this block can connect to a neighboring block at the specified position
 	 * with the given block state.
 	 *
-	 * @param level        the level reader providing access to the world state
-	 * @param neighborPos  the position of the neighboring block to check connectivity
+	 * @param level         the level reader providing access to the world state
+	 * @param neighborPos   the position of the neighboring block to check connectivity
 	 * @param neighborState the block state of the neighboring block to check connectivity
 	 * @return true if this block can connect to the neighboring block, false otherwise
 	 */
@@ -355,16 +339,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	}
 
-	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-			.element(element -> element.from(0, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE)).build();
+	public static final ModelTemplate ITEM_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_item").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(0, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE)).build();
 
-	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-			.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE))
-			.element(element -> element.from(6, 0, 6).to(10, 6, 10).textureAll(CABLE_ARM_TEXTURE))
-			.element(element -> element.from(6, 10, 6).to(10, 16, 10).textureAll(CABLE_ARM_TEXTURE))
-			.element(element -> element.from(6, 6, 0).to(10, 10, 6).textureAll(CABLE_ARM_TEXTURE))
-			.element(element -> element.from(6, 6, 10).to(10, 10, 16).textureAll(CABLE_ARM_TEXTURE))
-			.element(element -> element.from(0, 6, 6).to(6, 10, 10).textureAll(CABLE_ARM_TEXTURE))
-			.element(element -> element.from(10, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE))
-			.build();
+	public static final ModelTemplate GUI_MODEL = ExtendedModelTemplateBuilder.builder().parent(BLOCK_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE)).element(element -> element.from(6, 0, 6).to(10, 6, 10).textureAll(CABLE_ARM_TEXTURE)).element(element -> element.from(6, 10, 6).to(10, 16, 10).textureAll(CABLE_ARM_TEXTURE)).element(element -> element.from(6, 6, 0).to(10, 10, 6).textureAll(CABLE_ARM_TEXTURE)).element(element -> element.from(6, 6, 10).to(10, 10, 16).textureAll(CABLE_ARM_TEXTURE)).element(element -> element.from(0, 6, 6).to(6, 10, 10).textureAll(CABLE_ARM_TEXTURE)).element(element -> element.from(10, 6, 6).to(16, 10, 10).textureAll(CABLE_ARM_TEXTURE)).build();
 }

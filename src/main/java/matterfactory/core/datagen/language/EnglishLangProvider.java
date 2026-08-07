@@ -12,7 +12,7 @@ public class EnglishLangProvider extends LanguageProvider {
 	}
 
 	@Override
-	protected void addTranslations() {
+	protected void addTranslations () {
 		addManualStrings();
 		addSubtitles();
 
@@ -27,11 +27,11 @@ public class EnglishLangProvider extends LanguageProvider {
 		}
 	}
 
-	protected void addManualStrings() {
+	protected void addManualStrings () {
 		add("itemGroup." + matterfactory.core.Factory.MODID, matterfactory.core.Factory.NAME);
 	}
 
-	protected void addSubtitles() {
+	protected void addSubtitles () {
 		add("subtitles.matterfactory.wrench_use", "Wrench Used");
 	}
 

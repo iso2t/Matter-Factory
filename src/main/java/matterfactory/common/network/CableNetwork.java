@@ -1,25 +1,22 @@
 package matterfactory.common.network;
 
 import matterfactory.common.block.cable.CableBlock;
-import matterfactory.common.block.entity.FacadeBlockEntity;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
+import matterfactory.common.block.entity.FacadeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.ToIntFunction;
 
-/** Shared topology operations for cable and pipe networks. */
+/**
+ * Utility class for managing and interacting with a network of cable blocks and their block entities.
+ * This class provides methods for discovering, indexing, and routing through cable networks, as well as
+ * for calculating transfer rates and managing budgets for data or resource transfer.
+ */
 public final class CableNetwork {
 
 	private CableNetwork () {

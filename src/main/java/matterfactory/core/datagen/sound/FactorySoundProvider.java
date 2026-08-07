@@ -13,9 +13,6 @@ public class FactorySoundProvider extends SoundDefinitionsProvider {
 
 	@Override
 	public void registerSounds () {
-		add(FactorySounds.WRENCH_USE.get(), SoundDefinition.definition()
-				.with(sound(matterfactory.core.Factory.MODID + ":wrench_use", SoundDefinition.SoundType.SOUND)
-						.volume(1.f).pitch(1.f).weight(1))
-				.subtitle("subtitles.matterfactory.wrench_use"));
+		add(FactorySounds.WRENCH_USE.get(), SoundDefinition.definition().with(sound(matterfactory.core.Factory.MODID + ":wrench_use", SoundDefinition.SoundType.SOUND).volume(1.f).pitch(1.f).weight(1)).subtitle("subtitles.matterfactory.wrench_use"));
 	}
 }

@@ -2,13 +2,7 @@ package matterfactory.common.registries;
 
 import com.google.common.base.Preconditions;
 import matterfactory.common.block.cable.EntityCableBlock;
-import matterfactory.common.block.cable.FacadeBlock;
-import matterfactory.common.block.entity.BaseCableBlockEntity;
-import matterfactory.common.block.entity.FacadeBlockEntity;
-import matterfactory.common.block.entity.FluidPipeBlockEntity;
-import matterfactory.common.block.entity.ItemPipeBlockEntity;
-import matterfactory.common.block.entity.PowerCableBlockEntity;
-import matterfactory.common.block.entity.BaseBlockEntity;
+import matterfactory.common.block.entity.*;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.definition.BlockEntityDefinition;
 import matterfactory.core.Factory;
@@ -31,7 +25,7 @@ public class FactoryBlockEntities {
 	private static final List<BlockEntityDefinition<?>> BLOCK_ENTITIES = new ArrayList<>();
 
 	public static final BlockEntityDefinition<PowerCableBlockEntity> POWER_CABLE = create("power_cable", PowerCableBlockEntity.class, PowerCableBlockEntity::new, FactoryBlocks.BASIC_POWER_CABLE, FactoryBlocks.ADVANCED_POWER_CABLE, FactoryBlocks.ELITE_POWER_CABLE, FactoryBlocks.ULTIMATE_POWER_CABLE, FactoryBlocks.INFINITE_POWER_CABLE);
-	public static final BlockEntityDefinition<FluidPipeBlockEntity>   FLUID_PIPE  = create("fluid_pipe", FluidPipeBlockEntity.class, FluidPipeBlockEntity::new, FactoryBlocks.BASIC_FLUID_PIPE, FactoryBlocks.ADVANCED_FLUID_PIPE, FactoryBlocks.ELITE_FLUID_PIPE, FactoryBlocks.ULTIMATE_FLUID_PIPE, FactoryBlocks.INFINITE_FLUID_PIPE);
+	public static final BlockEntityDefinition<FluidPipeBlockEntity>  FLUID_PIPE  = create("fluid_pipe", FluidPipeBlockEntity.class, FluidPipeBlockEntity::new, FactoryBlocks.BASIC_FLUID_PIPE, FactoryBlocks.ADVANCED_FLUID_PIPE, FactoryBlocks.ELITE_FLUID_PIPE, FactoryBlocks.ULTIMATE_FLUID_PIPE, FactoryBlocks.INFINITE_FLUID_PIPE);
 	public static final BlockEntityDefinition<ItemPipeBlockEntity>   ITEM_PIPE   = create("item_pipe", ItemPipeBlockEntity.class, ItemPipeBlockEntity::new, FactoryBlocks.BASIC_ITEM_PIPE, FactoryBlocks.ADVANCED_ITEM_PIPE, FactoryBlocks.ELITE_ITEM_PIPE, FactoryBlocks.ULTIMATE_ITEM_PIPE, FactoryBlocks.INFINITE_ITEM_PIPE);
 	public static final BlockEntityDefinition<FacadeBlockEntity>     FACADE      = createFacade();
 

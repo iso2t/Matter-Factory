@@ -1,8 +1,8 @@
 package matterfactory.core;
 
+import lombok.Getter;
 import matterfactory.common.FactoryTab;
 import matterfactory.common.registries.*;
-import lombok.Getter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;

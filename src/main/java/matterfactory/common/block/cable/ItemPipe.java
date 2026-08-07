@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 
-	public static final MapCodec<ItemPipe> CODEC = simpleCodec(properties -> new ItemPipe(properties, Tier.BASIC));
-	private static final Identifier ITEM_PIPE_MODEL_PARENT = Factory.get("block/item_pipe_translucent");
+	public static final  MapCodec<ItemPipe> CODEC                  = simpleCodec(properties -> new ItemPipe(properties, Tier.BASIC));
+	private static final Identifier         ITEM_PIPE_MODEL_PARENT = Factory.get("block/item_pipe_translucent");
 
 	@Getter
 	private final Tier tier;
@@ -55,14 +55,7 @@ public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 
 	@Override
 	public CableShape getCableShape () {
-		return CableShape.from(
-				box(4, 4, 4, 12, 12, 12),
-				box(4, 0, 4, 12, 4, 12),
-				box(4, 12, 4, 12, 16, 12),
-				box(4, 4, 0, 12, 12, 4),
-				box(4, 4, 12, 12, 12, 16),
-				box(0, 4, 4, 4, 12, 12),
-				box(12, 4, 4, 16, 12, 12));
+		return CableShape.from(box(4, 4, 4, 12, 12, 12), box(4, 0, 4, 12, 4, 12), box(4, 12, 4, 12, 16, 12), box(4, 4, 0, 12, 12, 4), box(4, 4, 12, 12, 12, 16), box(0, 4, 4, 4, 12, 12), box(12, 4, 4, 16, 12, 12));
 	}
 
 	@Override
@@ -95,8 +88,7 @@ public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 
 	@Override
 	public @NotNull ModelTemplate getGuiModel () {
-		ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder().parent(ITEM_PIPE_MODEL_PARENT).suffix("_gui")
-				.requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(CABLE_GLASS_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE);
+		ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder().parent(ITEM_PIPE_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(CABLE_GLASS_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE);
 		addJunctionFrame(builder, CABLE_CENTER_TEXTURE);
 		addNorthSouthTube(builder, 0, 4, CABLE_ARM_TEXTURE);
 		addNorthSouthTube(builder, 12, 16, CABLE_ARM_TEXTURE);
@@ -104,8 +96,7 @@ public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 	}
 
 	private static ExtendedModelTemplateBuilder itemPipeTemplate (String suffix, TextureSlot frameTexture) {
-		return ExtendedModelTemplateBuilder.builder().parent(ITEM_PIPE_MODEL_PARENT).suffix(suffix)
-				.requiredTextureSlot(frameTexture).requiredTextureSlot(CABLE_GLASS_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE);
+		return ExtendedModelTemplateBuilder.builder().parent(ITEM_PIPE_MODEL_PARENT).suffix(suffix).requiredTextureSlot(frameTexture).requiredTextureSlot(CABLE_GLASS_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE);
 	}
 
 	private static void addJunctionFrame (ExtendedModelTemplateBuilder builder, TextureSlot frameTexture) {

@@ -28,8 +28,8 @@ import org.jspecify.annotations.NonNull;
 
 public class FluidPipe extends EntityCableBlock<FluidPipeBlockEntity> {
 
-	public static final MapCodec<FluidPipe> CODEC = simpleCodec(properties -> new FluidPipe(properties, Tier.BASIC));
-	private static final Identifier FLUID_PIPE_MODEL_PARENT = Identifier.withDefaultNamespace("block/block");
+	public static final  MapCodec<FluidPipe> CODEC                   = simpleCodec(properties -> new FluidPipe(properties, Tier.BASIC));
+	private static final Identifier          FLUID_PIPE_MODEL_PARENT = Identifier.withDefaultNamespace("block/block");
 
 	@Getter
 	private final Tier tier;
@@ -56,14 +56,7 @@ public class FluidPipe extends EntityCableBlock<FluidPipeBlockEntity> {
 
 	@Override
 	public CableShape getCableShape () {
-		return CableShape.from(
-				box(3.5, 3.5, 3.5, 12.5, 12.5, 12.5),
-				box(4.5, 0, 4.5, 11.5, 4.5, 11.5),
-				box(4.5, 11.5, 4.5, 11.5, 16, 11.5),
-				box(4.5, 4.5, 0, 11.5, 11.5, 4.5),
-				box(4.5, 4.5, 11.5, 11.5, 11.5, 16),
-				box(0, 4.5, 4.5, 4.5, 11.5, 11.5),
-				box(11.5, 4.5, 4.5, 16, 11.5, 11.5));
+		return CableShape.from(box(3.5, 3.5, 3.5, 12.5, 12.5, 12.5), box(4.5, 0, 4.5, 11.5, 4.5, 11.5), box(4.5, 11.5, 4.5, 11.5, 16, 11.5), box(4.5, 4.5, 0, 11.5, 11.5, 4.5), box(4.5, 4.5, 11.5, 11.5, 11.5, 16), box(0, 4.5, 4.5, 4.5, 11.5, 11.5), box(11.5, 4.5, 4.5, 16, 11.5, 11.5));
 	}
 
 	@Override
@@ -96,8 +89,7 @@ public class FluidPipe extends EntityCableBlock<FluidPipeBlockEntity> {
 
 	@Override
 	public @NotNull ModelTemplate getGuiModel () {
-		ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder().parent(FLUID_PIPE_MODEL_PARENT).suffix("_gui")
-				.requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE);
+		ExtendedModelTemplateBuilder builder = ExtendedModelTemplateBuilder.builder().parent(FLUID_PIPE_MODEL_PARENT).suffix("_gui").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE);
 		addHub(builder, CABLE_CENTER_TEXTURE);
 		addNorthSouthPipe(builder, 0, 4, CABLE_ARM_TEXTURE);
 		addNorthSouthPipe(builder, 12, 16, CABLE_ARM_TEXTURE);
@@ -113,8 +105,7 @@ public class FluidPipe extends EntityCableBlock<FluidPipeBlockEntity> {
 	}
 
 	private static void addNorthSouthPipe (ExtendedModelTemplateBuilder builder, float minZ, float maxZ, TextureSlot texture) {
-		builder.element(element -> element.from(4.5F, 4.5F, minZ).to(11.5F, 11.5F, maxZ).textureAll(texture)
-				.face(Direction.UP, face -> face.rotation(Quadrant.R90)));
+		builder.element(element -> element.from(4.5F, 4.5F, minZ).to(11.5F, 11.5F, maxZ).textureAll(texture).face(Direction.UP, face -> face.rotation(Quadrant.R90)));
 	}
 
 	private static void addElement (ExtendedModelTemplateBuilder builder, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, TextureSlot texture) {

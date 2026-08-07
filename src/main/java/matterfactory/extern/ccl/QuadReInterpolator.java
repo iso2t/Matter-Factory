@@ -39,11 +39,11 @@ public class QuadReInterpolator implements QuadTransform {
 
 	private final float[] originalSpriteV = new float[4];
 
-	public QuadReInterpolator() {
+	public QuadReInterpolator () {
 		super();
 	}
 
-	public void setInputQuad(MutableQuad quad) {
+	public void setInputQuad (MutableQuad quad) {
 		int s = quad.direction().ordinal() >> 1;
 		int xIdx = dx(s);
 		int yIdx = dy(s);
@@ -62,7 +62,7 @@ public class QuadReInterpolator implements QuadTransform {
 	}
 
 	@Override
-	public boolean transform(MutableQuad quad) {
+	public boolean transform (MutableQuad quad) {
 		int s = quad.direction().ordinal() >> 1;
 		int xIdx = dx(s);
 		int yIdx = dy(s);
@@ -109,7 +109,7 @@ public class QuadReInterpolator implements QuadTransform {
 	/**
 	 * Interpolates the new UV values for this Vertex using the others as a reference.
 	 */
-	public void interpUVFrom(MutableQuad quad, int vertexIndex) {
+	public void interpUVFrom (MutableQuad quad, int vertexIndex) {
 		float p1 = originalSpriteU[0];
 		float p2 = originalSpriteU[1];
 		float p3 = originalSpriteU[2];
@@ -130,7 +130,7 @@ public class QuadReInterpolator implements QuadTransform {
 	 * @param s The axis. side >> 1
 	 * @return The x coord.
 	 */
-	private static int dx(int s) {
+	private static int dx (int s) {
 		if (s <= 1) {
 			return 0;
 		} else {
@@ -144,7 +144,7 @@ public class QuadReInterpolator implements QuadTransform {
 	 * @param s The axis. side >> 1
 	 * @return The y coord.
 	 */
-	private static int dy(int s) {
+	private static int dy (int s) {
 		if (s > 0) {
 			return 1;
 		} else {

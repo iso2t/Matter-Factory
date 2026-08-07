@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-@SuppressWarnings ("unused")
+@SuppressWarnings("unused")
 @EventBusSubscriber(modid = Factory.MODID)
 public class DataGenerators {
 

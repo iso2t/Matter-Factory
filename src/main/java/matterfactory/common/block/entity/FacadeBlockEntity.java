@@ -1,10 +1,8 @@
 package matterfactory.common.block.entity;
 
+import lombok.Getter;
 import matterfactory.common.block.cable.EntityCableBlock;
 import matterfactory.common.block.cable.FacadeBlock;
-import matterfactory.common.block.entity.FluidPipeBlockEntity;
-import matterfactory.common.block.entity.ItemPipeBlockEntity;
-import matterfactory.common.block.entity.PowerCableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -12,8 +10,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,15 +24,16 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-/** Stores the painted appearance and the cable replaced by a facade. */
 public class FacadeBlockEntity extends BaseBlockEntity {
 
-	private BlockState coveredState = Blocks.AIR.defaultBlockState();
-	private BlockState paintedState = Blocks.AIR.defaultBlockState();
+	@Getter
+	private BlockState           coveredState = Blocks.AIR.defaultBlockState();
+	@Getter
+	private BlockState           paintedState = Blocks.AIR.defaultBlockState();
 	@Nullable
 	private BaseCableBlockEntity coveredCable;
 	@Nullable
-	private CompoundTag coveredCableData;
+	private CompoundTag          coveredCableData;
 
 	public FacadeBlockEntity (BlockEntityType<FacadeBlockEntity> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
@@ -71,20 +70,12 @@ public class FacadeBlockEntity extends BaseBlockEntity {
 		markUpdated();
 	}
 
-	public BlockState getCoveredState () {
-		return coveredState;
-	}
-
 	public void setCoveredState (BlockState state) {
 		coveredState = state;
 		if (coveredCable != null) {
 			coveredCable.setBlockState(state);
 		}
 		markUpdated();
-	}
-
-	public BlockState getPaintedState () {
-		return paintedState;
 	}
 
 	public void setPaintedState (BlockState state) {

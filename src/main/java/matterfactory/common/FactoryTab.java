@@ -26,11 +26,7 @@ public class FactoryTab {
 	private static final List<ItemDefinition<?>>                                   itemDefs         = new ArrayList<>();
 
 	public static void init (Registry<CreativeModeTab> registry) {
-		var tab = CreativeModeTab.builder()
-				.title(Component.translatable("itemGroup." + Factory.MODID))
-				.icon(FactoryBlocks.MACHINE_FRAME::getStack)
-				.displayItems(FactoryTab::buildDisplayItems)
-				.build();
+		var tab = CreativeModeTab.builder().title(Component.translatable("itemGroup." + Factory.MODID)).icon(FactoryBlocks.MACHINE_FRAME::getStack).displayItems(FactoryTab::buildDisplayItems).build();
 		Registry.register(registry, MAIN, tab);
 	}
 

@@ -24,8 +24,7 @@ public final class FactoryModelProvider extends ModelProviders {
 
 	@Override
 	protected @NotNull Stream<? extends Holder<Item>> getKnownItems () {
-		return BuiltInRegistries.ITEM.listElements()
-				.filter(holder -> holder.getKey().identifier().getNamespace().equals(matterfactory.core.Factory.MODID));
+		return BuiltInRegistries.ITEM.listElements().filter(holder -> holder.getKey().identifier().getNamespace().equals(matterfactory.core.Factory.MODID));
 	}
 
 	@Override

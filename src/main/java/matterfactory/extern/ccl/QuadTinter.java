@@ -27,12 +27,12 @@ public class QuadTinter implements QuadTransform {
 
 	private final int argb;
 
-	public QuadTinter(int rgb) {
+	public QuadTinter (int rgb) {
 		this.argb = 0xFF << 24 | rgb;
 	}
 
 	@Override
-	public boolean transform(MutableQuad quad) {
+	public boolean transform (MutableQuad quad) {
 		// Nuke tintIndex.
 		quad.setTintIndex(-1);
 		for (int i = 0; i < 4; i++) {
@@ -43,7 +43,7 @@ public class QuadTinter implements QuadTransform {
 		return true;
 	}
 
-	private static int multiplyColor(int color1, int color2) {
+	private static int multiplyColor (int color1, int color2) {
 		if (color1 == -1) {
 			return color2;
 		} else if (color2 == -1) {

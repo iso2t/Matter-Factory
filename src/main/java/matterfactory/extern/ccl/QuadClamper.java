@@ -18,11 +18,10 @@
 
 package matterfactory.extern.ccl;
 
-import org.joml.Vector3f;
-
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.model.quad.MutableQuad;
+import org.joml.Vector3f;
 
 /**
  * This transformer simply clamps the vertices inside the provided box. You probably want to Re-Interpolate the UV's,
@@ -36,12 +35,12 @@ public class QuadClamper implements QuadTransform {
 
 	private final Vector3f pos = new Vector3f();
 
-	public QuadClamper(AABB clampBounds) {
+	public QuadClamper (AABB clampBounds) {
 		this.clampBounds = clampBounds;
 	}
 
 	@Override
-	public boolean transform(MutableQuad quad) {
+	public boolean transform (MutableQuad quad) {
 		int s = quad.direction().ordinal() >> 1;
 
 		clamp(quad, this.clampBounds);
@@ -63,12 +62,10 @@ public class QuadClamper implements QuadTransform {
 		return !flag1 && !flag2;
 	}
 
-	private void clamp(MutableQuad quad, AABB bb) {
+	private void clamp (MutableQuad quad, AABB bb) {
 		for (int i = 0; i < 4; i++) {
 			quad.copyPosition(i, pos);
-			pos.set((float) Mth.clamp(pos.x(), bb.minX, bb.maxX),
-					(float) Mth.clamp(pos.y(), bb.minY, bb.maxY),
-					(float) Mth.clamp(pos.z(), bb.minZ, bb.maxZ));
+			pos.set((float) Mth.clamp(pos.x(), bb.minX, bb.maxX), (float) Mth.clamp(pos.y(), bb.minY, bb.maxY), (float) Mth.clamp(pos.z(), bb.minZ, bb.maxZ));
 			quad.setPosition(i, pos);
 		}
 	}
@@ -79,7 +76,7 @@ public class QuadClamper implements QuadTransform {
 	 * @param s The axis. side >> 1
 	 * @return The x coord.
 	 */
-	private static int dx(int s) {
+	private static int dx (int s) {
 		if (s <= 1) {
 			return 0;
 		} else {
@@ -93,7 +90,7 @@ public class QuadClamper implements QuadTransform {
 	 * @param s The axis. side >> 1
 	 * @return The y coord.
 	 */
-	private static int dy(int s) {
+	private static int dy (int s) {
 		if (s > 0) {
 			return 1;
 		} else {

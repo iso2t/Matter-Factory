@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public record BlockEntityDefinition<T extends BlockEntity>(Class<T> blockEntityClass, DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> holder) implements Supplier<BlockEntityType<T>> {
 
 	@Override
-	public BlockEntityType<T> get() {
+	public BlockEntityType<T> get () {
 		return holder.get();
 	}
 

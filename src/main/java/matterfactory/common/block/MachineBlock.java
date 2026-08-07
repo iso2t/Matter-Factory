@@ -12,7 +12,7 @@ public class MachineBlock extends BaseBlock implements IPickaxe {
 	@Getter
 	private final Type type;
 
-	public MachineBlock(Type type, Properties properties) {
+	public MachineBlock (Type type, Properties properties) {
 		super(properties);
 		this.type = type;
 	}
@@ -23,11 +23,11 @@ public class MachineBlock extends BaseBlock implements IPickaxe {
 
 		private final Supplier<Properties> properties;
 
-		Type(Supplier<Properties> properties) {
+		Type (Supplier<Properties> properties) {
 			this.properties = properties;
 		}
 
-		public Properties createProperties() {
+		public Properties createProperties () {
 			return properties.get();
 		}
 	}

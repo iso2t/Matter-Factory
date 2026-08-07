@@ -18,11 +18,11 @@
 
 package matterfactory.extern.ccl;
 
-import static net.minecraft.core.Direction.AxisDirection.POSITIVE;
-
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.model.quad.MutableQuad;
+
+import static net.minecraft.core.Direction.AxisDirection.POSITIVE;
 
 /**
  * This transformer strips quads that are on faces. Simply set the bounds for the faces, and the strip mask.
@@ -32,13 +32,13 @@ import net.neoforged.neoforge.client.model.quad.MutableQuad;
 public class QuadFaceStripper implements QuadTransform {
 
 	private AABB bounds;
-	private int mask;
+	private int  mask;
 
-	QuadFaceStripper() {
+	QuadFaceStripper () {
 		super();
 	}
 
-	public QuadFaceStripper(AABB bounds, int mask) {
+	public QuadFaceStripper (AABB bounds, int mask) {
 		this.bounds = bounds;
 		this.mask = mask;
 	}
@@ -49,7 +49,7 @@ public class QuadFaceStripper implements QuadTransform {
 	 *
 	 * @param bounds The bounds.
 	 */
-	public void setBounds(AABB bounds) {
+	public void setBounds (AABB bounds) {
 		this.bounds = bounds;
 	}
 
@@ -58,12 +58,12 @@ public class QuadFaceStripper implements QuadTransform {
 	 *
 	 * @param mask The mask.
 	 */
-	public void setMask(int mask) {
+	public void setMask (int mask) {
 		this.mask = mask;
 	}
 
 	@Override
-	public boolean transform(MutableQuad quad) {
+	public boolean transform (MutableQuad quad) {
 		if (this.mask == 0) {
 			return true;// No mask, nothing changes.
 		}

@@ -22,8 +22,8 @@ import java.util.EnumSet;
 
 public abstract class BaseCableBlockEntity extends BaseBlockEntity {
 
-	private final EnumSet<Direction> disconnectedSides = EnumSet.noneOf(Direction.class);
-	private final EnumMap<Direction, CableConnectionMode> connectionModes = new EnumMap<>(Direction.class);
+	private final EnumSet<Direction>                      disconnectedSides = EnumSet.noneOf(Direction.class);
+	private final EnumMap<Direction, CableConnectionMode> connectionModes   = new EnumMap<>(Direction.class);
 
 	public BaseCableBlockEntity (BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);

@@ -2,8 +2,8 @@ package matterfactory.common.block.cable;
 
 import com.mojang.serialization.MapCodec;
 import lombok.Getter;
-import matterfactory.core.Tier;
 import matterfactory.common.block.entity.PowerCableBlockEntity;
+import matterfactory.core.Tier;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.core.BlockPos;
@@ -52,20 +52,17 @@ public class PowerCable extends EntityCableBlock<PowerCableBlockEntity> {
 
 	@Override
 	public @NotNull ModelTemplate getCenterModel () {
-		return ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-				.element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE)).build();
+		return ExtendedModelTemplateBuilder.builder().suffix("_center").requiredTextureSlot(CABLE_CENTER_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(5, 5, 5).to(11, 11, 11).textureAll(CABLE_CENTER_TEXTURE)).build();
 	}
 
 	@Override
 	public @NotNull ModelTemplate getArmModel () {
-		return ExtendedModelTemplateBuilder.builder().suffix("_arm").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-				.element(element -> element.from(6, 6, 0).to(10, 10, 5).textureAll(CABLE_ARM_TEXTURE)).build();
+		return ExtendedModelTemplateBuilder.builder().suffix("_arm").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(6, 6, 0).to(10, 10, 5).textureAll(CABLE_ARM_TEXTURE)).build();
 	}
 
 	@Override
 	public @NotNull ModelTemplate getStraightModel () {
-		return ExtendedModelTemplateBuilder.builder().suffix("_straight").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE)
-				.element(element -> element.from(6, 6, 0).to(10, 10, 16).textureAll(CABLE_ARM_TEXTURE)).build();
+		return ExtendedModelTemplateBuilder.builder().suffix("_straight").requiredTextureSlot(CABLE_ARM_TEXTURE).requiredTextureSlot(TextureSlot.PARTICLE).element(element -> element.from(6, 6, 0).to(10, 10, 16).textureAll(CABLE_ARM_TEXTURE)).build();
 	}
 
 	@Nullable

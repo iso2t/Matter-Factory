@@ -54,21 +54,21 @@ public class QuadCornerKicker implements QuadTransform {
 			{ 0, 1, 2, 3 }, //
 			{ 0, 1, 2, 3 } };
 
-	private int    mySide;
+	private int mySide;
 
 	/**
 	 * -- SETTER --
 	 * Sets the bitmask of Facades / Covers in the blockspace. This is as simple as, mask = (1 << side)
 	 */
 	@Setter
-	private int    facadeMask;
+	private int facadeMask;
 
 	/**
 	 * -- SETTER --
 	 * Sets the bounding box of the Facade / Cover, this should be the full box, not just a piece of the hole's 'ring'.
 	 */
 	@Setter
-	private AABB   box;
+	private AABB box;
 
 	/**
 	 * -- SETTER --

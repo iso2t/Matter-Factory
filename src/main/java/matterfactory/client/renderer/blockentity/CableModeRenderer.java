@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import matterfactory.common.block.cable.CableBlock;
 import matterfactory.common.block.cable.CableConnectionMode;
-import matterfactory.common.block.entity.ItemPipeBlockEntity;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
+import matterfactory.common.block.entity.ItemPipeBlockEntity;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -24,11 +24,10 @@ import org.jspecify.annotations.NonNull;
 
 public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockEntityRenderer<T, CableModeRenderState> {
 
-	private static final int IMPORT_COLOR = 0xFF186EFF;
-	private static final int EXPORT_COLOR = 0xFFFF7418;
+	private static final int   IMPORT_COLOR         = 0xFF186EFF;
+	private static final int   EXPORT_COLOR         = 0xFFFF7418;
 	private static final float ITEM_TRAVEL_DISTANCE = 0.5F;
-	private static final float ITEM_SCALE = 0.5F;
-	private static final float BLOCK_SCALE = 0.75F;
+	private static final float ITEM_SCALE           = 0.5F;
 
 	private final ItemModelResolver itemModelResolver;
 
@@ -155,17 +154,11 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 	}
 
 	private static Vec3 lerp (Vec3 from, Vec3 to, float progress) {
-		return new Vec3(
-				Mth.lerp(progress, from.x, to.x),
-				Mth.lerp(progress, from.y, to.y),
-				Mth.lerp(progress, from.z, to.z));
+		return new Vec3(Mth.lerp(progress, from.x, to.x), Mth.lerp(progress, from.y, to.y), Mth.lerp(progress, from.z, to.z));
 	}
 
 	private static Vec3 sidePoint (Direction direction) {
-		return new Vec3(
-				0.5 + direction.getStepX() * ITEM_TRAVEL_DISTANCE,
-				0.5 + direction.getStepY() * ITEM_TRAVEL_DISTANCE,
-				0.5 + direction.getStepZ() * ITEM_TRAVEL_DISTANCE);
+		return new Vec3(0.5 + direction.getStepX() * ITEM_TRAVEL_DISTANCE, 0.5 + direction.getStepY() * ITEM_TRAVEL_DISTANCE, 0.5 + direction.getStepZ() * ITEM_TRAVEL_DISTANCE);
 	}
 
 	private static void renderModeBand (PoseStack.Pose pose, VertexConsumer consumer, Direction direction, CableBlock.CableRenderGeometry geometry, int color) {

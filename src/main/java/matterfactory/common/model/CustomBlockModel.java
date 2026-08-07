@@ -35,11 +35,7 @@ public interface CustomBlockModel {
 
 	private static void registerCableModels (BlockModelGenerators generators, CableBlock cable, ModelTemplate center, ModelTemplate arm, ModelTemplate straight, ModelTemplate item, ModelTemplate gui) {
 		Identifier texture = TextureMapping.getBlockTexture(cable).sprite().withPath(path -> path.replace("block/", "block/cable/"));
-		TextureMapping textures = new TextureMapping()
-				.put(CableBlock.CABLE_CENTER_TEXTURE, new Material(texture.withPath(path -> path + "_center")))
-				.put(CableBlock.CABLE_ARM_TEXTURE, new Material(texture.withPath(path -> path + "_arm")))
-				.put(CableBlock.CABLE_GLASS_TEXTURE, new Material(texture.withPath(path -> path + "_glass")))
-				.put(TextureSlot.PARTICLE, new Material(texture.withPath(path -> path + "_center")));
+		TextureMapping textures = new TextureMapping().put(CableBlock.CABLE_CENTER_TEXTURE, new Material(texture.withPath(path -> path + "_center"))).put(CableBlock.CABLE_ARM_TEXTURE, new Material(texture.withPath(path -> path + "_arm"))).put(CableBlock.CABLE_GLASS_TEXTURE, new Material(texture.withPath(path -> path + "_glass"))).put(TextureSlot.PARTICLE, new Material(texture.withPath(path -> path + "_center")));
 
 		Identifier centerModel = center.create(cable, textures, generators.modelOutput);
 		Identifier armModel = arm.create(cable, textures, generators.modelOutput);
@@ -54,17 +50,7 @@ public interface CustomBlockModel {
 	private static void registerCableBlockState (BlockModelGenerators generators, CableBlock cable, Identifier centerModel, Identifier armModel, Identifier straightModel) {
 		MultiVariant center = BlockModelGenerators.variant(new Variant(centerModel));
 
-		MultiPartGenerator multipart = MultiPartGenerator.multiPart(cable)
-				.with(centerCondition(), center)
-				.with(straightNorthSouth(), BlockModelGenerators.variant(new Variant(straightModel)))
-				.with(straightEastWest(), BlockModelGenerators.variant(new Variant(straightModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R90))))
-				.with(straightUpDown(), BlockModelGenerators.variant(new Variant(straightModel).with(VariantMutator.X_ROT.withValue(Quadrant.R90))))
-				.with(armCondition(CableBlock.NORTH), BlockModelGenerators.variant(new Variant(armModel)))
-				.with(armCondition(CableBlock.EAST), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R90))))
-				.with(armCondition(CableBlock.SOUTH), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R180))))
-				.with(armCondition(CableBlock.WEST), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R270))))
-				.with(armCondition(CableBlock.UP), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.X_ROT.withValue(Quadrant.R270))))
-				.with(armCondition(CableBlock.DOWN), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.X_ROT.withValue(Quadrant.R90))));
+		MultiPartGenerator multipart = MultiPartGenerator.multiPart(cable).with(centerCondition(), center).with(straightNorthSouth(), BlockModelGenerators.variant(new Variant(straightModel))).with(straightEastWest(), BlockModelGenerators.variant(new Variant(straightModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R90)))).with(straightUpDown(), BlockModelGenerators.variant(new Variant(straightModel).with(VariantMutator.X_ROT.withValue(Quadrant.R90)))).with(armCondition(CableBlock.NORTH), BlockModelGenerators.variant(new Variant(armModel))).with(armCondition(CableBlock.EAST), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R90)))).with(armCondition(CableBlock.SOUTH), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R180)))).with(armCondition(CableBlock.WEST), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.Y_ROT.withValue(Quadrant.R270)))).with(armCondition(CableBlock.UP), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.X_ROT.withValue(Quadrant.R270)))).with(armCondition(CableBlock.DOWN), BlockModelGenerators.variant(new Variant(armModel).with(VariantMutator.X_ROT.withValue(Quadrant.R90))));
 
 		generators.blockStateOutput.accept(multipart);
 	}

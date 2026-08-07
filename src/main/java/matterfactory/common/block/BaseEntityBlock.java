@@ -24,8 +24,8 @@ public abstract class BaseEntityBlock<T extends BaseBlockEntity> extends BaseBlo
 
 	@Getter
 	private             BlockEntityType<T>      blockEntityType;
-	public static final EnumProperty<Direction> FACING      = BlockStateProperties.FACING;
-	private final       MapCodec<BaseBlock>     codec       = getCodec();
+	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+	private final       MapCodec<BaseBlock>     codec  = getCodec();
 
 	public BaseEntityBlock (Properties properties) {
 		super(properties);

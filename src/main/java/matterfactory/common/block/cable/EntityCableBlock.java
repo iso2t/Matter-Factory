@@ -36,8 +36,7 @@ public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends C
 			return !(level instanceof BlockGetter blockGetter) || !(getBlockEntity(blockGetter, neighborPos) instanceof BaseCableBlockEntity neighborCable) || !neighborCable.isManuallyDisconnected(direction.getOpposite());
 		}
 
-		return level instanceof Level realLevel
-				&& (hasEndpointCapability(realLevel, neighborPos, neighborState, direction.getOpposite()) || hasEndpointCapability(realLevel, neighborPos, neighborState, null));
+		return level instanceof Level realLevel && (hasEndpointCapability(realLevel, neighborPos, neighborState, direction.getOpposite()) || hasEndpointCapability(realLevel, neighborPos, neighborState, null));
 	}
 
 	@Override
@@ -48,9 +47,7 @@ public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends C
 
 		BlockPos neighborPos = pos.relative(direction);
 		BlockState neighborState = level.getBlockState(neighborPos);
-		return !isSameCableType(neighborState)
-				&& level instanceof Level realLevel
-				&& (hasEndpointCapability(realLevel, neighborPos, neighborState, direction.getOpposite()) || hasEndpointCapability(realLevel, neighborPos, neighborState, null));
+		return !isSameCableType(neighborState) && level instanceof Level realLevel && (hasEndpointCapability(realLevel, neighborPos, neighborState, direction.getOpposite()) || hasEndpointCapability(realLevel, neighborPos, neighborState, null));
 	}
 
 	protected abstract boolean hasEndpointCapability (Level level, BlockPos pos, BlockState state, @Nullable Direction side);
