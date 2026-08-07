@@ -47,17 +47,29 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 
 		Level level = blockEntity.getLevel();
 		BlockState blockState = blockEntity.getBlockState();
-		state.geometry = blockState.getBlock() instanceof CableBlock cableBlock ? cableBlock.getRenderGeometry() : CableBlock.CableRenderGeometry.POWER_CABLE;
-		for (Direction direction : Direction.values()) {
-			state.modes[direction.ordinal()] = blockEntity.getConnectionMode(direction);
-			state.endpoints[direction.ordinal()] = level != null && blockEntity.isEndpointConnection(level, blockEntity.getBlockPos(), blockState, direction);
-		}
+		extractConnectionModes(state, blockEntity, level, blockState);
 
 		extractVisualItem(blockEntity, state, partialTick, level);
 	}
 
 	@Override
 	public void submit (@NonNull CableModeRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
+		submitConnectionModeBands(state, poseStack, collector);
+
+		for (CableModeRenderState.VisualItemRenderState visualItem : state.visualItems) {
+			renderVisualItem(visualItem, poseStack, collector, cameraState, state.lightCoords);
+		}
+	}
+
+	static void extractConnectionModes (CableModeRenderState state, BaseCableBlockEntity cable, Level level, BlockState blockState) {
+		state.geometry = blockState.getBlock() instanceof CableBlock cableBlock ? cableBlock.getRenderGeometry() : CableBlock.CableRenderGeometry.POWER_CABLE;
+		for (Direction direction : Direction.values()) {
+			state.modes[direction.ordinal()] = cable.getConnectionMode(direction);
+			state.endpoints[direction.ordinal()] = level != null && cable.isEndpointConnection(level, cable.getBlockPos(), blockState, direction);
+		}
+	}
+
+	static void submitConnectionModeBands (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector) {
 		for (Direction direction : Direction.values()) {
 			CableConnectionMode mode = state.modes[direction.ordinal()];
 			if (mode == CableConnectionMode.AUTO || !state.endpoints[direction.ordinal()]) {
@@ -66,10 +78,6 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 
 			int color = mode == CableConnectionMode.IMPORT ? IMPORT_COLOR : EXPORT_COLOR;
 			collector.submitCustomGeometry(poseStack, RenderTypes.debugQuads(), (pose, consumer) -> renderModeBand(pose, consumer, direction, state.geometry, color));
-		}
-
-		for (CableModeRenderState.VisualItemRenderState visualItem : state.visualItems) {
-			renderVisualItem(visualItem, poseStack, collector, cameraState, state.lightCoords);
 		}
 	}
 

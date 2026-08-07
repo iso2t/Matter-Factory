@@ -16,6 +16,7 @@
     "matterfactory:advanced_item_pipe",
     "matterfactory:elite_item_pipe",
     "matterfactory:ultimate_item_pipe",
-    "matterfactory:infinite_item_pipe"
+    "matterfactory:infinite_item_pipe",
+    "matterfactory:facade"
   ]
 }

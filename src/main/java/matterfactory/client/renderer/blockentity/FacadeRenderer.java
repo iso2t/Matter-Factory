@@ -1,6 +1,7 @@
 package matterfactory.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import matterfactory.common.block.entity.BaseCableBlockEntity;
 import matterfactory.common.block.entity.FacadeBlockEntity;
 import matterfactory.common.item.tool.WrenchItem;
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
@@ -42,12 +44,22 @@ public class FacadeRenderer implements BlockEntityRenderer<FacadeBlockEntity, Fa
 		}
 
 		ItemStack heldItem = Minecraft.getInstance().player == null ? ItemStack.EMPTY : Minecraft.getInstance().player.getMainHandItem();
-		blockModelResolver.update(state.model, heldItem.getItem() instanceof WrenchItem ? facade.getCoveredState() : facade.getPaintedState(), BlockDisplayContext.create());
+		state.revealingCable = heldItem.getItem() instanceof WrenchItem;
+		BlockState coveredState = facade.getCoveredState();
+		blockModelResolver.update(state.model, state.revealingCable ? coveredState : facade.getPaintedState(), BlockDisplayContext.create());
+
+		BaseCableBlockEntity cable = facade.getCoveredCable(BaseCableBlockEntity.class);
+		if (cable != null && level != null) {
+			CableModeRenderer.extractConnectionModes(state, cable, level, coveredState);
+		}
 	}
 
 	@Override
 	public void submit (@NonNull FacadeRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
 		state.model.submitMultiLayer(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+		if (state.revealingCable) {
+			CableModeRenderer.submitConnectionModeBands(state, poseStack, collector);
+		}
 	}
 
 	private static int getFacadeLight (Level level, BlockPos pos) {

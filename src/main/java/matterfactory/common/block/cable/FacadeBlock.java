@@ -1,12 +1,14 @@
 package matterfactory.common.block.cable;
 
+import lombok.Setter;
 import matterfactory.common.block.BaseBlock;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
 import matterfactory.common.block.entity.FacadeBlockEntity;
 import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.item.tool.WrenchItem;
+import matterfactory.common.model.CustomBlockModel;
 import matterfactory.core.Factory;
-import matterfactory.core.datagen.util.IDefinedModel;
+import matterfactory.core.datagen.util.IPickaxe;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.MultiVariant;
@@ -20,7 +22,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -31,23 +35,24 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-public class FacadeBlock extends BaseBlock implements EntityBlock, IDefinedModel {
+@Setter
+public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockModel, IPickaxe {
 
 	private static final Identifier MODEL = Factory.get("block/facade");
 	public static final BooleanProperty PAINTED = BooleanProperty.create("painted");
+	public static final BooleanProperty GLOWING = BooleanProperty.create("glowing");
 
 	private BlockEntityType<FacadeBlockEntity> blockEntityType;
 
 	public FacadeBlock (Properties properties) {
-		super(properties);
-		registerDefaultState(getStateDefinition().any().setValue(PAINTED, false));
-	}
-
-	public void setBlockEntityType (BlockEntityType<FacadeBlockEntity> blockEntityType) {
-		this.blockEntityType = blockEntityType;
+		super(properties.lightLevel(state -> state.getValue(GLOWING) ? 15 : 0));
+		registerDefaultState(getStateDefinition().any().setValue(PAINTED, false).setValue(GLOWING, false));
 	}
 
 	public void cover (Level level, BlockPos pos, BlockState coveredState, BaseCableBlockEntity cable) {
@@ -58,22 +63,38 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, IDefinedModel
 	}
 
 	@Override
-	protected @NonNull InteractionResult useItemOn (ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	protected @NonNull InteractionResult useItemOn (ItemStack itemStack, @NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull InteractionHand hand, @NonNull BlockHitResult hit) {
 		if (itemStack.getItem() instanceof WrenchItem wrenchItem && level.getBlockEntity(pos) instanceof FacadeBlockEntity facade) {
 			return useWrenchOnFacade(wrenchItem, itemStack, level, pos, player, hit, facade);
 		}
 
+		if (itemStack.is(Items.GLOWSTONE_DUST) && !state.getValue(GLOWING)) {
+			if (!level.isClientSide()) {
+				level.setBlock(pos, state.setValue(GLOWING, true), UPDATE_ALL);
+				consumeInteractionItem(itemStack, player);
+			}
+			return InteractionResult.SUCCESS;
+		}
+
 		if (itemStack.getItem() instanceof BlockItem blockItem && isValidPaint(blockItem.getBlock().defaultBlockState()) && level.getBlockEntity(pos) instanceof FacadeBlockEntity facade) {
+			if (state.getValue(PAINTED)) {
+				return InteractionResult.SUCCESS;
+			}
+
 			if (!level.isClientSide()) {
 				facade.setPaintedState(blockItem.getBlock().defaultBlockState());
-				if (!player.getAbilities().instabuild) {
-					itemStack.shrink(1);
-				}
+				consumeInteractionItem(itemStack, player);
 			}
 			return InteractionResult.SUCCESS;
 		}
 
 		return InteractionResult.PASS;
+	}
+
+	private static void consumeInteractionItem (ItemStack itemStack, Player player) {
+		if (!player.getAbilities().instabuild) {
+			itemStack.shrink(1);
+		}
 	}
 
 	private static InteractionResult useWrenchOnFacade (WrenchItem wrench, ItemStack itemStack, Level level, BlockPos pos, Player player, BlockHitResult hit, FacadeBlockEntity facade) {
@@ -131,7 +152,28 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, IDefinedModel
 	}
 
 	@Override
-	public void registerDefinedModel (BlockModelGenerators generators, BlockDefinition<?> block) {
+	protected @NonNull VoxelShape getShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
+		if (!(level.getBlockEntity(pos) instanceof FacadeBlockEntity facade) || !(facade.getCoveredState().getBlock() instanceof CableBlock cable)) {
+			return Shapes.block();
+		}
+
+		BlockState coveredState = facade.getCoveredState();
+		VoxelShape shape = cable.getCableShape().core();
+		for (Direction direction : Direction.values()) {
+			if (coveredState.getValue(CableBlock.getConnectionProperty(direction))) {
+				shape = Shapes.or(shape, CableBlock.getArmShape(direction, cable));
+			}
+		}
+		return shape.optimize();
+	}
+
+	@Override
+	protected @NonNull VoxelShape getCollisionShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
+		return Shapes.block();
+	}
+
+	@Override
+	public void registerModel (BlockModelGenerators generators, BlockDefinition<?> block) {
 		MultiVariant model = BlockModelGenerators.variant(new Variant(MODEL));
 		generators.blockStateOutput.accept(MultiPartGenerator.multiPart(block.getBlock())
 				.with(BlockModelGenerators.condition().term(PAINTED, false).build(), model));
@@ -140,26 +182,40 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, IDefinedModel
 
 	@Override
 	protected void createBlockStateDefinition (StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(PAINTED);
+		builder.add(PAINTED, GLOWING);
 	}
 
 	@Override
-	public void playerDestroy (Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+	public void playerDestroy (@NonNull Level level, @NonNull Player player, @NonNull BlockPos pos, @NonNull BlockState state, @Nullable BlockEntity blockEntity, @NonNull ItemStack tool) {
+		if (!level.isClientSide() && !player.getAbilities().instabuild && blockEntity instanceof FacadeBlockEntity facade) {
+			dropFacadeContents(level, pos, state, facade);
+		}
+
 		super.playerDestroy(level, player, pos, state, blockEntity, tool);
 		if (!level.isClientSide() && blockEntity instanceof FacadeBlockEntity facade) {
 			facade.restoreCoveredCable(level);
 		}
 	}
 
+	private static void dropFacadeContents (Level level, BlockPos pos, BlockState state, FacadeBlockEntity facade) {
+		BlockState paintedState = facade.getPaintedState();
+		if (!paintedState.isAir()) {
+			Block.popResource(level, pos, new ItemStack(paintedState.getBlock()));
+		}
+		if (state.getValue(GLOWING)) {
+			Block.popResource(level, pos, new ItemStack(Items.GLOWSTONE_DUST));
+		}
+	}
+
 	@Nullable
 	@Override
-	public BlockEntity newBlockEntity (BlockPos pos, BlockState state) {
+	public BlockEntity newBlockEntity (@NonNull BlockPos pos, @NonNull BlockState state) {
 		return blockEntityType.create(pos, state);
 	}
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> BlockEntityTicker<T> getTicker (Level level, BlockState state, BlockEntityType<T> type) {
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker (@NonNull Level level, @NonNull BlockState state, @NonNull BlockEntityType<T> type) {
 		return type == blockEntityType ? (tickLevel, pos, tickState, blockEntity) -> FacadeBlockEntity.serverTick(tickLevel, pos, tickState, (FacadeBlockEntity) blockEntity) : null;
 	}
 }
