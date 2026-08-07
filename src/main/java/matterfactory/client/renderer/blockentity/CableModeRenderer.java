@@ -48,16 +48,14 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		BlockState blockState = blockEntity.getBlockState();
 		extractConnectionModes(state, blockEntity, level, blockState);
 
-		extractVisualItem(blockEntity, state, partialTick, level);
+		extractVisualItems(itemModelResolver, state, blockEntity, partialTick, level);
 	}
 
 	@Override
 	public void submit (@NonNull CableModeRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
 		submitConnectionModeBands(state, poseStack, collector);
 
-		for (CableModeRenderState.VisualItemRenderState visualItem : state.visualItems) {
-			renderVisualItem(visualItem, poseStack, collector, cameraState, state.lightCoords);
-		}
+		submitVisualItems(state, poseStack, collector, cameraState);
 	}
 
 	static void extractConnectionModes (CableModeRenderState state, BaseCableBlockEntity cable, Level level, BlockState blockState) {
@@ -80,7 +78,7 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		}
 	}
 
-	private void extractVisualItem (T blockEntity, CableModeRenderState state, float partialTick, Level level) {
+	static void extractVisualItems (ItemModelResolver itemModelResolver, CableModeRenderState state, BaseCableBlockEntity blockEntity, float partialTick, Level level) {
 		if (!(blockEntity instanceof ItemPipeBlockEntity itemPipe) || level == null) {
 			state.visualItems.clear();
 			return;
@@ -105,6 +103,12 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 
 		while (state.visualItems.size() > visualIndex) {
 			state.visualItems.removeLast();
+		}
+	}
+
+	static void submitVisualItems (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState) {
+		for (CableModeRenderState.VisualItemRenderState visualItem : state.visualItems) {
+			renderVisualItem(visualItem, poseStack, collector, cameraState, state.lightCoords);
 		}
 	}
 

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -31,9 +32,11 @@ public class FacadeRenderer implements BlockEntityRenderer<FacadeBlockEntity, Fa
 	private static final Identifier FACADE_TEXTURE = Factory.get("textures/block/facade.png");
 
 	private final BlockModelResolver blockModelResolver;
+	private final ItemModelResolver  itemModelResolver;
 
 	public FacadeRenderer (BlockEntityRendererProvider.Context context) {
 		blockModelResolver = context.blockModelResolver();
+		itemModelResolver = context.itemModelResolver();
 	}
 
 	@Override
@@ -52,28 +55,50 @@ public class FacadeRenderer implements BlockEntityRenderer<FacadeBlockEntity, Fa
 		ItemStack heldItem = Minecraft.getInstance().player == null ? ItemStack.EMPTY : Minecraft.getInstance().player.getMainHandItem();
 		state.revealingCable = heldItem.getItem() instanceof WrenchItem;
 		BlockState coveredState = facade.getCoveredState();
-		state.showUnpaintedFacade = !state.revealingCable && facade.getPaintedState().isAir();
+		BlockState paintedState = facade.getPaintedState();
+		state.showUnpaintedFacade = !state.revealingCable && paintedState.isAir();
+		if (state.revealingCable || isTransparentPaint(paintedState)) {
+			blockModelResolver.update(state.coveredModel, coveredState, BlockDisplayContext.create());
+		} else {
+			state.coveredModel.clear();
+		}
+
 		if (state.showUnpaintedFacade) {
 			state.model.clear();
+		} else if (state.revealingCable) {
+			state.model.clear();
 		} else {
-			blockModelResolver.update(state.model, state.revealingCable ? coveredState : facade.getPaintedState(), BlockDisplayContext.create());
+			blockModelResolver.update(state.model, paintedState, BlockDisplayContext.create());
 		}
 
 		BaseCableBlockEntity cable = facade.getCoveredCable(BaseCableBlockEntity.class);
 		if (cable != null && level != null) {
 			CableModeRenderer.extractConnectionModes(state, cable, level, coveredState);
+			if (isTransparentPaint(paintedState)) {
+				CableModeRenderer.extractVisualItems(itemModelResolver, state, cable, partialTick, level);
+			} else {
+				state.visualItems.clear();
+			}
+		} else {
+			state.visualItems.clear();
 		}
 	}
 
 	@Override
 	public void submit (@NonNull FacadeRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
+		state.coveredModel.submitMultiLayer(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 		state.model.submitMultiLayer(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 		if (state.showUnpaintedFacade) {
 			collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(FACADE_TEXTURE, false), (pose, consumer) -> renderUnpaintedFacade(pose, consumer, state.lightCoords));
 		}
-		if (state.revealingCable) {
+		if (!state.coveredModel.isEmpty()) {
 			CableModeRenderer.submitConnectionModeBands(state, poseStack, collector);
 		}
+		CableModeRenderer.submitVisualItems(state, poseStack, collector, cameraState);
+	}
+
+	private static boolean isTransparentPaint (BlockState paintedState) {
+		return !paintedState.isAir() && !paintedState.isSolidRender();
 	}
 
 	private static int getFacadeLight (Level level, BlockPos pos) {
