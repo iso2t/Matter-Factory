@@ -1,3 +1,3 @@
 files:
-  - source: src/generated/resources/assets/matterfactory/lang
+  - source: src/generated/resources/assets/matterfactory/lang/en_us.json
     translation: src/java/resources/assets/matterfactory/lang/%two_letters_code%
