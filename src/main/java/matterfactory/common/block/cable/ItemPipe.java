@@ -5,6 +5,7 @@ import lombok.Getter;
 import matterfactory.common.block.entity.ItemPipeBlockEntity;
 import matterfactory.core.Factory;
 import matterfactory.core.Tier;
+import matterfactory.util.shape.CableShape;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.core.BlockPos;
@@ -19,7 +20,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -54,38 +54,15 @@ public class ItemPipe extends EntityCableBlock<ItemPipeBlockEntity> {
 	}
 
 	@Override
-	public VoxelShape getCoreShape () {
-		return box(4, 4, 4, 12, 12, 12);
-	}
-
-	@Override
-	public VoxelShape getDownShape () {
-		return box(4, 0, 4, 12, 4, 12);
-	}
-
-	@Override
-	public VoxelShape getUpShape () {
-		return box(4, 12, 4, 12, 16, 12);
-	}
-
-	@Override
-	public VoxelShape getNorthShape () {
-		return box(4, 4, 0, 12, 12, 4);
-	}
-
-	@Override
-	public VoxelShape getSouthShape () {
-		return box(4, 4, 12, 12, 12, 16);
-	}
-
-	@Override
-	public VoxelShape getWestShape () {
-		return box(0, 4, 4, 4, 12, 12);
-	}
-
-	@Override
-	public VoxelShape getEastShape () {
-		return box(12, 4, 4, 16, 12, 12);
+	public CableShape getCableShape () {
+		return CableShape.from(
+				box(4, 4, 4, 12, 12, 12),
+				box(4, 0, 4, 12, 4, 12),
+				box(4, 12, 4, 12, 16, 12),
+				box(4, 4, 0, 12, 12, 4),
+				box(4, 4, 12, 12, 12, 16),
+				box(0, 4, 4, 4, 12, 12),
+				box(12, 4, 4, 16, 12, 12));
 	}
 
 	@Override

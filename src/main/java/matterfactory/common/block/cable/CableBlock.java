@@ -6,6 +6,7 @@ import matterfactory.common.definition.BlockDefinition;
 import matterfactory.common.item.tool.WrenchItem;
 import matterfactory.common.model.CustomBlockModel;
 import matterfactory.core.datagen.util.IPickaxe;
+import matterfactory.util.shape.CableShape;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -79,32 +80,15 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		return getCodec();
 	}
 
-	public VoxelShape getCoreShape () {
-		return box(5, 5, 5, 11, 11, 11);
-	}
-
-	public VoxelShape getDownShape () {
-		return box(5, 0, 5, 11, 5, 11);
-	}
-
-	public VoxelShape getUpShape () {
-		return box(5, 11, 5, 11, 16, 11);
-	}
-
-	public VoxelShape getNorthShape () {
-		return box(5, 5, 0, 11, 11, 5);
-	}
-
-	public VoxelShape getSouthShape () {
-		return box(5, 5, 11, 11, 11, 16);
-	}
-
-	public VoxelShape getWestShape () {
-		return box(0, 5, 5, 5, 11, 11);
-	}
-
-	public VoxelShape getEastShape () {
-		return box(11, 5, 5, 16, 11, 11);
+	public CableShape getCableShape () {
+		return CableShape.from(
+				box(5, 5, 5, 11, 11, 11),
+				box(5, 0, 5, 11, 5, 11),
+				box(5, 11, 5, 11, 16, 11),
+				box(5, 5, 0, 11, 11, 5),
+				box(5, 5, 11, 11, 11, 16),
+				box(0, 5, 5, 5, 11, 11),
+				box(11, 5, 5, 16, 11, 11));
 	}
 
 	@Override
@@ -269,12 +253,12 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	public static VoxelShape getArmShape (Direction direction, CableBlock block) {
 		return switch (direction) {
-			case DOWN -> block.getDownShape();
-			case UP -> block.getUpShape();
-			case NORTH -> block.getNorthShape();
-			case SOUTH -> block.getSouthShape();
-			case WEST -> block.getWestShape();
-			case EAST -> block.getEastShape();
+			case DOWN -> block.getCableShape().down();
+			case UP -> block.getCableShape().up();
+			case NORTH -> block.getCableShape().north();
+			case SOUTH -> block.getCableShape().south();
+			case WEST -> block.getCableShape().west();
+			case EAST -> block.getCableShape().east();
 		};
 	}
 
@@ -294,13 +278,13 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		VoxelShape[] shapes = new VoxelShape[64];
 
 		for (int index = 0; index < shapes.length; index++) {
-			VoxelShape shape = getCoreShape();
-			if ((index & 1) != 0) shape = Shapes.or(shape, getDownShape());
-			if ((index & (1 << 1)) != 0) shape = Shapes.or(shape, getUpShape());
-			if ((index & (1 << 2)) != 0) shape = Shapes.or(shape, getNorthShape());
-			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, getSouthShape());
-			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, getWestShape());
-			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, getEastShape());
+			VoxelShape shape = getCableShape().core();
+			if ((index & 1) != 0) shape = Shapes.or(shape, getCableShape().down());
+			if ((index & (1 << 1)) != 0) shape = Shapes.or(shape, getCableShape().up());
+			if ((index & (1 << 2)) != 0) shape = Shapes.or(shape, getCableShape().north());
+			if ((index & (1 << 3)) != 0) shape = Shapes.or(shape, getCableShape().south());
+			if ((index & (1 << 4)) != 0) shape = Shapes.or(shape, getCableShape().west());
+			if ((index & (1 << 5)) != 0) shape = Shapes.or(shape, getCableShape().east());
 			shapes[index] = shape.optimize();
 		}
 
