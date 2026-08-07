@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -45,13 +47,14 @@ import org.jspecify.annotations.NonNull;
 public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockModel, IPickaxe {
 
 	private static final Identifier MODEL = Factory.get("block/facade");
+	private static final Identifier ITEM_MODEL = Factory.get("block/facade_item");
 	public static final BooleanProperty PAINTED = BooleanProperty.create("painted");
 	public static final BooleanProperty GLOWING = BooleanProperty.create("glowing");
 
 	private BlockEntityType<FacadeBlockEntity> blockEntityType;
 
 	public FacadeBlock (Properties properties) {
-		super(properties.lightLevel(state -> state.getValue(GLOWING) ? 15 : 0));
+		super(properties.noOcclusion().lightLevel(state -> state.getValue(GLOWING) ? 15 : 0));
 		registerDefaultState(getStateDefinition().any().setValue(PAINTED, false).setValue(GLOWING, false));
 	}
 
@@ -71,6 +74,7 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 		if (itemStack.is(Items.GLOWSTONE_DUST) && !state.getValue(GLOWING)) {
 			if (!level.isClientSide()) {
 				level.setBlock(pos, state.setValue(GLOWING, true), UPDATE_ALL);
+				level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.6F, 1.2F);
 				consumeInteractionItem(itemStack, player);
 			}
 			return InteractionResult.SUCCESS;
@@ -82,7 +86,9 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 			}
 
 			if (!level.isClientSide()) {
-				facade.setPaintedState(blockItem.getBlock().defaultBlockState());
+				BlockState paintedState = blockItem.getBlock().defaultBlockState();
+				facade.setPaintedState(paintedState);
+				playPlacementSound(level, pos, player, paintedState);
 				consumeInteractionItem(itemStack, player);
 			}
 			return InteractionResult.SUCCESS;
@@ -95,6 +101,11 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 		if (!player.getAbilities().instabuild) {
 			itemStack.shrink(1);
 		}
+	}
+
+	public static void playPlacementSound (Level level, BlockPos pos, @Nullable Player player, BlockState state) {
+		var sound = state.getSoundType(level, pos, player);
+		level.playSound(null, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 	}
 
 	private static InteractionResult useWrenchOnFacade (WrenchItem wrench, ItemStack itemStack, Level level, BlockPos pos, Player player, BlockHitResult hit, FacadeBlockEntity facade) {
@@ -177,7 +188,7 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 		MultiVariant model = BlockModelGenerators.variant(new Variant(MODEL));
 		generators.blockStateOutput.accept(MultiPartGenerator.multiPart(block.getBlock())
 				.with(BlockModelGenerators.condition().term(PAINTED, false).build(), model));
-		generators.itemModelOutput.accept(block.asItem(), ItemModelUtils.plainModel(MODEL));
+		generators.itemModelOutput.accept(block.asItem(), ItemModelUtils.plainModel(ITEM_MODEL));
 	}
 
 	@Override

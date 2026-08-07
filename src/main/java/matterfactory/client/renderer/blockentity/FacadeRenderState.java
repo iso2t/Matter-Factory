@@ -6,5 +6,6 @@ public class FacadeRenderState extends CableModeRenderState {
 
 	final BlockModelRenderState model = new BlockModelRenderState();
 	boolean revealingCable;
+	boolean showUnpaintedFacade;
 
 }

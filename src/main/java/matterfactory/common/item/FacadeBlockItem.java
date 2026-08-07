@@ -28,6 +28,7 @@ public class FacadeBlockItem extends BlockItem {
 
 		if (!level.isClientSide()) {
 			facade.cover(level, pos, state, cable);
+			FacadeBlock.playPlacementSound(level, pos, context.getPlayer(), level.getBlockState(pos));
 			if (context.getPlayer() == null || !context.getPlayer().getAbilities().instabuild) {
 				context.getItemInHand().shrink(1);
 			}
