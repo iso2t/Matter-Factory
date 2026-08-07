@@ -183,32 +183,37 @@ public record ItemPipeNetwork(List<ItemPipeBlockEntity> pipes, List<ItemEndpoint
 			return null;
 		}
 
-		ItemResource resource = ResourceHandlerUtil.findExtractableResource(source, resourceToMove -> true, transaction);
-		if (resource == null) {
-			return null;
-		}
+		for (int index = 0; index < source.size(); index++) {
+			ItemResource resource = source.getResource(index);
+			if (resource.isEmpty()) {
+				continue;
+			}
 
-		int extractable;
-		try (Transaction simulation = Transaction.open(transaction)) {
-			extractable = source.extract(resource, amount, simulation);
-		}
+			int requested = Math.min(amount, source.getAmountAsInt(index));
+			if (requested <= 0) {
+				continue;
+			}
 
-		if (extractable <= 0) {
-			return null;
-		}
+			int extractable;
+			try (Transaction simulation = Transaction.open(transaction)) {
+				extractable = source.extract(index, resource, requested, simulation);
+			}
 
-		int insertable = simulateInsertStacking(sink, resource, extractable, reservations, transaction);
+			if (extractable <= 0) {
+				continue;
+			}
 
-		int transferable = Math.min(extractable, insertable);
-		if (transferable <= 0) {
-			return null;
-		}
+			int transferable = Math.min(extractable, simulateInsertStacking(sink, resource, extractable, reservations, transaction));
+			if (transferable <= 0) {
+				continue;
+			}
 
-		try (Transaction transfer = Transaction.open(transaction)) {
-			int extracted = source.extract(resource, transferable, transfer);
-			if (extracted > 0) {
-				transfer.commit();
-				return new ResourceStack<>(resource, extracted);
+			try (Transaction transfer = Transaction.open(transaction)) {
+				int extracted = source.extract(index, resource, transferable, transfer);
+				if (extracted > 0) {
+					transfer.commit();
+					return new ResourceStack<>(resource, extracted);
+				}
 			}
 		}
 
