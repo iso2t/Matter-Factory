@@ -41,6 +41,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
@@ -178,6 +179,10 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 
 	@Override
 	protected @NonNull VoxelShape getShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
+		if (!isMaintainingFacade(context)) {
+			return Shapes.block();
+		}
+
 		if (!(level.getBlockEntity(pos) instanceof FacadeBlockEntity facade) || !(facade.getCoveredState().getBlock() instanceof CableBlock cable)) {
 			return Shapes.block();
 		}
@@ -190,6 +195,12 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 			}
 		}
 		return shape.optimize();
+	}
+
+	private static boolean isMaintainingFacade (CollisionContext context) {
+		return context instanceof EntityCollisionContext entityContext
+		       && entityContext.getEntity() instanceof Player player
+		       && player.getMainHandItem().getItem() instanceof WrenchItem;
 	}
 
 	@Override
