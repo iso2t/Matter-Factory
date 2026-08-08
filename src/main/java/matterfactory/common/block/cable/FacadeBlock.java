@@ -1,7 +1,7 @@
 package matterfactory.common.block.cable;
 
-import lombok.Setter;
 import matterfactory.common.block.BaseBlock;
+import matterfactory.common.block.BlockEntityTypeOwner;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
 import matterfactory.common.block.entity.FacadeBlockEntity;
 import matterfactory.common.definition.BlockDefinition;
@@ -46,8 +46,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-@Setter
-public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockModel, IPickaxe {
+public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockModel, IPickaxe, BlockEntityTypeOwner<FacadeBlockEntity> {
 
 	private static final Identifier      MODEL      = Factory.get("block/facade");
 	private static final Identifier      ITEM_MODEL = Factory.get("block/facade_item");
@@ -59,6 +58,11 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 	public FacadeBlock (Properties properties) {
 		super(properties.noOcclusion().lightLevel(state -> state.getValue(GLOWING) ? 15 : 0));
 		registerDefaultState(getStateDefinition().any().setValue(PAINTED, false).setValue(GLOWING, false));
+	}
+
+	@Override
+	public void setBlockEntity (Class<FacadeBlockEntity> blockEntityClass, BlockEntityType<FacadeBlockEntity> blockEntityType) {
+		this.blockEntityType = blockEntityType;
 	}
 
 	public void cover (Level level, BlockPos pos, BlockState coveredState, BaseCableBlockEntity cable) {

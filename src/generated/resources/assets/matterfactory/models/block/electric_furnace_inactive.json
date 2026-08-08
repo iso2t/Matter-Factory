@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "matterfactory:block/machine_side_item",
+    "front": "matterfactory:block/electric_furnace",
+    "side": "matterfactory:block/machine_side_item",
+    "top": "matterfactory:block/machine_side_item"
+  }
+}

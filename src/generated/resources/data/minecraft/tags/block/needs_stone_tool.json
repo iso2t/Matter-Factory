@@ -2,6 +2,7 @@
   "values": [
     "matterfactory:machine_frame",
     "matterfactory:machine_casing",
-    "matterfactory:facade"
+    "matterfactory:facade",
+    "matterfactory:electric_furnace"
   ]
 }

@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.SoundType;
 
-public class MachineFrameBlock extends MachineBlock implements CustomBlockModel, IPickaxe {
+public class MachineFrameBlock extends MachinePart implements CustomBlockModel, IPickaxe {
 
     private static final Identifier MODEL = Factory.get("block/machine_frame");
 

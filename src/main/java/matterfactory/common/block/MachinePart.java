@@ -7,12 +7,12 @@ import net.minecraft.world.level.block.SoundType;
 
 import java.util.function.Supplier;
 
-public class MachineBlock extends BaseBlock implements IPickaxe {
+public class MachinePart extends BaseBlock implements IPickaxe {
 
 	@Getter
 	private final Type type;
 
-	public MachineBlock (Type type, Properties properties) {
+	public MachinePart (Type type, Properties properties) {
 		super(properties);
 		this.type = type;
 	}

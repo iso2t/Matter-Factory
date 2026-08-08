@@ -1,6 +1,7 @@
 package matterfactory.common.block.cable;
 
 import lombok.Getter;
+import matterfactory.common.block.BlockEntityTypeOwner;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends CableBlock implements EntityBlock {
+public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends CableBlock implements EntityBlock, BlockEntityTypeOwner<T> {
 
 	private Class<T> blockEntityClass;
 
@@ -25,6 +26,7 @@ public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends C
 		super(properties);
 	}
 
+	@Override
 	public void setBlockEntity (Class<T> blockEntityClass, BlockEntityType<T> blockEntityType) {
 		this.blockEntityClass = blockEntityClass;
 		this.blockEntityType = blockEntityType;

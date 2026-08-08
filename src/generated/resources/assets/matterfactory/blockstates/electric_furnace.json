@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "matterfactory:block/electric_furnace_inactive"
+    },
+    "active=true": {
+      "model": "matterfactory:block/electric_furnace_active"
+    }
+  }
+}
