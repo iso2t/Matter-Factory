@@ -199,7 +199,17 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 			return Shapes.block();
 		}
 
-		return CableBlock.getMaintenanceShape(facade.getCoveredState(), cable);
+		return CableBlock.isSneakingWithWrench(context) ? CableBlock.getMaintenanceShape(facade.getCoveredState(), cable) : getCableShape(facade.getCoveredState(), cable);
+	}
+
+	private static VoxelShape getCableShape (BlockState state, CableBlock cable) {
+		VoxelShape shape = cable.getCableShape().core();
+		for (Direction direction : Direction.values()) {
+			if (state.getValue(CableBlock.getConnectionProperty(direction))) {
+				shape = Shapes.or(shape, CableBlock.getArmShape(direction, cable));
+			}
+		}
+		return shape.optimize();
 	}
 
 	@Override

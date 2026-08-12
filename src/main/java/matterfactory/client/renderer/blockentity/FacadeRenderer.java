@@ -85,14 +85,14 @@ public class FacadeRenderer implements BlockEntityRenderer<FacadeBlockEntity, Fa
 		}
 
 		BaseCableBlockEntity cable = facade.getCoveredCable(BaseCableBlockEntity.class);
-		state.showMaintenanceOutline = state.revealingCable
-		                               && Minecraft.getInstance().hitResult instanceof BlockHitResult hit
-		                               && hit.getBlockPos().equals(facade.getBlockPos());
+		BlockHitResult targetedHit = Minecraft.getInstance().hitResult instanceof BlockHitResult hit && hit.getBlockPos().equals(facade.getBlockPos()) ? hit : null;
+		state.showMaintenanceOutline = state.revealingCable && targetedHit != null;
 		state.maintenanceShape = net.minecraft.world.phys.shapes.Shapes.empty();
 		if (cable != null && level != null) {
 			CableModeRenderer.extractConnectionModes(state, cable, level, coveredState);
-			if (state.showMaintenanceOutline && coveredState.getBlock() instanceof CableBlock cableBlock) {
-				state.maintenanceShape = CableBlock.getMaintenanceShape(coveredState, cableBlock);
+			if (state.showMaintenanceOutline) {
+				var player = Minecraft.getInstance().player;
+				state.maintenanceShape = CableBlock.getWrenchOutlineShape(coveredState, facade.getBlockPos(), targetedHit, player != null && player.isShiftKeyDown());
 			}
 			if (isTransparentPaint(paintedState)) {
 				CableModeRenderer.extractVisualItems(itemModelResolver, state, cable, partialTick, level);

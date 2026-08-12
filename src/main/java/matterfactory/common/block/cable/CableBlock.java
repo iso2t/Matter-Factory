@@ -116,7 +116,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	 */
 	@Override
 	protected @NonNull VoxelShape getShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
-		return (isHoldingWrench(context) ? MAINTENANCE_SHAPES : SHAPES)[getShapeIndex(state)];
+		return (isSneakingWithWrench(context) ? MAINTENANCE_SHAPES : SHAPES)[getShapeIndex(state)];
 	}
 
 	@Override
@@ -291,8 +291,27 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		return shape.optimize();
 	}
 
+	public static VoxelShape getWrenchOutlineShape (BlockState state, BlockPos pos, BlockHitResult hit, boolean expanded) {
+		if (!(state.getBlock() instanceof CableBlock cableBlock)) {
+			return Shapes.empty();
+		}
+
+		var localHit = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
+		for (Direction direction : Direction.values()) {
+			if (state.getValue(getConnectionProperty(direction)) && getArmShape(direction, cableBlock).bounds().inflate(1.0E-5).contains(localHit)) {
+				return expanded ? getMaintenanceArmShape(direction, cableBlock) : getArmShape(direction, cableBlock);
+			}
+		}
+
+		return cableBlock.getCableShape().core();
+	}
+
 	public static boolean isHoldingWrench (CollisionContext context) {
 		return context instanceof EntityCollisionContext entityContext && entityContext.getEntity() instanceof Player player && player.getMainHandItem().getItem() instanceof WrenchItem;
+	}
+
+	public static boolean isSneakingWithWrench (CollisionContext context) {
+		return context instanceof EntityCollisionContext entityContext && entityContext.getEntity() instanceof Player player && player.isShiftKeyDown() && player.getMainHandItem().getItem() instanceof WrenchItem;
 	}
 
 	private static int getShapeIndex (BlockState state) {

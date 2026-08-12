@@ -10,11 +10,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jspecify.annotations.NonNull;
 
-@OnlyIn(Dist.CLIENT)
 public abstract class AbstractMachineScreen<T extends AbstractMachineMenu<?, ?>> extends AbstractContainerScreen<T> {
 
 	@Getter
