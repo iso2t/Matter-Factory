@@ -21,12 +21,12 @@ public class GuiPowerRenderer extends AbstractBarRenderer {
 	@Setter
 	private Color renderColor = Color.BRIGHT_GREEN;
 
-	public GuiPowerRenderer (int xMin, int yMin, IntSupplier energyStored, IntSupplier energyCapacity) {
-		this(xMin, yMin, energyStored, energyCapacity, 8, 64);
+	public GuiPowerRenderer (RenderLocation location, IntSupplier energyStored, IntSupplier energyCapacity) {
+		this(location, energyStored, energyCapacity, Size.getDefault());
 	}
 
-	public GuiPowerRenderer (int xMin, int yMin, IntSupplier energyStored, IntSupplier energyCapacity, int width, int height) {
-		super(xMin, yMin, width, height);
+	public GuiPowerRenderer (RenderLocation location, IntSupplier energyStored, IntSupplier energyCapacity, Size size) {
+		super(location.left(), location.top(), size.width(), size.maxHeight());
 		this.energyStored = energyStored;
 		this.energyCapacity = energyCapacity;
 	}
@@ -51,6 +51,22 @@ public class GuiPowerRenderer extends AbstractBarRenderer {
 		if (cap <= 0) return;
 		int storedPx = (int) (getHeight() * (getEnergyStored().getAsInt() / (float) cap));
 		guiGraphics.fillGradient(x, y + (getHeight() - storedPx), x + getWidth(), y + getHeight(), Color.BRIGHT_RED.getArgb(), getRenderColor().getArgb());
+	}
+
+	public record Size(int width, int maxHeight) {
+
+		public static Size getDefault () {
+			return new Size(8, 64);
+		}
+
+	}
+
+	public record RenderLocation(int left, int top) {
+
+		public static RenderLocation getDefault () {
+			return new RenderLocation(158, 9);
+		}
+
 	}
 
 }

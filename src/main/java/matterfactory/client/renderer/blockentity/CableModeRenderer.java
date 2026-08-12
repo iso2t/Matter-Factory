@@ -58,14 +58,37 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		submitVisualItems(state, poseStack, collector, cameraState);
 	}
 
+	/**
+	 * Extracts the connection modes and endpoint information for each direction of a cable block.
+	 * This method populates the provided render state's geometry, modes, and endpoints
+	 * based on the block state and cable entity data.
+	 *
+	 * @param state The render state to be updated with the connection modes and endpoint
+	 *              information for each direction.
+	 * @param cable The cable block entity containing connection mode data.
+	 * @param level The level or world in which the cable block is located.
+	 * @param blockState The block state of the cable, used to determine its render geometry.
+	 */
 	static void extractConnectionModes (CableModeRenderState state, BaseCableBlockEntity cable, Level level, BlockState blockState) {
-		state.geometry = blockState.getBlock() instanceof CableBlock cableBlock ? cableBlock.getRenderGeometry() : CableBlock.CableRenderGeometry.POWER_CABLE;
+		state.geometry = blockState.getBlock() instanceof CableBlock cableBlock
+				? cableBlock.getRenderGeometry().withCrossSection(CableBlock.getArmShape(Direction.NORTH, cableBlock).bounds())
+				: CableBlock.CableRenderGeometry.POWER_CABLE;
 		for (Direction direction : Direction.values()) {
 			state.modes[direction.ordinal()] = cable.getConnectionMode(direction);
 			state.endpoints[direction.ordinal()] = level != null && cable.isEndpointConnection(level, cable.getBlockPos(), blockState, direction);
 		}
 	}
 
+	/**
+	 * Submits connection mode bands for each direction based on the provided render state.
+	 * This method processes each direction, checks the connection mode, and submits custom
+	 * geometry for rendering import and export mode bands.
+	 *
+	 * @param state The render state containing information about the cable connection modes
+	 *              and endpoints for each direction.
+	 * @param poseStack The pose stack used to define transformations during rendering.
+	 * @param collector The node collector used to gather and submit renderable elements to the renderer.
+	 */
 	static void submitConnectionModeBands (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector) {
 		for (Direction direction : Direction.values()) {
 			CableConnectionMode mode = state.modes[direction.ordinal()];
@@ -78,6 +101,17 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		}
 	}
 
+	/**
+	 * Iterates through the visual transfers of a given {@code ItemPipeBlockEntity} and updates the visual
+	 * item states in the provided {@code CableModeRenderState}. If the block entity is not an
+	 * {@code ItemPipeBlockEntity} or the level is null, the method clears the visual items in the render state.
+	 *
+	 * @param itemModelResolver The resolver used to update the rendering model for visual items.
+	 * @param state The cable mode render state to be updated with visual item data.
+	 * @param blockEntity The base cable block entity, expected to be an {@code ItemPipeBlockEntity}.
+	 * @param partialTick The partial tick value used to interpolate rendering between frames.
+	 * @param level The current level or world in which the block entity resides.
+	 */
 	static void extractVisualItems (ItemModelResolver itemModelResolver, CableModeRenderState state, BaseCableBlockEntity blockEntity, float partialTick, Level level) {
 		if (!(blockEntity instanceof ItemPipeBlockEntity itemPipe) || level == null) {
 			state.visualItems.clear();
@@ -106,12 +140,30 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		}
 	}
 
+	/**
+	 * Submits all visual items stored in the given cable mode render state for rendering.
+	 * Each visual item is rendered by iterating through its associated render logic.
+	 *
+	 * @param state The cable mode render state containing the visual items to be rendered.
+	 * @param poseStack The pose stack used to define transformations for each visual item's rendering.
+	 * @param collector The node collector used to collect renderable elements for submission.
+	 * @param cameraState The current camera render state, providing orientation and view information for rendering.
+	 */
 	static void submitVisualItems (CableModeRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState) {
 		for (CableModeRenderState.VisualItemRenderState visualItem : state.visualItems) {
 			renderVisualItem(visualItem, poseStack, collector, cameraState, state.lightCoords);
 		}
 	}
 
+	/**
+	 * Retrieves the visual item render state at the specified index within the provided render state.
+	 * If the index is out of bounds, new instances of {@code VisualItemRenderState} are created and
+	 * added to the list until the index is within bounds.
+	 *
+	 * @param state The cable mode render state containing the list of visual item render states.
+	 * @param index The index of the visual item render state to retrieve.
+	 * @return The {@code VisualItemRenderState} at the specified index.
+	 */
 	private static CableModeRenderState.VisualItemRenderState getVisualItemState (CableModeRenderState state, int index) {
 		while (state.visualItems.size() <= index) {
 			state.visualItems.add(new CableModeRenderState.VisualItemRenderState());
@@ -120,6 +172,16 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		return state.visualItems.get(index);
 	}
 
+	/**
+	 * Renders a visual item, iterating through its count and calculating its progress along a
+	 * specified path, based on elapsed time and travel duration.
+	 *
+	 * @param visual The render state of the visual item containing all data necessary for rendering.
+	 * @param poseStack The pose stack used to define transformations for rendering.
+	 * @param collector The node collector used to collect renderable elements.
+	 * @param cameraState The current camera render state, providing orientation data for rendering.
+	 * @param lightCoords The packed light coordinates applied during rendering.
+	 */
 	private static void renderVisualItem (CableModeRenderState.VisualItemRenderState visual, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState, int lightCoords) {
 		int count = Math.max(1, visual.itemCount);
 		for (int index = 0; index < count; index++) {
@@ -133,6 +195,16 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		}
 	}
 
+	/**
+	 * Renders a visual item at a specific position along a cable's path, based on its progress value.
+	 *
+	 * @param visual The render state of the visual item containing all data necessary for rendering.
+	 * @param poseStack The pose stack used to define transformations for rendering.
+	 * @param collector The node collector used to collect renderable elements.
+	 * @param cameraState The current camera render state, providing orientation data for rendering.
+	 * @param lightCoords The packed light coordinates applied during rendering.
+	 * @param progress The progress value between 0 and 1 that determines the item's position along the path.
+	 */
 	private static void renderVisualItemAt (CableModeRenderState.VisualItemRenderState visual, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState, int lightCoords, float progress) {
 		Vec3 position = sharpPipePathPoint(visual.from, visual.to, progress);
 
@@ -165,6 +237,15 @@ public class CableModeRenderer<T extends BaseCableBlockEntity> implements BlockE
 		return new Vec3(0.5 + direction.getStepX() * ITEM_TRAVEL_DISTANCE, 0.5 + direction.getStepY() * ITEM_TRAVEL_DISTANCE, 0.5 + direction.getStepZ() * ITEM_TRAVEL_DISTANCE);
 	}
 
+	/**
+	 * Renders the mode band for a cable block, based on the provided geometry and direction.
+	 *
+	 * @param pose The transformation pose to be applied to the render.
+	 * @param consumer The vertex consumer for rendering vertices.
+	 * @param direction The direction in which the mode band is rendered.
+	 * @param geometry The render geometry containing dimensions for the cable block.
+	 * @param color The color to be applied to the rendered mode band.
+	 */
 	private static void renderModeBand (PoseStack.Pose pose, VertexConsumer consumer, Direction direction, CableBlock.CableRenderGeometry geometry, int color) {
 		float outerMin = geometry.crossMin() - 0.25F / 16.0F;
 		float outerMax = geometry.crossMax() + 0.25F / 16.0F;

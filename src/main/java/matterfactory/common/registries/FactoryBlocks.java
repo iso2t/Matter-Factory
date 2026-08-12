@@ -2,8 +2,8 @@ package matterfactory.common.registries;
 
 import matterfactory.common.FactoryTab;
 import matterfactory.common.block.BaseBlock;
-import matterfactory.common.block.MachinePart;
 import matterfactory.common.block.MachineFrameBlock;
+import matterfactory.common.block.MachinePart;
 import matterfactory.common.block.cable.FacadeBlock;
 import matterfactory.common.block.cable.FluidPipe;
 import matterfactory.common.block.cable.ItemPipe;
@@ -39,24 +39,24 @@ public class FactoryBlocks {
 
 	public static final List<BlockDefinition<?>> BLOCKS = new ArrayList<>();
 
-	public static final BlockDefinition<MachineFrameBlock> MACHINE_FRAME     = register("Machine Frame", MachineFrameBlock::new);
-	public static final BlockDefinition<MachinePart>       MACHINE_CASING    = register("Machine Casing", properties -> new MachinePart(MachinePart.Type.MACHINE_CASING, properties.requiresCorrectToolForDrops().strength(10.0F, 1200.0F).sound(SoundType.IRON)));
-	public static final BlockDefinition<PowerCable>        BASIC_POWER_CABLE = register("Basic Power Cable", properties -> new PowerCable(properties, Tier.BASIC));
-	public static final BlockDefinition<PowerCable>   ADVANCED_POWER_CABLE = register("Advanced Power Cable", properties -> new PowerCable(properties, Tier.ADVANCED));
-	public static final BlockDefinition<PowerCable>   ELITE_POWER_CABLE    = register("Elite Power Cable", properties -> new PowerCable(properties, Tier.ELITE));
-	public static final BlockDefinition<PowerCable>   ULTIMATE_POWER_CABLE = register("Ultimate Power Cable", properties -> new PowerCable(properties, Tier.ULTIMATE));
-	public static final BlockDefinition<PowerCable>   INFINITE_POWER_CABLE = register("Infinite Power Cable", properties -> new PowerCable(properties, Tier.INFINITE));
-	public static final BlockDefinition<FluidPipe>    BASIC_FLUID_PIPE     = register("Basic Fluid Pipe", properties -> new FluidPipe(properties, Tier.BASIC));
-	public static final BlockDefinition<FluidPipe>    ADVANCED_FLUID_PIPE  = register("Advanced Fluid Pipe", properties -> new FluidPipe(properties, Tier.ADVANCED));
-	public static final BlockDefinition<FluidPipe>    ELITE_FLUID_PIPE     = register("Elite Fluid Pipe", properties -> new FluidPipe(properties, Tier.ELITE));
-	public static final BlockDefinition<FluidPipe>    ULTIMATE_FLUID_PIPE  = register("Ultimate Fluid Pipe", properties -> new FluidPipe(properties, Tier.ULTIMATE));
-	public static final BlockDefinition<FluidPipe>    INFINITE_FLUID_PIPE  = register("Infinite Fluid Pipe", properties -> new FluidPipe(properties, Tier.INFINITE));
-	public static final BlockDefinition<ItemPipe>     BASIC_ITEM_PIPE      = register("Basic Item Pipe", properties -> new ItemPipe(properties, Tier.BASIC));
-	public static final BlockDefinition<ItemPipe>     ADVANCED_ITEM_PIPE   = register("Advanced Item Pipe", properties -> new ItemPipe(properties, Tier.ADVANCED));
-	public static final BlockDefinition<ItemPipe>     ELITE_ITEM_PIPE      = register("Elite Item Pipe", properties -> new ItemPipe(properties, Tier.ELITE));
-	public static final BlockDefinition<ItemPipe>     ULTIMATE_ITEM_PIPE   = register("Ultimate Item Pipe", properties -> new ItemPipe(properties, Tier.ULTIMATE));
-	public static final BlockDefinition<ItemPipe>     INFINITE_ITEM_PIPE   = register("Infinite Item Pipe", properties -> new ItemPipe(properties, Tier.INFINITE));
-	public static final BlockDefinition<FacadeBlock>  FACADE               = register("Facade", Factory.get("facade"), FacadeBlock::new, BlockBehaviour.Properties::of, FacadeBlockItem::new);
+	public static final BlockDefinition<MachineFrameBlock> MACHINE_FRAME        = register("Machine Frame", MachineFrameBlock::new);
+	public static final BlockDefinition<MachinePart>       MACHINE_CASING       = register("Machine Casing", properties -> new MachinePart(MachinePart.Type.MACHINE_CASING, properties.requiresCorrectToolForDrops().strength(10.0F, 1200.0F).sound(SoundType.IRON)));
+	public static final BlockDefinition<PowerCable>        BASIC_POWER_CABLE    = register("Basic Power Cable", properties -> new PowerCable(properties, Tier.BASIC));
+	public static final BlockDefinition<PowerCable>        ADVANCED_POWER_CABLE = register("Advanced Power Cable", properties -> new PowerCable(properties, Tier.ADVANCED));
+	public static final BlockDefinition<PowerCable>        ELITE_POWER_CABLE    = register("Elite Power Cable", properties -> new PowerCable(properties, Tier.ELITE));
+	public static final BlockDefinition<PowerCable>        ULTIMATE_POWER_CABLE = register("Ultimate Power Cable", properties -> new PowerCable(properties, Tier.ULTIMATE));
+	public static final BlockDefinition<PowerCable>        INFINITE_POWER_CABLE = register("Infinite Power Cable", properties -> new PowerCable(properties, Tier.INFINITE));
+	public static final BlockDefinition<FluidPipe>         BASIC_FLUID_PIPE     = register("Basic Fluid Pipe", properties -> new FluidPipe(properties, Tier.BASIC));
+	public static final BlockDefinition<FluidPipe>         ADVANCED_FLUID_PIPE  = register("Advanced Fluid Pipe", properties -> new FluidPipe(properties, Tier.ADVANCED));
+	public static final BlockDefinition<FluidPipe>         ELITE_FLUID_PIPE     = register("Elite Fluid Pipe", properties -> new FluidPipe(properties, Tier.ELITE));
+	public static final BlockDefinition<FluidPipe>         ULTIMATE_FLUID_PIPE  = register("Ultimate Fluid Pipe", properties -> new FluidPipe(properties, Tier.ULTIMATE));
+	public static final BlockDefinition<FluidPipe>         INFINITE_FLUID_PIPE  = register("Infinite Fluid Pipe", properties -> new FluidPipe(properties, Tier.INFINITE));
+	public static final BlockDefinition<ItemPipe>          BASIC_ITEM_PIPE      = register("Basic Item Pipe", properties -> new ItemPipe(properties, Tier.BASIC));
+	public static final BlockDefinition<ItemPipe>          ADVANCED_ITEM_PIPE   = register("Advanced Item Pipe", properties -> new ItemPipe(properties, Tier.ADVANCED));
+	public static final BlockDefinition<ItemPipe>          ELITE_ITEM_PIPE      = register("Elite Item Pipe", properties -> new ItemPipe(properties, Tier.ELITE));
+	public static final BlockDefinition<ItemPipe>          ULTIMATE_ITEM_PIPE   = register("Ultimate Item Pipe", properties -> new ItemPipe(properties, Tier.ULTIMATE));
+	public static final BlockDefinition<ItemPipe>          INFINITE_ITEM_PIPE   = register("Infinite Item Pipe", properties -> new ItemPipe(properties, Tier.INFINITE));
+	public static final BlockDefinition<FacadeBlock>       FACADE               = register("Facade", Factory.get("facade"), FacadeBlock::new, BlockBehaviour.Properties::of, FacadeBlockItem::new);
 
 	public static final BlockDefinition<ElectricFurnaceBlock> ELECTRIC_FURNACE = register("Electric Furnace", ElectricFurnaceBlock::new);
 

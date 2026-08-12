@@ -31,8 +31,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -62,8 +62,8 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 	private static final double MAINTENANCE_HITBOX_PADDING = 2.0 / 16.0;
 
-	private final VoxelShape[] SHAPES                    = createShapes();
-	private final VoxelShape[] MAINTENANCE_SHAPES        = createMaintenanceShapes();
+	private final VoxelShape[] SHAPES             = createShapes();
+	private final VoxelShape[] MAINTENANCE_SHAPES = createMaintenanceShapes();
 
 	public CableBlock (Properties properties) {
 		super(properties);
@@ -79,7 +79,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	public CableShape getCableShape () {
-		return CableShape.from(box(5, 5, 5, 11, 11, 11), box(5, 0, 5, 11, 5, 11), box(5, 11, 5, 11, 16, 11), box(5, 5, 0, 11, 11, 5), box(5, 5, 11, 11, 11, 16), box(0, 5, 5, 5, 11, 11), box(11, 5, 5, 16, 11, 11));
+		return CableShape.from(box(5, 5, 5, 11, 11, 11), box(6, 0, 6, 10, 5, 10), box(6, 11, 6, 10, 16, 10), box(6, 6, 0, 10, 10, 5), box(6, 6, 11, 10, 10, 16), box(0, 6, 6, 5, 10, 10), box(11, 6, 6, 16, 10, 10));
 	}
 
 	@Override
@@ -104,6 +104,16 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 		return state.setValue(getConnectionProperty(direction), shouldConnectTo(state, level, pos, direction, neighborPos, neighborState));
 	}
 
+	/**
+	 * Retrieves the shape for the cable block based on its state, context, and position.
+	 * The shape differs depending on whether the player is holding a wrench or not.
+	 *
+	 * @param state    the current block state of the cable
+	 * @param level    the block getter providing access to the world data
+	 * @param pos      the position of the block in the world
+	 * @param context  the collision context, useful for determining player interaction (e.g., holding a wrench)
+	 * @return the {@code VoxelShape} that defines the block's collision and visual representation
+	 */
 	@Override
 	protected @NonNull VoxelShape getShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
 		return (isHoldingWrench(context) ? MAINTENANCE_SHAPES : SHAPES)[getShapeIndex(state)];
@@ -262,9 +272,12 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	public static VoxelShape getMaintenanceArmShape (Direction direction, CableBlock block) {
 		AABB bounds = getArmShape(direction, block).bounds();
 		return switch (direction) {
-			case DOWN, UP -> Shapes.create(new AABB(bounds.minX - MAINTENANCE_HITBOX_PADDING, bounds.minY, bounds.minZ - MAINTENANCE_HITBOX_PADDING, bounds.maxX + MAINTENANCE_HITBOX_PADDING, bounds.maxY, bounds.maxZ + MAINTENANCE_HITBOX_PADDING));
-			case NORTH, SOUTH -> Shapes.create(new AABB(bounds.minX - MAINTENANCE_HITBOX_PADDING, bounds.minY - MAINTENANCE_HITBOX_PADDING, bounds.minZ, bounds.maxX + MAINTENANCE_HITBOX_PADDING, bounds.maxY + MAINTENANCE_HITBOX_PADDING, bounds.maxZ));
-			case WEST, EAST -> Shapes.create(new AABB(bounds.minX, bounds.minY - MAINTENANCE_HITBOX_PADDING, bounds.minZ - MAINTENANCE_HITBOX_PADDING, bounds.maxX, bounds.maxY + MAINTENANCE_HITBOX_PADDING, bounds.maxZ + MAINTENANCE_HITBOX_PADDING));
+			case DOWN, UP ->
+					Shapes.create(new AABB(bounds.minX - MAINTENANCE_HITBOX_PADDING, bounds.minY, bounds.minZ - MAINTENANCE_HITBOX_PADDING, bounds.maxX + MAINTENANCE_HITBOX_PADDING, bounds.maxY, bounds.maxZ + MAINTENANCE_HITBOX_PADDING));
+			case NORTH, SOUTH ->
+					Shapes.create(new AABB(bounds.minX - MAINTENANCE_HITBOX_PADDING, bounds.minY - MAINTENANCE_HITBOX_PADDING, bounds.minZ, bounds.maxX + MAINTENANCE_HITBOX_PADDING, bounds.maxY + MAINTENANCE_HITBOX_PADDING, bounds.maxZ));
+			case WEST, EAST ->
+					Shapes.create(new AABB(bounds.minX, bounds.minY - MAINTENANCE_HITBOX_PADDING, bounds.minZ - MAINTENANCE_HITBOX_PADDING, bounds.maxX, bounds.maxY + MAINTENANCE_HITBOX_PADDING, bounds.maxZ + MAINTENANCE_HITBOX_PADDING));
 		};
 	}
 
@@ -279,9 +292,7 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 	}
 
 	public static boolean isHoldingWrench (CollisionContext context) {
-		return context instanceof EntityCollisionContext entityContext
-		       && entityContext.getEntity() instanceof Player player
-		       && player.getMainHandItem().getItem() instanceof WrenchItem;
+		return context instanceof EntityCollisionContext entityContext && entityContext.getEntity() instanceof Player player && player.getMainHandItem().getItem() instanceof WrenchItem;
 	}
 
 	private static int getShapeIndex (BlockState state) {
@@ -386,6 +397,10 @@ public abstract class CableBlock extends BaseBlock implements CustomBlockModel, 
 
 		public static CableRenderGeometry fromPixels (float crossMin, float crossMax, float bandMin, float bandMax) {
 			return new CableRenderGeometry(crossMin / 16.0F, crossMax / 16.0F, bandMin / 16.0F, bandMax / 16.0F);
+		}
+
+		public CableRenderGeometry withCrossSection (AABB armBounds) {
+			return new CableRenderGeometry((float) armBounds.minX, (float) armBounds.maxX, bandMin, bandMax);
 		}
 
 	}

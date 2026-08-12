@@ -180,6 +180,15 @@ public class FacadeBlock extends BaseBlock implements EntityBlock, CustomBlockMo
 		return super.getSoundType(state, level, pos, entity);
 	}
 
+	/**
+	 * Retrieves the shape of the block at the given position based on its state, level, and collision context.
+	 *
+	 * @param state the {@link BlockState} of the block.
+	 * @param level the {@link BlockGetter} providing access to the level data.
+	 * @param pos the {@link BlockPos} representing the block's position.
+	 * @param context the {@link CollisionContext} used to determine the interaction context.
+	 * @return a {@link VoxelShape} representing the shape of the block.
+	 */
 	@Override
 	protected @NonNull VoxelShape getShape (@NonNull BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
 		if (!CableBlock.isHoldingWrench(context)) {

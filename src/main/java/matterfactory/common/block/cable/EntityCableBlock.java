@@ -3,6 +3,7 @@ package matterfactory.common.block.cable;
 import lombok.Getter;
 import matterfactory.common.block.BlockEntityTypeOwner;
 import matterfactory.common.block.entity.BaseCableBlockEntity;
+import matterfactory.common.block.entity.FacadeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -34,7 +35,7 @@ public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends C
 
 	@Override
 	public boolean canConnectTo (LevelReader level, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState) {
-		if (isSameCableType(neighborState)) {
+		if (isSameCableType(level, neighborPos, neighborState)) {
 			return !(level instanceof BlockGetter blockGetter) || !(getBlockEntity(blockGetter, neighborPos) instanceof BaseCableBlockEntity neighborCable) || !neighborCable.isManuallyDisconnected(direction.getOpposite());
 		}
 
@@ -49,7 +50,7 @@ public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends C
 
 		BlockPos neighborPos = pos.relative(direction);
 		BlockState neighborState = level.getBlockState(neighborPos);
-		return !isSameCableType(neighborState) && level instanceof Level realLevel && (hasEndpointCapability(realLevel, neighborPos, neighborState, direction.getOpposite()) || hasEndpointCapability(realLevel, neighborPos, neighborState, null));
+		return !isSameCableType(level, neighborPos, neighborState) && level instanceof Level realLevel && (hasEndpointCapability(realLevel, neighborPos, neighborState, direction.getOpposite()) || hasEndpointCapability(realLevel, neighborPos, neighborState, null));
 	}
 
 	protected abstract boolean hasEndpointCapability (Level level, BlockPos pos, BlockState state, @Nullable Direction side);
@@ -112,7 +113,11 @@ public abstract class EntityCableBlock<T extends BaseCableBlockEntity> extends C
 		return oldState.getBlock() == this;
 	}
 
-	private boolean isSameCableType (BlockState state) {
+	private boolean isSameCableType (Object level, BlockPos pos, BlockState state) {
+		if (level instanceof BlockGetter blockGetter && blockGetter.getBlockEntity(pos) instanceof FacadeBlockEntity facade) {
+			state = facade.getCoveredState();
+		}
+
 		return getClass().isInstance(state.getBlock());
 	}
 
